@@ -1,14 +1,13 @@
-// export const allowRoles = (roles = []) => {
-//   return (req, res, next) => {
-//     console.log(req.user);    
-//     if (!req.user || !req.user.role) {
-//       return res.status(403).json({ message: "Role not found" });
-//     }
+import { Request, Response, NextFunction } from "express";
 
-//     if (!roles.includes(req.user.role)) {
-//       return res.status(403).json({ message: "Access denied" });
-//     }
-
-//     next();
-//   };
-// };
+export const allowRoles = (...roles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    next();
+  };
+};
