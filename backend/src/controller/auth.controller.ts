@@ -87,6 +87,8 @@ export const login = async (
 
     if (userError) return res.status(400).json({ error: userError.message });
 
+    console.log("Logged User",userData);
+
     return res.status(200).json({
       message: "Login successful",
       token: data.session.access_token, // ✅ Supabase token

@@ -1,13 +1,19 @@
-import "dotenv/config";
+// app.ts
+import "dotenv/config"; // MUST be first
 import express from "express";
 import authRoutes from "./routes/auth.routes.js";
+import recruiterRoutes from "./routes/recruiter.routes.js";
 
 const app = express();
 
-console.log("ENV TEST >>>", process.env.TEST_ENV);
+// Middlewares
 app.use(express.json());
-app.use("/api/auth", authRoutes);
 
+// Routes
+app.use("/api/auth", authRoutes);
+ app.use("/api/recruiter", recruiterRoutes);
+
+// Test route
 app.get("/", (req, res) => {
   res.send("API is running 🚀");
 });

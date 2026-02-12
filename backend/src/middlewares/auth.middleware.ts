@@ -1,18 +1,38 @@
-import { supabase } from "../services/supabase.service.js";
-import { Request,Response,NextFunction } from "express";
-export const protect = async (req:Request, res:Response, next:NextFunction) => {
+import { Request, Response, NextFunction } from "express";
+import { getSupabase } from "../services/supabase.service.js";
+
+export const protect = async (req: any, res: any, next: NextFunction) => {
   try {
+    const supabase = getSupabase();
     const authHeader = req.headers.authorization;
     if (!authHeader) return res.status(401).json({ message: "No token" });
 
     const token = authHeader.split(" ")[1];
 
-    const { data, error } = await supabase.auth.getUser(token);
-    if (error) return res.status(401).json({ message: "Invalid token" });
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !authData.user) return res.status(401).json({ message: "Invalid token" });
 
-    req.user = data.user; // attach user
+    const userId = authData.user.id;
+
+    // Fetch the actual role from your users table
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("id, role,email")
+      .eq("id", userId)
+      .single();
+
+    if (userError || !userData) return res.status(401).json({ message: "User not found" });
+
+    // Attach to request
+    // console.log("user data",userData);
+    req.user = userData;
+    req.accessToken = token;
+
+    // console.log("User attached to req:", req);
+
     next();
   } catch (err) {
+    console.error("Auth middleware error:", err);
     res.status(401).json({ message: "Unauthorized" });
   }
 };
