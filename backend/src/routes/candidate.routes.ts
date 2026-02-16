@@ -4,6 +4,7 @@ import express from "express";
 import {
   updateCandidateProfile,
   getCandidateProfile,
+  fetchAllPostedJobs
 } from "../controller/candiate.controller.js";
 
 const candidateRoutes = express.Router();
@@ -20,6 +21,14 @@ candidateRoutes.get(
   protect,
   allowRoles("ADMIN", "CANDIDATE"),
   getCandidateProfile,
+);
+
+
+candidateRoutes.get(
+  "/jobs",
+  protect,
+  allowRoles("ADMIN", "CANDIDATE"),
+  fetchAllPostedJobs,
 );
 
 export default candidateRoutes;

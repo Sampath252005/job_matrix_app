@@ -27,6 +27,7 @@ export const upsertProfileDetails = async (
     .single();
 };
 
+//To fectch candidate profile
 export const getCandidateProfile = async (token: string) => {
   const supabase = getSupabase(token);
 
@@ -38,4 +39,17 @@ export const getCandidateProfile = async (token: string) => {
     .select("*")
     .eq("user_id", userId)
     .maybeSingle();
+};
+
+
+//to fetch all the jobs
+
+export const getAlljobs = async (token: string) => {
+  const supabase = getSupabase(token);
+
+  return supabase
+    .from("jobs")
+    .select("*")
+    .eq("status","OPEN")
+    .order("created_at",{ascending:false});
 };

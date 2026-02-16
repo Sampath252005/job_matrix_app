@@ -112,3 +112,29 @@ export const getCandidateProfile = async (
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const fetchAllPostedJobs= async (
+  req: Request<{}, {}, {}>,
+  res: Response,
+) => {
+  try {
+    const token = req.accessToken;
+    if (!req.user || !token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { data, error } = await candiaterServices.getAlljobs(token);
+    if (error) {
+      return res
+        .status(401)
+        .json({ error: "error from getJobs" + error.message });
+    }
+    return res.status(200).json({
+      message: "All jobs fetched successfully",
+      data,
+    });
+  } catch (error) {
+    console.error("Fetch profile error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
