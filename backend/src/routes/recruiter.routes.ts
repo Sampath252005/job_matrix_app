@@ -1,3 +1,4 @@
+
 import { protect } from "../middlewares/auth.middleware.js";
 import { allowRoles } from "../middlewares/rbac.middleware.js";
 // import { register, login } from "../controller/auth.controller.js";
@@ -9,7 +10,11 @@ import {
   postJob,
   getAllMyJob,
   updateJobById,
-  deleteJobById
+  deleteJobById,
+  getApplicationsByJob,
+  updateApplicationStatus,
+  closeJobController,
+  getRecruiterDashboardController
 } from "../controller/recruiter.controller.js";
 // import { protect } from "../middlewares/auth.middleware.js"; // uncomment when ready
 
@@ -53,4 +58,42 @@ recruiterRoutes.delete(
   allowRoles("ADMIN", "RECRUITER"),
   deleteJobById,
 );
+
+recruiterRoutes.get(
+  "/jobs/:jobId/applications",
+  protect,
+  allowRoles("ADMIN", "RECRUITER"),
+  getApplicationsByJob,
+);
+
+recruiterRoutes.get(
+  "/jobs/:jobId/applications",
+  protect,
+  allowRoles("ADMIN", "RECRUITER"),
+  getApplicationsByJob,
+);
+
+
+recruiterRoutes.put(
+  "/applcations/:applicationId/status",
+  protect,
+  allowRoles("ADMIN", "RECRUITER"),
+  updateApplicationStatus,
+);
+
+recruiterRoutes.put(
+  "/jobs/:id/close",
+  protect,
+  allowRoles("ADMIN", "RECRUITER"),
+  closeJobController,
+);
+
+recruiterRoutes.get(
+  "/dashboard",
+  protect,
+  allowRoles("ADMIN", "RECRUITER"),
+  getRecruiterDashboardController
+);
+
+
 export default recruiterRoutes;
