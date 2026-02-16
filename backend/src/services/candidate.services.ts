@@ -16,7 +16,7 @@ interface CandidateProfilePayload {
 //to Update a user profile
 export const upsertProfileDetails = async (
   payload: CandidateProfilePayload,
-  token: string
+  token: string,
 ) => {
   const supabase = getSupabase(token);
 
@@ -25,4 +25,17 @@ export const upsertProfileDetails = async (
     .upsert(payload, { onConflict: "user_id" })
     .select()
     .single();
+};
+
+export const getCandidateProfile = async (token: string) => {
+  const supabase = getSupabase(token);
+
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData.user?.id;
+
+  return supabase
+    .from("candidate_profiles")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
 };

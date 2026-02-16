@@ -89,7 +89,6 @@ export const getRecruiterProfile = async (
   res: Response,
 ) => {
   try {
-    console.log("get REcruiter prmfsmfls");
     const token = req.accessToken;
     if (!req.user || !token) {
       return res.status(401).json({ message: "Unauthorized" });

@@ -55,7 +55,7 @@ export const updateCandidateProfile = async (
     // }
 
     // Call service with token (VERY IMPORTANT)
-    const {data,error} = await candiaterServices.upsertProfileDetails(
+    const { data, error } = await candiaterServices.upsertProfileDetails(
       {
         user_id: userId,
         education: education ?? null,
@@ -83,6 +83,32 @@ export const updateCandidateProfile = async (
     });
   } catch (err) {
     console.error("Unexpected controller error:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getCandidateProfile = async (
+  req: Request<{}, {}, {}>,
+  res: Response,
+) => {
+  try {
+    const token = req.accessToken;
+    if (!req.user || !token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { data, error } = await candiaterServices.getCandidateProfile(token);
+    if (error) {
+      return res
+        .status(401)
+        .json({ error: "error from getProfile" + error.message });
+    }
+    return res.status(200).json({
+      message: "Profile fetched successfully",
+      data,
+    });
+  } catch (error) {
+    console.error("Fetch profile error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
