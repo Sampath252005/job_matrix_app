@@ -255,124 +255,124 @@ interface CreateJobBody {
 //   }
 // };
 
-export const getApplicationsByJob = async (
-  req: Request<{ jobId: string }>,
-  res: Response,
-) => {
-  try {
-    const { jobId } = req.params;
-    const recruiter_id = req.user?.id;
-    const token = req.accessToken;
+// export const getApplicationsByJob = async (
+//   req: Request<{ jobId: string }>,
+//   res: Response,
+// ) => {
+//   try {
+//     const { jobId } = req.params;
+//     const recruiter_id = req.user?.id;
+//     const token = req.accessToken;
 
-    if (!recruiter_id || !token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+//     if (!recruiter_id || !token) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
 
    
-    const { data: job, error: jobError } =
-      await recruiterServices.checkJobOwnership(jobId, recruiter_id, token);
+//     const { data: job, error: jobError } =
+//       await recruiterServices.checkJobOwnership(jobId, recruiter_id, token);
 
-    if (jobError || !job) {
-      return res.status(403).json({ message: "Not authorized for this job" });
-    }
+//     if (jobError || !job) {
+//       return res.status(403).json({ message: "Not authorized for this job" });
+//     }
 
-    const { data, error } = await recruiterServices.getApplicationsByJob(
-      jobId,
-      token,
-    );
+//     const { data, error } = await recruiterServices.getApplicationsByJob(
+//       jobId,
+//       token,
+//     );
 
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
+//     if (error) {
+//       return res.status(400).json({ error: error.message });
+//     }
 
-    return res.status(200).json(data);
-  } catch (error) {
-    console.error("Fetch applications error:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-
-export const updateApplicationStatus = async (
-  req: Request<{applicationId:string},{},{status:string}>,
-  res: Response
-) => {
-  const {applicationId}= req.params
-  const recruiter_id = req.user!.id;
-  const { status} = req.body;
-  const token = req.accessToken;
-
-    if (!recruiter_id || !token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-  try {
-    const result = await recruiterServices.updateStatusService(
-      applicationId,
-      recruiter_id,
-      status,
-      token
-    );
-
-    return res.json({
-      message: "Application status updated",
-      data: result
-    });
-  } catch (error: any) {
-    return res.status(400).json({ error: error.message });
-  }
-};
+//     return res.status(200).json(data);
+//   } catch (error) {
+//     console.error("Fetch applications error:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
 
-// export const closeJobController = async (
-//   req:Request<{id:string},{},{}>,
+// export const updateApplicationStatus = async (
+//   req: Request<{applicationId:string},{},{status:string}>,
+//   res: Response
+// ) => {
+//   const {applicationId}= req.params
+//   const recruiter_id = req.user!.id;
+//   const { status} = req.body;
+//   const token = req.accessToken;
+
+//     if (!recruiter_id || !token) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
+
+//   try {
+//     const result = await recruiterServices.updateStatusService(
+//       applicationId,
+//       recruiter_id,
+//       status,
+//       token
+//     );
+
+//     return res.json({
+//       message: "Application status updated",
+//       data: result
+//     });
+//   } catch (error: any) {
+//     return res.status(400).json({ error: error.message });
+//   }
+// };
+
+
+// // export const closeJobController = async (
+// //   req:Request<{id:string},{},{}>,
+// //   res: Response
+// // ) => {
+// //   try {
+// //     const jobId = req.params.id;
+// //     const recruiter_id = req.user!.id;
+// //     const token = req.headers.authorization!.split(" ")[1];
+
+// //     const {data,error }= await recruiterServices.closeJob(jobId, recruiter_id, token);
+// //       if(error)
+// //       {
+// //         return res.status(400).json({message:"Error in close controller:",error});
+// //       }
+// //     return res.json({
+// //       message: "Job closed successfully",
+// //       data,
+// //     });
+// //   } catch (error: any) {
+// //     return res.status(400).json({
+// //       error: error.message,
+// //     });
+// //   }
+// // };
+
+// export const getRecruiterDashboardController = async (
+//   req: Request,
 //   res: Response
 // ) => {
 //   try {
-//     const jobId = req.params.id;
 //     const recruiter_id = req.user!.id;
-//     const token = req.headers.authorization!.split(" ")[1];
+//     const token = req.accessToken!;
+//     if(!token)
+//     {
+//         return res.status(400).json({message:"Unauthorzed:"});
+//     }
 
-//     const {data,error }= await recruiterServices.closeJob(jobId, recruiter_id, token);
-//       if(error)
-//       {
-//         return res.status(400).json({message:"Error in close controller:",error});
-//       }
-//     return res.json({
-//       message: "Job closed successfully",
-//       data,
-//     });
+//     const stats = await recruiterServices.getRecruiterDashboardStats(
+//       recruiter_id,
+//       token
+//     );
+
+//     return res.json(stats);
 //   } catch (error: any) {
 //     return res.status(400).json({
 //       error: error.message,
 //     });
 //   }
 // };
-
-export const getRecruiterDashboardController = async (
-  req: Request,
-  res: Response
-) => {
-  try {
-    const recruiter_id = req.user!.id;
-    const token = req.accessToken!;
-    if(!token)
-    {
-        return res.status(400).json({message:"Unauthorzed:"});
-    }
-
-    const stats = await recruiterServices.getRecruiterDashboardStats(
-      recruiter_id,
-      token
-    );
-
-    return res.json(stats);
-  } catch (error: any) {
-    return res.status(400).json({
-      error: error.message,
-    });
-  }
-};
 
 
 
