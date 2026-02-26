@@ -1,4 +1,4 @@
-import * as authServices from "../services/auth.services.js";
+import * as authServices from "./auth.services.js";
 import { Response, Request } from "express";
 interface RegisterBody {
   email: string;

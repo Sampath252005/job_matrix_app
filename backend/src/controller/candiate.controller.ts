@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as candiaterServices from "../services/candidate.services.js";
 
+
 interface RegisterBody {
   education?: string;
   college?: string;
@@ -15,126 +16,155 @@ interface RegisterBody {
   job_type_preference?: string;
 }
 
-export const updateCandidateProfile = async (
-  req: Request<{}, {}, RegisterBody>,
-  res: Response,
-) => {
-  try {
-    console.log("Recruiter controller loaded");
+// export const updateCandidateProfile = async (
+//   req: Request<{}, {}, RegisterBody>,
+//   res: Response,
+// ) => {
+//   try {
+//     console.log("Recruiter controller loaded");
 
-    const token = req.accessToken;
-    const user = req.user;
+//     const token = req.accessToken;
+//     const user = req.user;
 
-    if (!user || !token) {
-      console.warn("Unauthorized request");
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+//     if (!user || !token) {
+//       console.warn("Unauthorized request");
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
 
-    const userId = user.id;
-    console.log("User ID from token:", userId);
+//     const userId = user.id;
+//     console.log("User ID from token:", userId);
 
-    const {
-      education,
-      college,
-      degree,
-      branch,
-      graduation_year,
-      experience_level,
-      skills,
-      resume_url,
-      portfolio_url,
-      location,
-      job_type_preference,
-    } = req.body;
+//     const {
+//       education,
+//       college,
+//       degree,
+//       branch,
+//       graduation_year,
+//       experience_level,
+//       skills,
+//       resume_url,
+//       portfolio_url,
+//       location,
+//       job_type_preference,
+//     } = req.body;
 
-    // Validate required fields
-    // if (!company_name || !website) {
-    //   return res.status(400).json({
-    //     message: "Company name and website are required",
-    //   });
-    // }
+//     // Validate required fields
+//     // if (!company_name || !website) {
+//     //   return res.status(400).json({
+//     //     message: "Company name and website are required",
+//     //   });
+//     // }
 
-    // Call service with token (VERY IMPORTANT)
-    const { data, error } = await candiaterServices.upsertProfileDetails(
-      {
-        user_id: userId,
-        education: education ?? null,
-        college: college ?? null,
-        degree: degree ?? null,
-        branch: branch ?? null,
-        graduation_year: graduation_year ?? null,
-        experience_level: experience_level ?? null,
-        skills: skills ?? null,
-        resume_url: resume_url ?? null,
-        portfolio_url: portfolio_url ?? null,
-        location: location ?? null,
-        job_type_preference: job_type_preference ?? null,
-      },
-      token,
-    );
-    if (error) {
-      console.warn("Insert error:", error.message);
-      return res.status(400).json({ error: error.message });
-    }
+//     // Call service with token (VERY IMPORTANT)
+//     const { data, error } = await candiaterServices.upsertProfileDetails(
+//       {
+//         user_id: userId,
+//         education: education ?? null,
+//         college: college ?? null,
+//         degree: degree ?? null,
+//         branch: branch ?? null,
+//         graduation_year: graduation_year ?? null,
+//         experience_level: experience_level ?? null,
+//         skills: skills ?? null,
+//         resume_url: resume_url ?? null,
+//         portfolio_url: portfolio_url ?? null,
+//         location: location ?? null,
+//         job_type_preference: job_type_preference ?? null,
+//       },
+//       token,
+//     );
+//     if (error) {
+//       console.warn("Insert error:", error.message);
+//       return res.status(400).json({ error: error.message });
+//     }
 
-    return res.status(200).json({
-      message: "Profile saved successfully",
-      data,
-    });
-  } catch (err) {
-    console.error("Unexpected controller error:", err);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
+//     return res.status(200).json({
+//       message: "Profile saved successfully",
+//       data,
+//     });
+//   } catch (err) {
+//     console.error("Unexpected controller error:", err);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
-export const getCandidateProfile = async (
-  req: Request<{}, {}, {}>,
-  res: Response,
-) => {
-  try {
-    const token = req.accessToken;
-    if (!req.user || !token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+// export const getCandidateProfile = async (
+//   req: Request<{}, {}, {}>,
+//   res: Response,
+// ) => {
+//   try {
+//     const token = req.accessToken;
+//     if (!req.user || !token) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
 
-    const { data, error } = await candiaterServices.getCandidateProfile(token);
-    if (error) {
-      return res
-        .status(401)
-        .json({ error: "error from getProfile" + error.message });
-    }
-    return res.status(200).json({
-      message: "Profile fetched successfully",
-      data,
-    });
-  } catch (error) {
-    console.error("Fetch profile error:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
+//     const { data, error } = await candiaterServices.getCandidateProfile(token);
+//     if (error) {
+//       return res
+//         .status(401)
+//         .json({ error: "error from getProfile" + error.message });
+//     }
+//     return res.status(200).json({
+//       message: "Profile fetched successfully",
+//       data,
+//     });
+//   } catch (error) {
+//     console.error("Fetch profile error:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
-export const fetchAllPostedJobs= async (
-  req: Request<{}, {}, {}>,
-  res: Response,
-) => {
-  try {
-    const token = req.accessToken;
-    if (!req.user || !token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+// export const fetchAllPostedJobs = async (
+//   req: Request<{}, {}, {}>,
+//   res: Response,
+// ) => {
+//   try {
+//     const token = req.accessToken;
+//     if (!req.user || !token) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
 
-    const { data, error } = await candiaterServices.getAlljobs(token);
-    if (error) {
-      return res
-        .status(401)
-        .json({ error: "error from getJobs" + error.message });
-    }
-    return res.status(200).json({
-      message: "All jobs fetched successfully",
-      data,
-    });
-  } catch (error) {
-    console.error("Fetch profile error:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
+//     const { data, error } = await candiaterServices.getAlljobs(token);
+//     if (error) {
+//       return res
+//         .status(401)
+//         .json({ error: "error from getJobs" + error.message });
+//     }
+//     return res.status(200).json({
+//       message: "All jobs fetched successfully",
+//       data,
+//     });
+//   } catch (error) {
+//     console.error("Fetch profile error:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+// export const getJobDetails = async (
+//   req: Request<{ jobId: string }, {}, {}>,
+//   res: Response,
+// ) => {
+//   try {
+//     const token = req.accessToken;
+//     if (!token) {
+//       return res.status(401).json({ message: "unauthorized" });
+//     }
+//     const jobId = req.params.jobId;
+//     const { data, error } = await candiaterServices.GetJobDetailsFromDb(
+//       jobId,
+//       token,
+//     );
+//     if (error) {
+//       console.error(error);
+//       return res.status(404).json({ message: "Job not found or closed" });
+//     }
+
+//     return res.status(200).json({
+//       message: "Job details fetched successfully",
+//       data,
+//     });
+//   } catch (error) {
+//     console.error("error from get job detilas:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };

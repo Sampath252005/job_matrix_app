@@ -5,8 +5,7 @@ import { allowRoles } from "../middlewares/rbac.middleware.js";
 
 import express from "express";
 import {
-  updateRecruiterProfile,
-  getRecruiterProfile,
+
   postJob,
   getAllMyJob,
   updateJobById,
@@ -22,18 +21,18 @@ const recruiterRoutes = express.Router();
 
 console.log("Recruiter routes loaded");
 
-recruiterRoutes.post(
-  "/profile",
-  protect,
-  allowRoles("ADMIN", "RECRUITER"),
-  updateRecruiterProfile,
-); // ✅ safe
-recruiterRoutes.get(
-  "/profile",
-  protect,
-  allowRoles("ADMIN", "RECRUITER"),
-  getRecruiterProfile,
-);
+// recruiterRoutes.post(
+//   "/profile",
+//   protect,
+//   allowRoles("ADMIN", "RECRUITER"),
+//   updateRecruiterProfile,
+// ); // ✅ safe
+// recruiterRoutes.get(
+//   "/profile",
+//   protect,
+//   allowRoles("ADMIN", "RECRUITER"),
+//   getRecruiterProfile,
+// );
 recruiterRoutes.post(
   "/postJob",
   protect,
