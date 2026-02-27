@@ -137,3 +137,34 @@ export const GetJobDetailsFromDb = async (jobId: string, token: string) => {
     .eq("status", "OPEN")
     .single();
 };
+
+
+export const searchJobsService = async (filters: {
+  location?: string;
+  type?: string;
+  skill?: string;
+},token:string) => {
+  const supabase = getSupabase(token);
+
+  let query = supabase
+    .from("jobs")
+    .select("*")
+    .eq("status","OPEN"); // assuming you have this
+
+  if (filters.location) {
+    query = query.ilike("location", `%${filters.location}%`);
+  }
+
+  if (filters.type) {
+    query = query.eq("type", filters.type);
+  }
+
+  if (filters.skill) {
+    query = query.ilike("title", `%${filters.skill}%`);
+  }
+
+  const { data, error } = await query.order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+};

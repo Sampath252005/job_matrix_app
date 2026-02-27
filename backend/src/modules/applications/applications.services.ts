@@ -134,18 +134,17 @@ export const applyToJobServices = async (
     })
     .select()
     .single();
-
 };
 
-
-
-
-export const getMyApplicationsService = async (candidateId: string,token:string) => {
-
-  const supabase=getSupabase(token);
+export const getMyApplicationsService = async (
+  candidateId: string,
+  token: string,
+) => {
+  const supabase = getSupabase(token);
   return await supabase
     .from("applications")
-    .select(`
+    .select(
+      `
       id,
       status,
       applied_at,
@@ -156,23 +155,22 @@ export const getMyApplicationsService = async (candidateId: string,token:string)
         type,
         salary
       )
-    `)
+    `,
+    )
     .eq("candidate_id", candidateId)
     .order("applied_at", { ascending: false });
-
 };
-
 
 export const getApplicationByIdService = async (
   applicationId: string,
   candidateId: string,
-  token :string,
+  token: string,
 ) => {
-
-  const supabase =getSupabase(token);
+  const supabase = getSupabase(token);
   return await supabase
     .from("applications")
-    .select(`
+    .select(
+      `
       id,
       status,
       applied_at,
@@ -184,8 +182,42 @@ export const getApplicationByIdService = async (
         type,
         salary
       )
-    `)
+    `,
+    )
     .eq("id", applicationId)
     .eq("candidate_id", candidateId)
     .single();
+};
+
+export const deleteApplcationService = async (
+  applicationId: string,
+  candidateId: string,
+  token: string,
+) => {
+  const supabase = getSupabase(token);
+  const { data: app, error: fetchError } = await supabase
+    .from("applications")
+    .select("id ,status")
+    .eq("id", applicationId)
+    .eq("candidate_id", candidateId)
+    .single();
+
+  console.log(fetchError, app);
+
+  if (fetchError || !app) {
+    throw new Error("Application not found or not authorized");
+  }
+
+  if (app.status === "HIRED") {
+    throw new Error("Cannot withdraw after hiring");
+  }
+  const { error } = await supabase
+    .from("applications")
+    .delete()
+    .eq("id", applicationId)
+    .eq("candidate_id", candidateId);
+
+  if (error) throw error;
+
+  return true;
 };

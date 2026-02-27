@@ -58,8 +58,6 @@ export const postJob = async (
 //get all my job
 export const getAllMyJob = async (req: Request<{}, {}, {}>, res: Response) => {
   try {
-
-    
     const token = req.accessToken;
     const user = req.user;
     if (!user || !token) {
@@ -244,5 +242,27 @@ export const getJobDetails = async (
   } catch (error) {
     console.error("error from get job detilas:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const searchJobsController = async (req: Request, res: Response) => {
+  try {
+    const { location, type, skill } = req.query;
+    const token = req.accessToken;
+    if (!token) {
+      return res.status(401).json({ message: "unauthorized" });
+    }
+    const jobs = await JobsServices.searchJobsService(
+      {
+        location: location as string,
+        type: type as string,
+        skill: skill as string,
+      },
+      token,
+    );
+
+    res.json(jobs);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
   }
 };

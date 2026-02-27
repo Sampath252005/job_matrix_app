@@ -5,8 +5,9 @@ import {
   getApplicationsByJob,
   updateApplicationStatus,
   applyToJob,
-   getMyApplications,
-   getApplicationById
+  getMyApplications,
+  getApplicationById,
+  deleteApplication
 } from "./applications.controller.js";
 
 const router = express.Router();
@@ -27,9 +28,25 @@ router.patch(
   updateApplicationStatus,
 );
 
-
 //-----------------------------------------candidate side routes-------------------------------
-router.post("/:jobId/apply", protect,allowRoles("ADMIN","CANDIDATE"),applyToJob);
-router.get("/my", protect,allowRoles("ADMIN","CANDIDATE"), getMyApplications);
-router.get("/:applicationId", protect,allowRoles("ADMIN","CANDIDATE"), getApplicationById);
+router.post(
+  "/:jobId/apply",
+  protect,
+  allowRoles("ADMIN", "CANDIDATE"),
+  applyToJob,
+);
+router.get("/my", protect, allowRoles("ADMIN", "CANDIDATE"), getMyApplications);
+router.get(
+  "/:applicationId",
+  protect,
+  allowRoles("ADMIN", "CANDIDATE"),
+  getApplicationById,
+);
+router.delete(
+  "/:applicationId",
+  protect,
+  allowRoles("ADMIN", "CANDIDATE"),
+  deleteApplication
+);
+
 export default router;

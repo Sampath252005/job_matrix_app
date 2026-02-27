@@ -106,11 +106,9 @@ export const getMyApplications = async (req: Request, res: Response) => {
     const { data: applications, error } =
       await ApplicationServices.getMyApplicationsService(candidateId, token);
     if (error) {
-      res
-        .status(400)
-        .json({
-          error: error.message + "from getMyApplications in candidate api ",
-        });
+      res.status(400).json({
+        error: error.message + "from getMyApplications in candidate api ",
+      });
     }
     res
       .status(201)
@@ -131,16 +129,39 @@ export const getApplicationById = async (
     if (!candidateId || !token) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const {data:application,error} = await ApplicationServices.getApplicationByIdService(
-      applicationId,
-      candidateId,
-      token,
-    );
+    const { data: application, error } =
+      await ApplicationServices.getApplicationByIdService(
+        applicationId,
+        candidateId,
+        token,
+      );
 
-     res
+    res
       .status(201)
       .json({ message: "application details:", data: application });
   } catch (err: any) {
     res.status(404).json({ message: "Application not found" });
   }
 };
+
+export const deleteApplication = async (
+  req: Request<{ applicationId: string }, {}, {}>,
+  res: Response,
+) => {
+  try {
+    const { applicationId } = req.params;
+    const candidateId = req.user!.id;
+    const token = req.accessToken;
+    if (!candidateId || !token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+      await ApplicationServices.deleteApplcationService(applicationId, candidateId,token);
+
+    res.json({ message: "Application withdrawn successfully" });
+  } catch (err: any) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
+

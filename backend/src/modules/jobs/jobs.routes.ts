@@ -8,7 +8,8 @@ import {
   deleteJobById,
   closeJobController,
   fetchAllPostedJobs,
-  getJobDetails
+  getJobDetails,
+  searchJobsController,
 } from "./jobs.controller.js";
 
 const router = express.Router();
@@ -18,64 +19,39 @@ const router = express.Router();
 ================================ */
 
 // Create job
-router.post(
-  "/",
-  protect,
-  allowRoles("ADMIN", "RECRUITER"),
-  postJob
-);
+router.post("/", protect, allowRoles("ADMIN", "RECRUITER"), postJob);
 
 // Get recruiter’s jobs
-router.get(
-  "/my",
-  protect,
-  allowRoles("ADMIN", "RECRUITER"),
-  getAllMyJob
-);
+router.get("/my", protect, allowRoles("ADMIN", "RECRUITER"), getAllMyJob);
 
 // Update job
-router.put(
-  "/:id",
-  protect,
-  allowRoles("ADMIN", "RECRUITER"),
-  updateJobById
-);
+router.put("/:id", protect, allowRoles("ADMIN", "RECRUITER"), updateJobById);
 
 // Delete job
-router.delete(
-  "/:id",
-  protect,
-  allowRoles("ADMIN", "RECRUITER"),
-  deleteJobById
-);
+router.delete("/:id", protect, allowRoles("ADMIN", "RECRUITER"), deleteJobById);
 
 // Close job
 router.patch(
   "/:id/close",
   protect,
   allowRoles("ADMIN", "RECRUITER"),
-  closeJobController
+  closeJobController,
 );
-
 
 /* ===============================
    PUBLIC / CANDIDATE ROUTES
 ================================ */
 
 // Get all open jobs
+router.get("/", protect, allowRoles("ADMIN", "CANDIDATE"), fetchAllPostedJobs);
 router.get(
-  "/",
+  "/search",
   protect,
   allowRoles("ADMIN", "CANDIDATE"),
-  fetchAllPostedJobs
+  searchJobsController,
 );
 
 // Get single job details
-router.get(
-  "/:jobId",
-  protect,
-  allowRoles("ADMIN", "CANDIDATE"),
-  getJobDetails
-);
+router.get("/:jobId", protect, allowRoles("ADMIN", "CANDIDATE"), getJobDetails);
 
 export default router;
