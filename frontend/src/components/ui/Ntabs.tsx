@@ -1,12 +1,14 @@
 import React from "react";
-
+import { useRouter } from "next/navigation";
 type NtabsProps = {
   icon: React.ReactNode;
   name: string;
   active?: boolean;
+  link:string
 };
 
-const Ntabs = ({ icon, name, active = false }: NtabsProps) => {
+const Ntabs = ({ icon, name, active = false,link }: NtabsProps) => {
+  const router=useRouter();
   return (
     <div
       className={`
@@ -18,6 +20,7 @@ const Ntabs = ({ icon, name, active = false }: NtabsProps) => {
             : "text-gray-600 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-800 hover:text-blue-700 dark:hover:text-blue-400"
         }
       `}
+      onClick={()=>router.push(link)}
     >
       <span className="shrink-0">{icon}</span>
       <span>{name}</span>

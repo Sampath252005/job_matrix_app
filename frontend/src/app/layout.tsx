@@ -1,5 +1,6 @@
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({
   children,
@@ -11,6 +12,7 @@ export default function RootLayout({
       <body className="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors">
         <ThemeProvider>
           {children}
+           <Toaster position="top-right" />
         </ThemeProvider>
       </body>
     </html>

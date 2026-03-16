@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { CircleArrowOutUpLeft } from "lucide-react";
-import { api } from "@/lib/axios";
+import { loginService } from "@/services/auth.services";
 
 type RegisterForm = {
   email: string;
@@ -43,10 +43,11 @@ const LoginPage = () => {
       //       return;
       //     }
 
-      const res = await api.post("auth/login", data);
+      const res = await loginService(data);
 
       const result = res.data;
-      console.log(result);
+      // console.log("res:",result);
+      localStorage.setItem("User",JSON.stringify(result.user));
 
       const role = result.user.role;
       router.push(

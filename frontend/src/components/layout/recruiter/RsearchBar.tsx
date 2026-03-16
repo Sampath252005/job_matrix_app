@@ -1,56 +1,170 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { User, ChevronDown } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+type RsearchBarProps = {
+  onMenuClick?: () => void;
+};
 
 const name = "Sampath";
 
-type RsearchBarProps = {
-  onMenuClick: () => void;
-};
-
-const RsearchBar = ({ onMenuClick }: RsearchBarProps) => {
+export default function RsearchBar({ onMenuClick }: RsearchBarProps) {
   const [mounted, setMounted] = useState(false);
-  const [openProfile,setOpenProfile]=useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
+
+  const router=useRouter();
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // ⛔ prevent hydration mismatch
+  /* Close dropdown when clicking outside */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpenProfile(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   if (!mounted) return null;
 
+  /* Dynamic greeting */
+  const hour = new Date().getHours();
+  let greeting = "Hello";
+
+  if (hour < 12) greeting = "Good Morning ☀️";
+  else if (hour < 18) greeting = "Good Afternoon 🌤";
+  else greeting = "Good Evening 🌙";
+
+  const initial = name.charAt(0).toUpperCase();
+
   return (
-  
-    <div
-      className="flex w-full justify-between items-center p-2
+    <header
+      className="
+      w-full flex justify-between items-center
+      px-6 py-4
       bg-white dark:bg-gray-900
-      text-gray-800 dark:text-gray-100
-      border border-gray-200 dark:border-gray-700
-      shadow-md"
+      border-b border-gray-200 dark:border-gray-800
+      "
     >
-      <div className="flex flex-col text-lg p-1">
-        <span className="font-bold">Good Morning</span>
-        <span className="text-sm font-bold">
-          Here what you need to focus on today
-        </span>
+      {/* Greeting Section */}
+
+      <div className="flex flex-col">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {greeting}
+        </h1>
+
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Here's what you need to focus on today
+        </p>
       </div>
 
-      <div  className="relative p-2 flex gap-2 justify-center items-center bg-blue-600 text-white text-sm rounded-2xl hover:cursor-pointer">
-        <span className="bg-blue-500 rounded-full p-2">
-          <User />
-        </span>
-        <span className="hidden md:block font-bold text-md">{name}</span>
-        <span onClick={()=>setOpenProfile(!openProfile)} className=" hidden md:block hover:bg-blue-500 rounded-full ">
-          <ChevronDown />
-        </span>
-        <div className={ ` ${openProfile?"hidden md:flex ":"hidden"}  absolute  flex flex-col justify-center items-center gap-2 top-16 bg-blue-600 z-50 right-0 w-full p-2 rounded-xl font-semibold `}>
-          <span className="border-b w-full text-center pb-2">Open Profile</span>
-          <span>Log Out</span>  
+      {/* Profile Section */}
+
+      <div ref={dropdownRef} className="relative">
+        <button
+          onClick={() => setOpenProfile(!openProfile)}
+          className="
+          flex items-center gap-3
+          px-3 py-2
+          rounded-full
+          transition
+          hover:bg-gray-100 dark:hover:bg-gray-800
+          focus:outline-none focus:ring-2 focus:ring-blue-500
+          "
+        >
+          {/* Avatar */}
+
+          <div
+            className="
+            w-9 h-9 flex items-center justify-center
+            rounded-full
+            bg-gradient-to-r from-blue-500 to-indigo-600
+            text-white font-semibold
+            "
+          >
+            {initial}
+          </div>
+
+          {/* Name */}
+
+          <span className="hidden md:block font-medium text-gray-800 dark:text-gray-200">
+            {name}
+          </span>
+
+          {/* Arrow */}
+
+          <ChevronDown
+            size={18}
+            className={`transition-transform duration-200 ${
+              openProfile ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        {/* Dropdown */}
+
+        <div
+          className={`
+          absolute right-0 mt-3 w-48
+          bg-white dark:bg-gray-800
+          border border-gray-200 dark:border-gray-700
+          rounded-xl shadow-lg
+          overflow-hidden
+          transform transition-all duration-200
+          ${
+            openProfile
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-95 pointer-events-none"
+          }
+          `}
+        >
+          <button
+            className="
+            w-full text-left
+            px-4 py-2 text-sm
+            hover:bg-gray-100 dark:hover:bg-gray-700
+            "
+            onClick={()=>router.push("/recruiter/profile")}
+          >
+            Open Profile
+          </button>
+
+          <button
+            className="
+            w-full text-left
+            px-4 py-2 text-sm
+            hover:bg-gray-100 dark:hover:bg-gray-700
+            "
+          >
+            Settings
+          </button>
+
+          <div className="border-t border-gray-200 dark:border-gray-700" />
+
+          <button
+            className="
+            w-full text-left
+            px-4 py-2 text-sm
+            text-red-500
+            hover:bg-red-50 dark:hover:bg-red-900/40
+            "
+          >
+            Log Out
+          </button>
         </div>
       </div>
-    </div>
+    </header>
   );
-};
-
-export default RsearchBar;
+}

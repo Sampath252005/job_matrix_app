@@ -6,7 +6,6 @@ interface RegisterBody {
   role: string;
 }
 
-
 // for register------------------------------------------------------------
 
 export const register = async (
@@ -87,13 +86,25 @@ export const login = async (
 
     if (userError) return res.status(400).json({ error: userError.message });
 
-    console.log("Logged User",userData);
+    console.log("Logged User", userData);
 
-    return res.status(200).json({
-      message: "Login successful",
-      token: data.session.access_token, // ✅ Supabase token
-      user: userData,
-    });
+    return res
+      .cookie("access_token", data.session.access_token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+      })
+      .cookie("refresh_token", data.session.refresh_token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+      })
+      .status(200)
+      .json({
+        message: "Login successful",
+        token: data.session.access_token, 
+        user: userData,
+      });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }

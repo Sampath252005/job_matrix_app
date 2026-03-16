@@ -2,7 +2,9 @@
 import "dotenv/config"; // MUST be first
 import express from "express";
 import authRoutes from "./modules/auth/auth.routes.js";
-import cors from "cors"
+import cors from "cors";
+import cookieParser from "cookie-parser";
+
 // import recruiterRoutes from "./routes/recruiter.routes.js";
 // import candidateRoutes from "./routes/candidate.routes.js"
 import profileRoutes from "./modules/profiles/profile.routes.js";
@@ -20,6 +22,8 @@ app.use(
 );
 // Middlewares
 app.use(express.json());
+
+app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoutes);

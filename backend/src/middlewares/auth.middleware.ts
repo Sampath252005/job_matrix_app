@@ -4,13 +4,16 @@ import { getSupabase } from "../services/supabase.service.js";
 export const protect = async (req: any, res: any, next: NextFunction) => {
   try {
     const supabase = getSupabase();
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ message: "No token" });
+    const token = req.cookies.access_token;
 
-    const token = authHeader.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "No token in cookie" });
+    }
 
-    const { data: authData, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !authData.user) return res.status(401).json({ message: "Invalid token" });
+    const { data: authData, error: authError } =
+      await supabase.auth.getUser(token);
+    if (authError || !authData.user)
+      return res.status(401).json({ message: "Invalid token" });
 
     const userId = authData.user.id;
 
@@ -21,7 +24,8 @@ export const protect = async (req: any, res: any, next: NextFunction) => {
       .eq("id", userId)
       .single();
 
-    if (userError || !userData) return res.status(401).json({ message: "User not found" });
+    if (userError || !userData)
+      return res.status(401).json({ message: "User not found" });
 
     // Attach to request
     // console.log("user data",userData);
@@ -29,7 +33,7 @@ export const protect = async (req: any, res: any, next: NextFunction) => {
     req.accessToken = token;
 
     // console.log("User attached to req:", req);
-
+    // console.log(req.cookies);
     next();
   } catch (err) {
     console.error("Auth middleware error:", err);
