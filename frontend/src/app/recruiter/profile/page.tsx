@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import {
   fetchRecruiterProfile,
   updateRecruiterProfile,
-} from "@/services/recruiter.services";
+} from "@/services/profile.services";
 
 import { Globe, Users, Briefcase, Pencil, Save, ImageIcon } from "lucide-react";
 
@@ -45,7 +45,6 @@ export default function RecruiterProfilePage() {
         setLoading(false);
       }
     };
-
     loadProfile();
   }, []);
 

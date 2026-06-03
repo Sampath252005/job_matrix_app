@@ -1,3 +1,4 @@
+
 import { getSupabase } from "../../config/supabase.js"
 
 //------------------------------------------------------recruiter jobs api---------------------------------------------------------//
@@ -32,6 +33,17 @@ export const createJob = async (
   const supabase = getSupabase(token);
   return supabase.from("jobs").insert([payload]).select().single();
 };
+
+//get job id
+
+export const getJobById =async(recruiter_id:string,token:string,jobId:string)=>{
+  const supabase=getSupabase(token);
+  return supabase 
+  .from("jobs")
+  .select("*")
+  .eq("id",jobId)
+  .eq("recruiter_id",recruiter_id)
+}
 
 export const getMyJobs = async (recruiter_id: string, token: string) => {
   const supabase = getSupabase(token);

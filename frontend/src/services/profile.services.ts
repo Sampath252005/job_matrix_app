@@ -10,6 +10,6 @@ export const fetchRecruiterProfile = async () => {
 export const updateRecruiterProfile = async (data: any) => {
   const res = await api.post("/profile/recruiter", data);
 
-  console.log("res",res);
+  // console.log("res",res);
   return res.data;
 };

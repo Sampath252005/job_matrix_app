@@ -10,6 +10,39 @@ interface CreateJobBody {
   experience: string;
 }
 
+//get job id
+
+export const getJobId = async (
+  req: Request<{ id: string }, {}, {}>,
+  res: Response,
+) => {
+  try {
+    const token = req.accessToken;
+    const user = req.user;
+    if (!user || !token) {
+      console.warn("Unauthorized request");
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const recruiter_id = req.user!.id;
+    const jobId = req.params.id;
+
+    const { data, error } = await JobsServices.getJobById(
+      recruiter_id,
+      token,
+      jobId,
+    );
+    if (error) {
+      return res
+        .status(400)
+        .json({ error: "error while fetching job:" + error.message });
+    }
+    return res.status(201).json({
+      message: "Job fetched successfully",
+      data,
+    });
+  } catch (error) {}
+};
+
 //post a job
 export const postJob = async (
   req: Request<{}, {}, CreateJobBody>,
@@ -50,7 +83,7 @@ export const postJob = async (
       data,
     });
   } catch (error) {
-    console.error("Create job error:", error);
+    console.error("while fecthing an  error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -166,7 +199,10 @@ export const closeJobController = async (
   try {
     const jobId = req.params.id;
     const recruiter_id = req.user!.id;
-    const token = req.headers.authorization!.split(" ")[1];
+    const token =req!.accessToken;
+        if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const { data, error } = await JobsServices.closeJob(
       jobId,

@@ -1,3 +1,26 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* keep your variables (already correct) */
+  }
+
+  .dark {
+    /* keep your dark variables */
+  }
+
+  * {
+    @apply border-border; /* removed outline-ring/50 */
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    @apply font-sans;
+  }
+}
