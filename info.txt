@@ -1,0 +1,114 @@
+Step 4: Recruiter APIs
+
+Create these APIs first:
+
+POST   /api/assessments
+GET    /api/assessments/job/:jobId
+GET    /api/assessments/:assessmentId
+PUT    /api/assessments/:assessmentId
+DELETE /api/assessments/:assessmentId
+
+Purpose:
+
+Recruiter creates aptitude test for a job
+Recruiter views test
+Recruiter updates test
+Recruiter deletes test
+Step 5: Question APIs
+POST   /api/assessments/:assessmentId/questions
+GET    /api/assessments/:assessmentId/questions
+PUT    /api/questions/:questionId
+DELETE /api/questions/:questionId
+
+Important: only recruiter should see correct_answer.
+
+Step 6: Candidate APIs
+GET  /api/jobs/:jobId/assessment
+POST /api/assessments/:assessmentId/start
+POST /api/attempts/:attemptId/answer
+POST /api/attempts/:attemptId/submit
+GET  /api/attempts/:attemptId/result
+
+Important: candidate should not receive correct_answer.
+
+Step 7: Backend scoring logic
+
+When candidate submits:
+
+1. Get all answers of attempt
+2. Compare selected_answer with correct_answer
+3. Calculate score
+4. Update attempt status
+5. Store score
+
+Example:
+
+score >= passing_score → passed
+score < passing_score  → failed
+Step 8: Frontend pages
+
+In Next.js create:
+
+/recruiter/assessments/create
+/recruiter/jobs/[jobId]/assessment
+/candidate/jobs/[jobId]/assessment
+/candidate/assessment/[assessmentId]/start
+/candidate/assessment/result/[attemptId]
+Step 9: Recruiter UI flow
+
+Recruiter side:
+
+Job Details Page
+      ↓
+Create Assessment
+      ↓
+Add Questions
+      ↓
+View Candidates Scores
+Step 10: Candidate UI flow
+
+Candidate side:
+
+Applied Job Page
+      ↓
+Start Aptitude Test
+      ↓
+Answer Questions
+      ↓
+Submit
+      ↓
+View Result
+Step 11: Add timer
+
+Frontend timer only for display.
+
+But backend should also validate time:
+
+started_at + duration_minutes
+
+If time is over, auto-submit or reject late submission.
+
+Step 12: Add unique features later
+
+After basic version works, add:
+
+tab switch count
+fullscreen mode
+question randomization
+skill-wise score
+candidate ranking
+analytics dashboard
+Best development order
+
+Build in this exact order:
+
+1. Supabase tables
+2. Recruiter create assessment API
+3. Add question API
+4. Candidate start test API
+5. Candidate answer save API
+6. Submit and score API
+7. Recruiter UI
+8. Candidate test UI
+9. Result page
+10. Analytics

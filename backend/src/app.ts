@@ -1,3 +1,4 @@
+
 // app.ts
 import "dotenv/config"; // MUST be first
 import express from "express";
@@ -11,6 +12,8 @@ import profileRoutes from "./modules/profiles/profile.routes.js";
 import jobsRoutes from "./modules/jobs/jobs.routes.js";
 import applicationRoutes from "./modules/applications/applications.routes.js";
 import dashboardroutes from "./modules/dashboard/dashboard.routes.js";
+import assessmentRoutes from "./modules/assessments/assessments.routes.js";
+import questionRoutes from "./modules/questions/questions.routes.js"
 const app = express();
 
 // CORS FIRST
@@ -31,6 +34,8 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/jobs", jobsRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/dashboard", dashboardroutes);
+app.use("/api/assessments", assessmentRoutes);
+app.use("/api", questionRoutes);
 // app.use("/api/candidate", candidateRoutes);
 
 // Test route
