@@ -10,10 +10,16 @@ import {
   fetchAllPostedJobs,
   getJobDetails,
   searchJobsController,
-  getJobId
+  getJobId,
 } from "./jobs.controller.js";
 
 const router = express.Router();
+router.get(
+  "/search",
+  protect,
+  allowRoles("ADMIN", "CANDIDATE"),
+  searchJobsController,
+);
 
 /* ===============================
    RECRUITER ROUTES
@@ -46,14 +52,13 @@ router.patch(
 
 // Get all open jobs
 router.get("/", protect, allowRoles("ADMIN", "CANDIDATE"), fetchAllPostedJobs);
-router.get(
-  "/search",
-  protect,
-  allowRoles("ADMIN", "CANDIDATE"),
-  searchJobsController,
-);
 
 // Get single job details
-router.get("/:jobId", protect, allowRoles("ADMIN", "CANDIDATE"), getJobDetails);
+router.get(
+  "/details/:jobId",
+  protect,
+  allowRoles("ADMIN", "CANDIDATE"),
+  getJobDetails,
+);
 
 export default router;

@@ -1,45 +1,63 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Ntabs from "@/components/ui/Ntabs";
 
 import {
   LayoutDashboard,
-  Users,
-  UserCheck,
   Briefcase,
   ClipboardList,
-  FileQuestion,
-  Layers,
+  User,
   Moon,
   Sun,
+  FileQuestion,
 } from "lucide-react";
 
-type RNavbarProps = {
+type CNavbarProps = {
   onClose?: () => void;
 };
 
-/* NAVIGATION CONFIG */
-
 const navs = [
-  { id: 1, name: "Dashboard", icon: LayoutDashboard ,link:"/recruiter/dashboard" },
-  { id: 2, name: "Interview", icon: ClipboardList ,link:"/recruiter/IterView" },
-  { id: 3, name: "Job Board", icon: Briefcase,link:"/recruiter/jobBoard"  },
-  { id: 4, name: "Jobs", icon: Layers ,link:"/recruiter/jobs" },
-  { id: 5, name: "Quiz Designer", icon: FileQuestion,link:"/recruiter/quiz-designer"  },
-  { id: 6, name: "Interview Designer", icon: ClipboardList ,link:"/recruiter/dashboard" },
-  { id: 7, name: "Categories", icon: Layers ,link:"/recruiter/dashboard" },
-  { id: 8, name: "Shortlisted Candidates", icon: UserCheck,link:"/recruiter/dashboard"  },
-  { id: 9, name: "Candidates", icon: Users ,link:"/recruiter/dashboard" },
+  {
+    id: 1,
+    name: "Dashboard",
+    icon: LayoutDashboard,
+    link: "/candidate/dashboard",
+  },
+  {
+    id: 2,
+    name: "Jobs",
+    icon: Briefcase,
+    link: "/candidate/jobs",
+  },
+  {
+    id: 3,
+    name: "My Applications",
+    icon: ClipboardList,
+    link: "/candidate/applications",
+  },
+  {
+    id: 4,
+    name: "Assessments",
+    icon: FileQuestion,
+    link: "/candidate/assessments",
+  },
+  {
+    id: 5,
+    name: "Profile",
+    icon: User,
+    link: "/candidate/profile",
+  },
 ];
 
-export default function RNavbar({ onClose }: RNavbarProps) {
-  const router=useRouter();
+export default function CNavbar({
+  onClose,
+}: CNavbarProps) {
   const { theme, setTheme } = useTheme();
 
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] =
+    useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -58,19 +76,20 @@ export default function RNavbar({ onClose }: RNavbarProps) {
       border-r border-gray-200 dark:border-gray-800
       "
     >
-      {/* TOP SECTION */}
+      {/* TOP */}
 
       <div>
-        {/* LOGO */}
-
         <div className="flex items-center gap-3 mb-10 px-2">
           <div
             className="
             w-9 h-9
             flex items-center justify-center
             rounded-lg
-            bg-gradient-to-r from-blue-600 to-indigo-600
-            text-white font-bold
+            bg-gradient-to-r
+            from-green-600
+            to-emerald-600
+            text-white
+            font-bold
             "
           >
             JM
@@ -81,9 +100,7 @@ export default function RNavbar({ onClose }: RNavbarProps) {
           </span>
         </div>
 
-        {/* NAVIGATION */}
-
-        <nav className="flex flex-col gap-1 overflow-y-auto">
+        <nav className="flex flex-col gap-1">
           {navs.map((nav) => (
             <Ntabs
               key={nav.id}
@@ -95,10 +112,9 @@ export default function RNavbar({ onClose }: RNavbarProps) {
         </nav>
       </div>
 
-      {/* BOTTOM SECTION */}
+      {/* BOTTOM */}
 
       <div className="space-y-4">
-        {/* THEME SWITCH */}
 
         <div
           className="
@@ -111,12 +127,14 @@ export default function RNavbar({ onClose }: RNavbarProps) {
           <button
             onClick={() => setTheme("light")}
             className={`
-              flex items-center gap-2 px-3 py-1 rounded-md text-sm
-              transition
+              flex items-center gap-2
+              px-3 py-1
+              rounded-md
+              text-sm
               ${
                 theme === "light"
                   ? "bg-white shadow text-gray-900"
-                  : "text-gray-500 hover:text-gray-800 dark:hover:text-white"
+                  : "text-gray-500"
               }
             `}
           >
@@ -127,12 +145,14 @@ export default function RNavbar({ onClose }: RNavbarProps) {
           <button
             onClick={() => setTheme("dark")}
             className={`
-              flex items-center gap-2 px-3 py-1 rounded-md text-sm
-              transition
+              flex items-center gap-2
+              px-3 py-1
+              rounded-md
+              text-sm
               ${
                 theme === "dark"
                   ? "bg-gray-700 text-white"
-                  : "text-gray-500 hover:text-gray-800 dark:hover:text-white"
+                  : "text-gray-500"
               }
             `}
           >
@@ -141,11 +161,10 @@ export default function RNavbar({ onClose }: RNavbarProps) {
           </button>
         </div>
 
-        {/* FOOTER */}
-
         <div className="text-xs text-gray-400 text-center">
           © {new Date().getFullYear()} Job Matrix
         </div>
+
       </div>
     </aside>
   );

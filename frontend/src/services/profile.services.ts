@@ -13,3 +13,14 @@ export const updateRecruiterProfile = async (data: any) => {
   // console.log("res",res);
   return res.data;
 };
+
+
+export const fetchCandidateProfile = async () => {
+  const res = await api.get("/profile/candidate");
+  return res.data;
+};
+
+export const updateCandidateProfile = async (data: any) => {
+  const res = await api.post("/profile/candidate", data);
+  return res.data;
+};
