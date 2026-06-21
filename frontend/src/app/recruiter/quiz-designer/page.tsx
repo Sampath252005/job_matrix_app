@@ -12,7 +12,7 @@ interface Job {
   status: string;
 }
 
-export default function QuizDesignerPage() {4
+export default function QuizDesignerPage() {
   const router=useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);

@@ -3,9 +3,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import {
   createAssessment,
   getAssessmentByJob,
+  updateAssessment,
+  publishAssessment,
 } from "@/services/assessment.services";
 
 interface Assessment {
@@ -14,41 +17,74 @@ interface Assessment {
   description?: string;
   duration_minutes: number;
   passing_score: number;
+
+  start_time?: string;
+  end_time?: string;
+  status: string;
 }
 
 export default function AssessmentPage() {
   const params = useParams();
-  const router=useRouter();
-
+  const router = useRouter();
 
   const jobId = params.id as string;
 
   const [loading, setLoading] = useState(true);
 
-  const [assessment, setAssessment] =
-    useState<Assessment | null>(null);
+  const [assessment, setAssessment] = useState<Assessment | null>(null);
 
   const [title, setTitle] = useState("");
 
-  const [description, setDescription] =
-    useState("");
+  const [description, setDescription] = useState("");
 
-  const [durationMinutes, setDurationMinutes] =
-    useState(30);
+  const [durationMinutes, setDurationMinutes] = useState(30);
 
-  const [passingScore, setPassingScore] =
-    useState(10);
+  const [passingScore, setPassingScore] = useState(10);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [status, setStatus] = useState("ACTIVE");
 
   useEffect(() => {
     fetchAssessment();
   }, []);
 
+  const handlePublish = async () => {
+     if (!assessment) return;
+    try {
+      const res = await publishAssessment(assessment.id);
+        toast.success("Assessment published");
+      fetchAssessment();
+    } catch (error: any) {
+      const message = error?.response?.data?.message;
+
+      if (message === "Assessment already published") {
+        toast.error("Assessment already published");
+      } else {
+        toast.error("Failed to publish assessment");
+      }
+
+      console.error(error);
+    }
+  };
   const fetchAssessment = async () => {
     try {
       const res = await getAssessmentByJob(jobId);
 
       if (res?.data) {
         setAssessment(res.data);
+
+        setTitle(res.data.title);
+        setDescription(res.data.description || "");
+        setDurationMinutes(res.data.duration_minutes);
+        setPassingScore(res.data.passing_score);
+
+        setStartTime(
+          res.data.start_time ? res.data.start_time.slice(0, 16) : "",
+        );
+
+        setEndTime(res.data.end_time ? res.data.end_time.slice(0, 16) : "");
+
+        setStatus(res.data.status);
       }
     } catch (error) {
       console.error(error);
@@ -57,6 +93,28 @@ export default function AssessmentPage() {
     }
   };
 
+  const handleSaveSettings = async () => {
+    if (!assessment) return;
+
+    try {
+      await updateAssessment(assessment.id, {
+        title,
+        description,
+        duration_minutes: durationMinutes,
+        passing_score: passingScore,
+        start_time: startTime,
+        end_time: endTime,
+        status,
+      });
+
+      alert("Assessment updated successfully");
+
+      fetchAssessment();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update assessment");
+    }
+  };
   const handleCreateAssessment = async () => {
     try {
       const res = await createAssessment({
@@ -86,90 +144,228 @@ export default function AssessmentPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-8">
-
-      <h1 className="text-3xl font-bold mb-6">
-        Assessment Management
-      </h1>
+      <h1 className="text-3xl font-bold mb-6">Assessment Management</h1>
 
       {assessment ? (
         <div
           className="
-          bg-white
-          dark:bg-zinc-900
-          border
-          border-gray-200
-          dark:border-zinc-800
-          rounded-xl
-          p-6
-          shadow
-          "
+      bg-white
+      dark:bg-zinc-900
+      border
+      border-gray-200
+      dark:border-zinc-800
+      rounded-xl
+      p-6
+      shadow
+    "
         >
-          <h2 className="text-2xl font-semibold">
-            {assessment.title}
-          </h2>
+          <h2 className="text-2xl font-bold mb-6">Assessment Settings</h2>
 
-          <p className="mt-3 text-gray-600 dark:text-gray-400">
-            {assessment.description}
-          </p>
-
-          <div className="mt-6 grid grid-cols-2 gap-4">
+          <div className="space-y-4">
             <div>
-              <p className="text-sm text-gray-500">
-                Duration
-              </p>
+              <label className="block mb-2 font-medium">Title</label>
 
-              <p className="font-semibold">
-                {assessment.duration_minutes} mins
-              </p>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="
+            w-full
+            border
+            border-gray-300
+            dark:border-zinc-700
+            bg-white
+            dark:bg-zinc-950
+            rounded-lg
+            p-3
+          "
+              />
             </div>
 
             <div>
-              <p className="text-sm text-gray-500">
-                Passing Score
-              </p>
+              <label className="block mb-2 font-medium">Description</label>
 
-              <p className="font-semibold">
-                {assessment.passing_score}
-              </p>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="
+            w-full
+            border
+            border-gray-300
+            dark:border-zinc-700
+            bg-white
+            dark:bg-zinc-950
+            rounded-lg
+            p-3
+          "
+                rows={4}
+              />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-2 font-medium">
+                  Duration (Minutes)
+                </label>
+
+                <input
+                  type="number"
+                  value={durationMinutes}
+                  onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                  className="
+              w-full
+              border
+              border-gray-300
+              dark:border-zinc-700
+              bg-white
+              dark:bg-zinc-950
+              rounded-lg
+              p-3
+            "
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 font-medium">Passing Score</label>
+
+                <input
+                  type="number"
+                  value={passingScore}
+                  onChange={(e) => setPassingScore(Number(e.target.value))}
+                  className="
+              w-full
+              border
+              border-gray-300
+              dark:border-zinc-700
+              bg-white
+              dark:bg-zinc-950
+              rounded-lg
+              p-3
+            "
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-2 font-medium">Start Time</label>
+
+                <input
+                  type="datetime-local"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  className="
+              w-full
+              border
+              border-gray-300
+              dark:border-zinc-700
+              bg-white
+              dark:bg-zinc-950
+              rounded-lg
+              p-3
+            "
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 font-medium">End Time</label>
+
+                <input
+                  type="datetime-local"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  className="
+              w-full
+              border
+              border-gray-300
+              dark:border-zinc-700
+              bg-white
+              dark:bg-zinc-950
+              rounded-lg
+              p-3
+            "
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block mb-2 font-medium">Status</label>
+
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="
+            w-full
+            border
+            border-gray-300
+            dark:border-zinc-700
+            bg-white
+            dark:bg-zinc-950
+            rounded-lg
+            p-3
+          "
+              >
+                <option value="ACTIVE">ACTIVE</option>
+
+                <option value="INACTIVE">INACTIVE</option>
+              </select>
             </div>
           </div>
 
-          <div className="mt-8 flex gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             <button
+              onClick={handleSaveSettings}
               className="
-              px-4
-              py-2
-              rounded-lg
-              bg-yellow-500
-              text-white
-              "
+          px-4
+          py-2
+          rounded-lg
+          bg-green-600
+          hover:bg-green-700
+          text-white
+        "
             >
-              Edit Assessment
+              Save Settings
             </button>
 
             <button
+              onClick={() =>
+                router.push(`assessment/${assessment.id}/questions`)
+              }
               className="
-              px-4
-              py-2
-              rounded-lg
-              bg-red-600
-              text-white
-              "
-            >
-              Delete Assessment
-            </button>
-
-            <button
-             onClick={()=>{router.push(`assessment/${assessment.id}/questions`)}}
-              className="
-              px-4
-              py-2
-              rounded-lg
-              bg-blue-600
-              text-white
-              "
+          px-4
+          py-2
+          rounded-lg
+          bg-blue-600
+          hover:bg-blue-700
+          text-white
+        "
             >
               Manage Questions
+            </button>
+            <button
+              onClick={handlePublish}
+              className="
+    px-4
+    py-2
+    rounded-lg
+    bg-green-600
+    hover:bg-green-700
+    text-white
+  "
+            >
+              Publish Assessment
+            </button>
+
+            <button
+              className="
+          px-4
+          py-2
+          rounded-lg
+          bg-red-600
+          hover:bg-red-700
+          text-white
+        "
+            >
+              Delete Assessment
             </button>
           </div>
         </div>
@@ -186,9 +382,7 @@ export default function AssessmentPage() {
           shadow
           "
         >
-          <h2 className="text-xl font-semibold mb-4">
-            Create Assessment
-          </h2>
+          <h2 className="text-xl font-semibold mb-4">Create Assessment</h2>
 
           <div className="space-y-4">
             <input
@@ -204,9 +398,7 @@ export default function AssessmentPage() {
               "
               placeholder="Assessment Title"
               value={title}
-              onChange={(e) =>
-                setTitle(e.target.value)
-              }
+              onChange={(e) => setTitle(e.target.value)}
             />
 
             <textarea
@@ -222,9 +414,7 @@ export default function AssessmentPage() {
               "
               placeholder="Description"
               value={description}
-              onChange={(e) =>
-                setDescription(e.target.value)
-              }
+              onChange={(e) => setDescription(e.target.value)}
             />
 
             <input
@@ -241,11 +431,7 @@ export default function AssessmentPage() {
               "
               placeholder="Duration"
               value={durationMinutes}
-              onChange={(e) =>
-                setDurationMinutes(
-                  Number(e.target.value)
-                )
-              }
+              onChange={(e) => setDurationMinutes(Number(e.target.value))}
             />
 
             <input
@@ -262,11 +448,7 @@ export default function AssessmentPage() {
               "
               placeholder="Passing Score"
               value={passingScore}
-              onChange={(e) =>
-                setPassingScore(
-                  Number(e.target.value)
-                )
-              }
+              onChange={(e) => setPassingScore(Number(e.target.value))}
             />
 
             <button

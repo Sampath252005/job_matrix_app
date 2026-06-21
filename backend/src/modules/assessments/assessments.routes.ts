@@ -8,20 +8,19 @@ import {
   getAssessmentByIdController,
   updateAssessmentController,
   deleteAssessmentController,
- startAssessmentController,
- saveAnswerController,
- submitAssessmentController,
- getAssessmentResultController
+  startAssessmentController,
+  saveAnswerController,
+  submitAssessmentController,
+  getAssessmentResultController,
+  publishAssessment,
+  getCandidateAssessments,
+  getCandidateAssessmentById,
+  getAssessmentResultsController  
 } from "./assessments.controller.js";
 
 const router = express.Router();
 
-router.post(
-  "/",
-  protect,
-  allowRoles("ADMIN", "RECRUITER"),
-  createAssessment,
-);
+router.post("/", protect, allowRoles("ADMIN", "RECRUITER"), createAssessment);
 
 router.get(
   "/job/:jobId",
@@ -42,6 +41,12 @@ router.put(
   protect,
   allowRoles("ADMIN", "RECRUITER"),
   updateAssessmentController,
+);
+router.patch(
+  "/:assessmentId/publish",
+  protect,
+  allowRoles("ADMIN", "RECRUITER"),
+  publishAssessment,
 );
 
 router.delete(
@@ -65,7 +70,6 @@ router.post(
   saveAnswerController,
 );
 
-
 router.post(
   "/attempts/:attemptId/submit",
   protect,
@@ -73,10 +77,31 @@ router.post(
   submitAssessmentController,
 );
 
-router.get(
+router.patch(
   "/attempts/:attemptId/result",
   protect,
-  allowRoles("ADMIN", "CANDIDATE"),
+  allowRoles("ADMIN", "RECRUITER"),
   getAssessmentResultController,
+);
+
+router.get(
+  "/",
+  protect,
+  allowRoles("ADMIN", "CANDIDATE"),
+  getCandidateAssessments,
+);
+
+router.get(
+  "/candidate/:assessmentId",
+    protect,
+  allowRoles("ADMIN", "CANDIDATE"),
+  getCandidateAssessmentById
+);
+
+router.get(
+  "/recruiter/assessments/:assessmentId/results",
+  protect,
+  allowRoles("RECRUITER", "ADMIN"),
+  getAssessmentResultsController,
 );
 export default router;

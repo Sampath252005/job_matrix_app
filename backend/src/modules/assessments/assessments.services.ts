@@ -1,6 +1,6 @@
-import { getSupabase } from "../../config/supabase.js"
+import { getSupabase } from "../../config/supabase.js";
 
-  interface UpdateAssessmentPayload{
+interface UpdateAssessmentPayload {
   title?: string;
   description?: string;
   duration_minutes?: number;
@@ -34,36 +34,28 @@ export const createAssessment = async (
     return {
       data: null,
       error: {
-        message:
-          "Job not found or you are not authorized",
+        message: "Job not found or you are not authorized",
       },
     };
   }
 
-  const { data: existingAssessment } =
-  await supabase
+  const { data: existingAssessment } = await supabase
     .from("assessments")
     .select("id")
     .eq("job_id", payload.job_id)
     .maybeSingle();
 
-if (existingAssessment) {
-  return {
-    data: null,
-    error: {
-      message:
-        "Assessment already exists for this job",
-    },
-  };
-}
+  if (existingAssessment) {
+    return {
+      data: null,
+      error: {
+        message: "Assessment already exists for this job",
+      },
+    };
+  }
 
-  return supabase
-    .from("assessments")
-    .insert([payload])
-    .select()
-    .single();
+  return supabase.from("assessments").insert([payload]).select().single();
 };
-
 
 export const getAssessmentByJob = async (
   jobId: string,
@@ -98,7 +90,7 @@ export const getAssessmentById = async (
 export const updateAssessment = async (
   assessmentId: string,
   recruiterId: string,
-  payload:UpdateAssessmentPayload,
+  payload: UpdateAssessmentPayload,
   token: string,
 ) => {
   const supabase = getSupabase(token);
@@ -138,36 +130,72 @@ export const startAssessment = async (
 ) => {
   const supabase = getSupabase(token);
 
-  // 1. Check assessment exists and get job_id
+  // 1. Check assessment exists
   const { data: assessment, error: assessmentError } = await supabase
     .from("assessments")
-    .select("id, job_id, status")
+    .select("*")
     .eq("id", assessmentId)
     .single();
 
   if (assessmentError || !assessment) {
     return {
       data: null,
-      error: { message: "Assessment not found" },
+      error: {
+        message: "Assessment not found",
+      },
     };
   }
 
+  // 2. Check assessment active
   if (assessment.status !== "ACTIVE") {
     return {
       data: null,
-      error: { message: "Assessment is not active" },
+      error: {
+        message: "Assessment is not active",
+      },
     };
   }
 
-  // 2. Check candidate applied for that job
-  const { data: application, error: applicationError } = await supabase
+  // 3. Check published
+  if (!assessment.is_published) {
+    return {
+      data: null,
+      error: {
+        message: "Assessment is not published",
+      },
+    };
+  }
+
+  // 4. Check assessment window
+  const now = new Date();
+
+  if (assessment.start_time && now < new Date(assessment.start_time)) {
+    return {
+      data: null,
+      error: {
+        message: "Assessment has not started yet",
+      },
+    };
+  }
+
+  if (assessment.end_time && now >= new Date(assessment.end_time)) {
+    return {
+      data: null,
+      error: {
+        message: "Assessment deadline has passed",
+      },
+    };
+  }
+
+  // 5. Check application
+  const { data: application } = await supabase
     .from("applications")
-    .select("id")
+    .select("id,status")
     .eq("job_id", assessment.job_id)
     .eq("candidate_id", candidateId)
     .single();
 
-  if (applicationError || !application) {
+  if (!application) {
     return {
       data: null,
       error: {
@@ -176,13 +204,23 @@ export const startAssessment = async (
     };
   }
 
-  // 3. Check existing attempt
+  // 6. Only shortlisted candidates
+  if (application.status !== "SHORTLISTED") {
+    return {
+      data: null,
+      error: {
+        message: "You are not shortlisted for this assessment",
+      },
+    };
+  }
+
+  // 7. Check existing attempt
   const { data: existingAttempt } = await supabase
     .from("assessment_attempts")
     .select("*")
     .eq("assessment_id", assessmentId)
     .eq("candidate_id", candidateId)
-    .maybeSingle();
+    .single();
 
   if (existingAttempt) {
     return {
@@ -191,24 +229,30 @@ export const startAssessment = async (
     };
   }
 
-  // 4. Create new attempt
-  return supabase
+  // 8. Create attempt
+  const { data, error } = await supabase
     .from("assessment_attempts")
-    .insert([
-      {
-        assessment_id: assessmentId,
-        candidate_id: candidateId,
-        application_id: application.id,
-        status: "STARTED",
-      },
-    ])
+    .insert({
+      assessment_id: assessmentId,
+      candidate_id: candidateId,
+      application_id: application.id,
+      status: "STARTED",
+    })
     .select()
     .single();
+
+  if (error) {
+    return {
+      data: null,
+      error,
+    };
+  }
+
+  return {
+    data,
+    error: null,
+  };
 };
-
-
-
-
 
 export const saveAnswer = async (
   attemptId: string,
@@ -264,7 +308,7 @@ export const saveAnswer = async (
     };
   }
 
-  // Check existing answer
+  // Existing answer
 
   const { data: existingAnswer } = await supabase
     .from("candidate_answers")
@@ -273,10 +317,10 @@ export const saveAnswer = async (
     .eq("question_id", questionId)
     .maybeSingle();
 
-  if (existingAnswer) {
-    // Update existing answer
+  let result;
 
-    return supabase
+  if (existingAnswer) {
+    result = await supabase
       .from("candidate_answers")
       .update({
         selected_answer: selectedAnswer,
@@ -284,24 +328,32 @@ export const saveAnswer = async (
       .eq("id", existingAnswer.id)
       .select()
       .single();
-  }
-
-  // Create new answer
-
-  return supabase
-    .from("candidate_answers")
-    .insert([
-      {
+  } else {
+    result = await supabase
+      .from("candidate_answers")
+      .insert({
         attempt_id: attemptId,
         question_id: questionId,
         selected_answer: selectedAnswer,
+      })
+      .select()
+      .single();
+  }
+
+  if (result.error) {
+    return {
+      data: null,
+      error: {
+        message: result.error.message,
       },
-    ])
-    .select()
-    .single();
+    };
+  }
+
+  return {
+    data: result.data,
+    error: null,
+  };
 };
-
-
 export const submitAssessment = async (
   attemptId: string,
   candidateId: string,
@@ -309,18 +361,11 @@ export const submitAssessment = async (
 ) => {
   const supabase = getSupabase(token);
 
-  // Verify attempt ownership
+  // Verify attempt
 
   const { data: attempt, error: attemptError } = await supabase
     .from("assessment_attempts")
-    .select(`
-      id,
-      assessment_id,
-      status,
-      assessments (
-        passing_score
-      )
-    `)
+    .select("*")
     .eq("id", attemptId)
     .eq("candidate_id", candidateId)
     .single();
@@ -343,154 +388,17 @@ export const submitAssessment = async (
     };
   }
 
-  // Get all candidate answers
-
-  const { data: answers } = await supabase
-    .from("candidate_answers")
-    .select(`
-      selected_answer,
-      question_id,
-      questions (
-        correct_answer,
-        marks
-      )
-    `)
-    .eq("attempt_id", attemptId);
-
-  let score = 0;
-  let correctAnswers = 0;
-  let wrongAnswers = 0;
-
-for (const answer of answers || []) {
-  const question = Array.isArray(answer.questions)
-    ? answer.questions[0]
-    : answer.questions;
-
-  if (
-    question &&
-    answer.selected_answer === question.correct_answer
-  ) {
-    score += question.marks;
-    correctAnswers++;
-
-    await supabase
-      .from("candidate_answers")
-      .update({
-        is_correct: true,
-        marks_awarded: question.marks,
-      })
-      .eq("attempt_id", attemptId)
-      .eq("question_id", answer.question_id);
-  } else {
-    wrongAnswers++;
-
-    await supabase
-      .from("candidate_answers")
-      .update({
-        is_correct: false,
-        marks_awarded: 0,
-      })
-      .eq("attempt_id", attemptId)
-      .eq("question_id", answer.question_id);
-  }
-}
-
-  const attemptAssessments = (attempt as any).assessments;
-  const passingScore =
-    Array.isArray(attemptAssessments)
-      ? attemptAssessments[0]?.passing_score
-      : attemptAssessments?.passing_score;
-
-  const finalStatus =
-    score >= passingScore
-      ? "PASSED"
-      : "FAILED";
-
-  // Update attempt
-
-  const { data: updatedAttempt, error: updateError } =
-    await supabase
-      .from("assessment_attempts")
-      .update({
-        score,
-        status: finalStatus,
-        submitted_at: new Date().toISOString(),
-      })
-      .eq("id", attemptId)
-      .select()
-      .single();
-
-  if (updateError) {
-    return {
-      data: null,
-      error: updateError,
-    };
-  }
-
-  return {
-    data: {
-      attempt: updatedAttempt,
-      score,
-      correctAnswers,
-      wrongAnswers,
-      status: finalStatus,
-    },
-    error: null,
-  };
-};
-
-
-export const getAssessmentResult = async (
-  attemptId: string,
-  candidateId: string,
-  token: string,
-) => {
-  const supabase = getSupabase(token);
-
-  // Verify attempt ownership
-
-  const { data: attempt, error: attemptError } = await supabase
-    .from("assessment_attempts")
-    .select(`
-      id,
-      score,
-      status,
-      started_at,
-      submitted_at,
-      assessments (
-        id,
-        title,
-        passing_score
-      )
-    `)
-    .eq("id", attemptId)
-    .eq("candidate_id", candidateId)
-    .single();
-
-  if (attemptError || !attempt) {
-    return {
-      data: null,
-      error: {
-        message: "Result not found",
-      },
-    };
-  }
-
   // Get answers
 
-  const { data: answers, error: answersError } =
-    await supabase
-      .from("candidate_answers")
-      .select(`
-        selected_answer,
-        is_correct,
-        questions (
-          question,
-          correct_answer,
-          marks
-        )
-      `)
-      .eq("attempt_id", attemptId);
+  const { data: answers, error: answersError } = await supabase
+    .from("candidate_answers")
+    .select(
+      `
+      question_id,
+      selected_answer
+    `,
+    )
+    .eq("attempt_id", attemptId);
 
   if (answersError) {
     return {
@@ -499,28 +407,294 @@ export const getAssessmentResult = async (
     };
   }
 
-  let correctAnswers = 0;
-  let wrongAnswers = 0;
+  // Get questions
 
-  for (const answer of answers || []) {
-    if (answer.is_correct) {
-      correctAnswers++;
-    } else {
-      wrongAnswers++;
+  const { data: questions, error: questionsError } = await supabase
+    .from("questions")
+    .select(
+      `
+      id,
+      correct_answer,
+      marks
+    `,
+    )
+    .eq("assessment_id", attempt.assessment_id);
+
+  if (questionsError) {
+    return {
+      data: null,
+      error: questionsError,
+    };
+  }
+
+  // Calculate score
+
+  let score = 0;
+
+  for (const question of questions) {
+    const answer = answers?.find((a) => a.question_id === question.id);
+
+    if (answer && answer.selected_answer === question.correct_answer) {
+      score += question.marks;
     }
   }
 
+  // Update attempt
+
+  const { data, error } = await supabase
+    .from("assessment_attempts")
+    .update({
+      score,
+      submitted_at: new Date().toISOString(),
+      status: "SUBMITTED",
+    })
+    .eq("id", attemptId)
+    .select()
+    .single();
+
+  if (error) {
+    return {
+      data: null,
+      error,
+    };
+  }
+
   return {
-    data: {
-      assessment: attempt.assessments,
-      score: attempt.score,
-      status: attempt.status,
-      started_at: attempt.started_at,
-      submitted_at: attempt.submitted_at,
-      correctAnswers,
-      wrongAnswers,
-      answers,
-    },
+    data,
+    error: null,
+  };
+};
+
+export const getAssessmentResult = async (
+  attemptId: string,
+  status: "PASSED" | "FAILED",
+  token: string,
+) => {
+  const supabase = getSupabase(token);
+
+  // Verify attempt exists
+
+  const { data: attempt, error: attemptError } = await supabase
+    .from("assessment_attempts")
+    .select(`
+      id,
+      application_id,
+      status
+    `)
+    .eq("id", attemptId)
+    .single();
+
+  if (attemptError || !attempt) {
+    return {
+      data: null,
+      error: {
+        message: "Assessment attempt not found",
+      },
+    };
+  }
+
+  if (attempt.status !== "SUBMITTED") {
+    return {
+      data: null,
+      error: {
+        message: "Assessment has not been submitted yet",
+      },
+    };
+  }
+
+  // Update attempt status
+
+  const { data, error } = await supabase
+    .from("assessment_attempts")
+    .update({
+      status,
+    })
+    .eq("id", attemptId)
+    .select()
+    .single();
+
+  if (error) {
+    return {
+      data: null,
+      error,
+    };
+  }
+
+  // Update application status
+
+  await supabase
+    .from("applications")
+    .update({
+      status:
+        status === "PASSED"
+          ? "INTERVIEW_ROUND"
+          : "REJECTED",
+    })
+    .eq("id", attempt.application_id);
+
+  return {
+    data,
+    error: null,
+  };
+};
+
+export const publishAssessment = async (
+  assessmentId: string,
+  token: string,
+) => {
+  const supabase = getSupabase(token);
+
+  const { data: assessment } = await supabase
+    .from("assessments")
+    .select("is_published")
+    .eq("id", assessmentId)
+    .single();
+
+  if (assessment?.is_published) {
+    throw new Error("Assessment already published");
+  }
+
+  const { data, error } = await supabase
+    .from("assessments")
+    .update({
+      is_published: true,
+    })
+    .eq("id", assessmentId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return data;
+};
+
+//to get all assments for the candidates
+export const getCandidateAssessments = async (
+  candidateId: string,
+  token: string,
+) => {
+  const supabase = getSupabase(token);
+
+  const { data: applications, error: appError } = await supabase
+    .from("applications")
+    .select("id, job_id")
+    .eq("candidate_id", candidateId)
+    .eq("status", "SHORTLISTED");
+
+  if (appError) throw appError;
+
+  if (!applications?.length) {
+    return [];
+  }
+
+  const jobIds = applications.map((app) => app.job_id);
+
+  const { data: assessments, error } = await supabase
+    .from("assessments")
+    .select("*")
+    .in("job_id", jobIds)
+    .eq("is_published", true);
+
+  if (error) throw error;
+
+  return assessments;
+};
+
+//to get assment details for the candidates
+export const getCandidateAssessmentById = async (
+  assessmentId: string,
+  token: string,
+) => {
+  const supabase = getSupabase(token);
+
+  const { data, error } = await supabase
+    .from("assessments")
+    .select(
+      `
+      id,
+      title,
+      description,
+      duration_minutes,
+      passing_score,
+      total_marks,
+      total_questions,
+      start_time,
+      end_time,
+      is_published,
+      jobs (
+        id,
+        title
+      )
+    `,
+    )
+    .eq("id", assessmentId)
+    .single();
+
+  if (error) {
+
+    console.log("error--",error)
+    throw error;
+  }
+
+  return data;
+};
+
+
+export const getAssessmentResults = async (
+  assessmentId: string,
+  recruiterId: string,
+  token: string,
+) => {
+  const supabase = getSupabase(token);
+
+  // Verify assessment belongs to recruiter
+
+  const { data: assessment, error: assessmentError } =
+    await supabase
+      .from("assessments")
+      .select("id")
+      .eq("id", assessmentId)
+      .eq("recruiter_id", recruiterId)
+      .single();
+
+  if (assessmentError || !assessment) {
+    return {
+      data: null,
+      error: {
+        message: "Assessment not found",
+      },
+    };
+  }
+
+  // Fetch candidate results
+  const { data, error } = await supabase
+    .from("assessment_attempts")
+    .select(`
+      id,
+      score,
+      status,
+      submitted_at,
+
+      users:candidate_id (
+        id,
+        name,
+        email
+      )
+    `)
+    .eq("assessment_id", assessmentId)
+    .order("submitted_at", {
+      ascending: false,
+    });
+
+  if (error) {
+    return {
+      data: null,
+      error,
+    };
+  }
+
+  return {
+    data,
     error: null,
   };
 };

@@ -110,6 +110,28 @@ export const getAllMyJob = async (req: Request<{}, {}, {}>, res: Response) => {
   }
 };
 
+//get all open job 
+export const getAllOpenjobs = async (req: Request<{}, {}, {}>, res: Response) => {
+  try {
+    const token = req.accessToken;
+    const user = req.user;
+    if (!user || !token) {
+      console.warn("Unauthorized request");
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { data, error } = await JobsServices.toGetAllCurrentJOb(user.id, token);
+    if (error) {
+      return res.status(400).json({ error: "while getJobd" + error.message });
+    }
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("Fetch jobs error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 //update a job details
 
 export const updateJobById = async (
@@ -224,6 +246,11 @@ export const closeJobController = async (
     });
   }
 };
+
+
+
+
+
 
 //-----------------------------------------------------------Candiate side jobs api----------------------------
 export const fetchAllPostedJobs = async (

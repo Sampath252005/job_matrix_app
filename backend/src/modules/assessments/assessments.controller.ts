@@ -13,9 +13,10 @@ interface UpdateAssessmentBody {
   description?: string;
   duration_minutes?: number;
   passing_score?: number;
+  start_time?: string;
+  end_time?: string;
   status?: "ACTIVE" | "INACTIVE";
 }
-
 
 export const createAssessment = async (
   req: Request<{}, {}, CreateAssessmentBody>,
@@ -31,37 +32,26 @@ export const createAssessment = async (
       });
     }
 
-    const {
-      job_id,
-      title,
-      description,
-      duration_minutes,
-      passing_score,
-    } = req.body;
+    const { job_id, title, description, duration_minutes, passing_score } =
+      req.body;
 
-    if (
-      !job_id ||
-      !title ||
-      !duration_minutes ||
-      !passing_score
-    ) {
+    if (!job_id || !title || !duration_minutes || !passing_score) {
       return res.status(400).json({
         message: "Missing required fields",
       });
     }
 
-    const { data, error } =
-      await AssessmentServices.createAssessment(
-        {
-          job_id,
-          recruiter_id: user.id,
-          title,
-          description,
-          duration_minutes,
-          passing_score,
-        },
-        token,
-      );
+    const { data, error } = await AssessmentServices.createAssessment(
+      {
+        job_id,
+        recruiter_id: user.id,
+        title,
+        description,
+        duration_minutes,
+        passing_score,
+      },
+      token,
+    );
 
     if (error) {
       return res.status(400).json({
@@ -175,6 +165,8 @@ export const updateAssessmentController = async (
       description: req.body.description,
       duration_minutes: req.body.duration_minutes,
       passing_score: req.body.passing_score,
+      start_time: req.body.start_time,
+      end_time: req.body.end_time,
       status: req.body.status,
     };
 
@@ -231,9 +223,8 @@ export const deleteAssessmentController = async (
       token,
     );
 
-    if(!data)
-    {
-       return res.status(400).json({
+    if (!data) {
+      return res.status(400).json({
         error: "assement not found:" + data,
       });
     }
@@ -254,7 +245,6 @@ export const deleteAssessmentController = async (
   }
 };
 
-
 //candidate
 export const startAssessmentController = async (
   req: Request<{ assessmentId: string }, {}, {}>,
@@ -264,33 +254,38 @@ export const startAssessmentController = async (
     const token = req.accessToken;
     const user = req.user;
 
-    if (!user || !token) {
-      return res.status(401).json({ message: "Unauthorized" });
+    if (!token || !user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
     }
 
-    const assessmentId = req.params.assessmentId;
+    const { assessmentId } = req.params;
 
-    const { data, error } =
-      await AssessmentServices.startAssessment(
-        assessmentId,
-        user.id,
-        token,
-      );
+    const result = await AssessmentServices.startAssessment(
+      assessmentId,
+      user.id,
+      token,
+    );
 
-    if (error) {
-      return res.status(400).json(error);
+    if (result.error) {
+      return res.status(400).json({
+        message: result.error.message,
+      });
     }
 
     return res.status(201).json({
       message: "Assessment started successfully",
-      data,
+      data: result.data,
     });
   } catch (error) {
-    console.error("Start assessment error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 };
-
 
 interface SaveAnswerBody {
   question_id: string;
@@ -313,28 +308,21 @@ export const saveAnswerController = async (
 
     const attemptId = req.params.attemptId;
 
-    const {
-      question_id,
-      selected_answer,
-    } = req.body;
+    const { question_id, selected_answer } = req.body;
 
-    if (
-      !["A", "B", "C", "D"].includes(selected_answer)
-    ) {
+    if (!["A", "B", "C", "D"].includes(selected_answer)) {
       return res.status(400).json({
-        message:
-          "Selected answer must be A, B, C or D",
+        message: "Selected answer must be A, B, C or D",
       });
     }
 
-    const { data, error } =
-      await AssessmentServices.saveAnswer(
-        attemptId,
-        user.id,
-        question_id,
-        selected_answer,
-        token,
-      );
+    const { data, error } = await AssessmentServices.saveAnswer(
+      attemptId,
+      user.id,
+      question_id,
+      selected_answer,
+      token,
+    );
 
     if (error) {
       return res.status(400).json(error);
@@ -353,9 +341,8 @@ export const saveAnswerController = async (
   }
 };
 
-
 export const submitAssessmentController = async (
-  req: Request<{ attemptId: string }, {}, {}>,
+  req: Request<{ attemptId: string }>,
   res: Response,
 ) => {
   try {
@@ -368,36 +355,189 @@ export const submitAssessmentController = async (
       });
     }
 
-    const attemptId = req.params.attemptId;
+    const { attemptId } = req.params;
 
-    const { data, error } =
-      await AssessmentServices.submitAssessment(
-        attemptId,
-        user.id,
-        token,
-      );
+    const result = await AssessmentServices.submitAssessment(
+      attemptId,
+      user.id,
+      token,
+    );
 
-    if (error) {
-      return res.status(400).json(error);
+    if (result.error) {
+      return res.status(400).json(result.error);
     }
 
     return res.status(200).json({
       message: "Assessment submitted successfully",
-      data,
+      data: result.data,
     });
   } catch (error) {
-    console.error("Submit assessment error:", error);
+    console.error(error);
 
     return res.status(500).json({
-      message: "Internal server error",
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const getAssessmentResultController =  async (
+  req: Request<
+    { attemptId: string },
+    {},
+    {
+      status: "PASSED" | "FAILED";
+    }
+  >,
+  res: Response,
+) => {
+  try {
+    const token = req.accessToken;
+    const user = req.user;
+
+    if (!token || !user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const { attemptId } = req.params;
+    const { status } = req.body;
+
+    if (!["PASSED", "FAILED"].includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status",
+      });
+    }
+
+    const result =
+      await AssessmentServices.getAssessmentResult(
+        attemptId,
+        status,
+        token,
+      );
+
+    if (result.error) {
+      return res.status(400).json(result.error);
+    }
+
+    return res.status(200).json({
+      message: `Candidate marked as ${status}`,
+      data: result.data,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const publishAssessment = async (
+  req: Request<{ assessmentId: string }, {}, {}>,
+  res: Response,
+) => {
+  try {
+    const { assessmentId } = req.params;
+
+    const token = req.accessToken;
+    const user = req.user;
+
+    if (!token || !user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const assessment = await AssessmentServices.publishAssessment(
+      assessmentId,
+      token,
+    );
+
+    return res.status(200).json({
+      message: "Assessment published successfully",
+      data: assessment,
+    });
+  } catch (error: any) {
+    if (error.message === "Assessment already published") {
+      return res.status(400).json({
+        message: "Assessment already published",
+      });
+    }
+
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const getCandidateAssessments = async (req: Request, res: Response) => {
+  try {
+    const token = req.accessToken;
+    const user = req.user;
+
+    if (!token || !user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const assessments = await AssessmentServices.getCandidateAssessments(
+      user.id,
+      token,
+    );
+
+    return res.status(200).json({
+      data: assessments,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const getCandidateAssessmentById = async (
+  req: Request<{ assessmentId: string }>,
+  res: Response,
+) => {
+  try {
+    const { assessmentId } = req.params;
+
+    const token = req.accessToken;
+    const user = req.user;
+
+    if (!token || !user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const assessment = await AssessmentServices.getCandidateAssessmentById(
+      assessmentId,
+      token,
+    );
+
+    return res.status(200).json({
+      data: assessment,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
     });
   }
 };
 
 
 
-export const getAssessmentResultController = async (
-  req: Request<{ attemptId: string }, {}, {}>,
+export const getAssessmentResultsController = async (
+  req: Request<{ assessmentId: string }>,
   res: Response,
 ) => {
   try {
@@ -410,28 +550,28 @@ export const getAssessmentResultController = async (
       });
     }
 
-    const attemptId = req.params.attemptId;
+    const { assessmentId } = req.params;
 
-    const { data, error } =
-      await AssessmentServices.getAssessmentResult(
-        attemptId,
+    const result =
+      await AssessmentServices.getAssessmentResults(
+        assessmentId,
         user.id,
         token,
       );
 
-    if (error) {
-      return res.status(400).json(error);
+    if (result.error) {
+      return res.status(400).json(result.error);
     }
 
     return res.status(200).json({
-      message: "Result fetched successfully",
-      data,
+      message: "Assessment results fetched successfully",
+      data: result.data,
     });
   } catch (error) {
-    console.error("Get result error:", error);
+    console.error(error);
 
     return res.status(500).json({
-      message: "Internal server error",
+      message: "Internal Server Error",
     });
   }
 };

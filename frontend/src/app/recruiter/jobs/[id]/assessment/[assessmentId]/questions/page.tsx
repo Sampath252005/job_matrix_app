@@ -315,7 +315,7 @@ export default function QuestionsPage() {
 
               <span>Marks: {question.marks}</span>
             </div>
-
+x
             <div className="mt-4 flex gap-2">
               <button
                 onClick={() => {

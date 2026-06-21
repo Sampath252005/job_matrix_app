@@ -11,6 +11,7 @@ import {
   getJobDetails,
   searchJobsController,
   getJobId,
+  getAllOpenjobs
 } from "./jobs.controller.js";
 
 const router = express.Router();
@@ -30,6 +31,7 @@ router.post("/", protect, allowRoles("ADMIN", "RECRUITER"), postJob);
 
 // Get recruiter’s jobs
 router.get("/my", protect, allowRoles("ADMIN", "RECRUITER"), getAllMyJob);
+router.get("/my/open",protect, allowRoles("ADMIN", "RECRUITER"),getAllOpenjobs)
 
 router.get("/:id", protect, allowRoles("ADMIN", "RECRUITER"), getJobId);
 // Update job

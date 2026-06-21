@@ -32,7 +32,7 @@ const navs = [
   { id: 6, name: "Interview Designer", icon: ClipboardList ,link:"/recruiter/dashboard" },
   { id: 7, name: "Categories", icon: Layers ,link:"/recruiter/dashboard" },
   { id: 8, name: "Shortlisted Candidates", icon: UserCheck,link:"/recruiter/dashboard"  },
-  { id: 9, name: "Candidates", icon: Users ,link:"/recruiter/dashboard" },
+  { id: 9, name: "Candidates", icon: Users ,link:"/recruiter/candidates" },
 ];
 
 export default function RNavbar({ onClose }: RNavbarProps) {

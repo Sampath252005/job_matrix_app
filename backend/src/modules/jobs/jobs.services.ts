@@ -71,6 +71,9 @@ export const updateJob = async (
     .select();
 };
 
+
+
+
 //delete a posted job
 
 export const deleteJob = async (
@@ -101,6 +104,17 @@ export const closeJob = async (
     .select()
     .single();
 };
+
+export const toGetAllCurrentJOb =async(recruiter_id:string,token:string)=>
+{
+  const supabase=getSupabase(token);
+  return supabase
+    .from("jobs")
+    .select("*")
+    .eq("recruiter_id", recruiter_id)
+    .eq("status","OPEN")
+    .order("created_at", { ascending: false });
+}
 
 //----------------------------------------------------------------candidate jobs api------------------------------------------------------
 
