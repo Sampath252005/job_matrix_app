@@ -104,16 +104,16 @@ export const saveAnswer = async (
   attemptId: string,
   data: {
     question_id: string;
-    selected_answer: string;
+    selected_answer:"A"|"B"|"C"|"D";
   },
 ) => {
-  const res = await api.post(`/attempts/${attemptId}/answer`, data);
+  const res = await api.post(`/assessments/attempts/${attemptId}/answer`, data);
 
   return res.data;
 };
 
 export const submitAssessment = async (attemptId: string) => {
-  const res = await api.post(`/attempts/${attemptId}/submit`);
+  const res = await api.post(`/assessments/attempts/${attemptId}/submit`);
 
   return res.data;
 };
@@ -137,7 +137,6 @@ export const publishAssessment = async (
 
 export const getCandidateAssessments = async () => {
   const res = await api.get("/assessments");
-
   return res.data;
 };
 
@@ -146,6 +145,16 @@ export const getCandidateAssessmentById = async (
 ) => {
   const res = await api.get(
     `/assessments/candidate/${assessmentId}`
+  );
+
+  return res.data;
+};
+
+export const getAttemptById = async (
+  attemptId: string
+) => {
+  const res = await api.get(
+    `/assessments/candidate/attempts/${attemptId}`
   );
 
   return res.data;

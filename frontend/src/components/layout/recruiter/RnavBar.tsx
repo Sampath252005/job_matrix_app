@@ -28,7 +28,7 @@ const navs = [
   { id: 2, name: "Interview", icon: ClipboardList ,link:"/recruiter/IterView" },
   { id: 3, name: "Job Board", icon: Briefcase,link:"/recruiter/jobBoard"  },
   { id: 4, name: "Jobs", icon: Layers ,link:"/recruiter/jobs" },
-  { id: 5, name: "Quiz Designer", icon: FileQuestion,link:"/recruiter/quiz-designer"  },
+  { id: 5, name: "Assesments", icon: FileQuestion,link:"/recruiter/assesments"  },
   { id: 6, name: "Interview Designer", icon: ClipboardList ,link:"/recruiter/dashboard" },
   { id: 7, name: "Categories", icon: Layers ,link:"/recruiter/dashboard" },
   { id: 8, name: "Shortlisted Candidates", icon: UserCheck,link:"/recruiter/dashboard"  },

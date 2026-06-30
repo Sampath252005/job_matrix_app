@@ -280,16 +280,15 @@ export const startAssessmentController = async (
     });
   } catch (error) {
     console.error(error);
-
     return res.status(500).json({
       message: "Internal Server Error",
     });
-  }
+  } 
 };
 
 interface SaveAnswerBody {
   question_id: string;
-  selected_answer: "A" | "B" | "C" | "D";
+  selected_answer:string ;
 }
 
 export const saveAnswerController = async (
@@ -566,6 +565,42 @@ export const getAssessmentResultsController = async (
     return res.status(200).json({
       message: "Assessment results fetched successfully",
       data: result.data,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+
+
+export const getAttemptController = async (
+  req: Request<{ attemptId: string }>,
+  res: Response
+) => {
+  try {
+    const token = req.accessToken;
+    const user = req.user;
+
+    if (!token || !user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const data =
+      await AssessmentServices.getAttempt(
+        req.params.attemptId,
+        user.id,
+        token
+      );
+
+    return res.status(200).json({
+      data,
     });
   } catch (error) {
     console.error(error);

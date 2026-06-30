@@ -15,7 +15,8 @@ import {
   publishAssessment,
   getCandidateAssessments,
   getCandidateAssessmentById,
-  getAssessmentResultsController  
+  getAssessmentResultsController ,
+  getAttemptController 
 } from "./assessments.controller.js";
 
 const router = express.Router();
@@ -104,4 +105,12 @@ router.get(
   allowRoles("RECRUITER", "ADMIN"),
   getAssessmentResultsController,
 );
+
+router.get(
+  "/candidate/attempts/:attemptId",
+  protect,
+  allowRoles("ADMIN", "CANDIDATE"),
+  getAttemptController
+);
+
 export default router;

@@ -13,7 +13,7 @@ interface Job {
 }
 
 export default function QuizDesignerPage() {
-  const router=useRouter();
+  const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +48,7 @@ export default function QuizDesignerPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-            Quiz Designer
+            Assesments
           </h1>
 
           <p className="text-gray-500 dark:text-gray-400 mt-2">
@@ -63,9 +63,7 @@ export default function QuizDesignerPage() {
               Total Jobs
             </h3>
 
-            <p className="text-3xl font-bold mt-2">
-              {jobs.length}
-            </p>
+            <p className="text-3xl font-bold mt-2">{jobs.length}</p>
           </div>
 
           <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 shadow rounded-xl p-5">
@@ -74,11 +72,7 @@ export default function QuizDesignerPage() {
             </h3>
 
             <p className="text-3xl font-bold mt-2">
-              {
-                jobs.filter(
-                  (job) => job.status === "OPEN"
-                ).length
-              }
+              {jobs.filter((job) => job.status === "OPEN").length}
             </p>
           </div>
 
@@ -137,23 +131,45 @@ export default function QuizDesignerPage() {
                 </div>
 
                 {/* Button */}
-                <span
-                  onClick={()=>router.push(`/recruiter/jobs/${job.id}/assessment`)}
-                  className="
-                    block
-                    w-full
-                    text-center
-                    bg-blue-600
-                    hover:bg-blue-700
-                    text-white
-                    font-medium
-                    py-2
-                    rounded-lg
-                    transition
-                  "
-                >
-                  Manage Quiz
-                </span>
+                <div className="space-y-3 mt-6">
+                  <button
+                    onClick={() =>
+                      router.push(`/recruiter/jobs/${job.id}/assessment`)
+                    }
+                    className="
+      w-full
+      bg-blue-600
+      hover:bg-blue-700
+      text-white
+      py-2
+      rounded-lg
+      transition
+    "
+                  >
+                    Manage Assessment
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      router.push(
+                        `/recruiter/jobs/${job.id}/assessment/results`,
+                      )
+                    }
+                    className="
+      w-full
+      border
+      border-gray-300
+      dark:border-zinc-700
+      hover:bg-gray-100
+      dark:hover:bg-zinc-800
+      py-2
+      rounded-lg
+      transition
+    "
+                  >
+                    View Results
+                  </button>
+                </div>
               </div>
             </div>
           ))}

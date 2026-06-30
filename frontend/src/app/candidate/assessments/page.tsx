@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getCandidateAssessments } from "@/services/assessment.services";
+import { getCandidateAssessments,getCandidateAssessmentById } from "@/services/assessment.services";
 
 interface Assessment {
   id: string;
@@ -16,12 +16,20 @@ interface Assessment {
   attempt_status: string | null;
 }
 
+interface AssessmentStatus {
+  id: string;
+  assessment_id: string;
+  candidate_id: string;
+  status: string;
+}
+
 export default function CandidateAssessmentsPage() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
 
   const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [assesmentStatus,setAssessmentStatus]=useState<AssessmentStatus[]>([])
 
   useEffect(() => {
     fetchAssessments();
@@ -32,14 +40,17 @@ export default function CandidateAssessmentsPage() {
       const res = await getCandidateAssessments();
       console.log("res:",res);
 
-      setAssessments(res.data||[]);
-    //   console.log("assesments----",assessments);
+      setAssessments(res.data.assessments||[]);
+      setAssessmentStatus(res.data.assessmentStatus||[])
+    console.log("assesments----",assessments);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
+
+
 
   if (loading) {
     return (
@@ -92,7 +103,10 @@ export default function CandidateAssessmentsPage() {
         {/* Cards */}
 
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {assessments.map((assessment) => (
+          {assessments.map((assessment) => {
+           const attempts=assesmentStatus.find((item)=>item.assessment_id==assessment.id);
+           return (
+
             <div
               key={assessment.id}
               className="
@@ -194,14 +208,15 @@ export default function CandidateAssessmentsPage() {
                   rounded-lg
                 "
               >
-                {assessment.attempt_status === "STARTED"
+                {attempts?.status === "STARTED"
                   ? "Continue Assessment"
-                  : assessment.attempt_status === "SUBMITTED"
+                  :attempts?.status === "SUBMITTED"
                   ? "View Result"
                   : "View Assessment"}
               </button>
             </div>
-          ))}
+           )
+          })}
         </div>
       </div>
     </div>

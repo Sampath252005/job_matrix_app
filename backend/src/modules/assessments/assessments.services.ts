@@ -130,6 +130,8 @@ export const startAssessment = async (
 ) => {
   const supabase = getSupabase(token);
 
+
+
   // 1. Check assessment exists
   const { data: assessment, error: assessmentError } = await supabase
     .from("assessments")
@@ -476,11 +478,13 @@ export const getAssessmentResult = async (
 
   const { data: attempt, error: attemptError } = await supabase
     .from("assessment_attempts")
-    .select(`
+    .select(
+      `
       id,
       application_id,
       status
-    `)
+    `,
+    )
     .eq("id", attemptId)
     .single();
 
@@ -525,10 +529,7 @@ export const getAssessmentResult = async (
   await supabase
     .from("applications")
     .update({
-      status:
-        status === "PASSED"
-          ? "INTERVIEW_ROUND"
-          : "REJECTED",
+      status: status === "PASSED" ? "INTERVIEW_ROUND" : "REJECTED",
     })
     .eq("id", attempt.application_id);
 
@@ -589,15 +590,25 @@ export const getCandidateAssessments = async (
 
   const jobIds = applications.map((app) => app.job_id);
 
-  const { data: assessments, error } = await supabase
+  const { data: assessments, error: assesmetError } = await supabase
     .from("assessments")
     .select("*")
     .in("job_id", jobIds)
     .eq("is_published", true);
 
-  if (error) throw error;
+  if (assesmetError) throw assesmetError;
 
-  return assessments;
+  const assessmentIds = assessments.map((assessment) => assessment.id);
+
+  const { data: assessmentStatus, error: attemptsError } = await supabase
+    .from("assessment_attempts")
+    .select("id,status,assessment_id,candidate_id")
+    .in("assessment_id", assessmentIds)
+    .eq("candidate_id", candidateId);
+
+  if (attemptsError) throw attemptsError;
+
+  return { assessments, assessmentStatus };
 };
 
 //to get assment details for the candidates
@@ -631,14 +642,12 @@ export const getCandidateAssessmentById = async (
     .single();
 
   if (error) {
-
-    console.log("error--",error)
+    console.log("error--", error);
     throw error;
   }
 
   return data;
 };
-
 
 export const getAssessmentResults = async (
   assessmentId: string,
@@ -649,13 +658,12 @@ export const getAssessmentResults = async (
 
   // Verify assessment belongs to recruiter
 
-  const { data: assessment, error: assessmentError } =
-    await supabase
-      .from("assessments")
-      .select("id")
-      .eq("id", assessmentId)
-      .eq("recruiter_id", recruiterId)
-      .single();
+  const { data: assessment, error: assessmentError } = await supabase
+    .from("assessments")
+    .select("id")
+    .eq("id", assessmentId)
+    .eq("recruiter_id", recruiterId)
+    .single();
 
   if (assessmentError || !assessment) {
     return {
@@ -669,7 +677,8 @@ export const getAssessmentResults = async (
   // Fetch candidate results
   const { data, error } = await supabase
     .from("assessment_attempts")
-    .select(`
+    .select(
+      `
       id,
       score,
       status,
@@ -680,7 +689,8 @@ export const getAssessmentResults = async (
         name,
         email
       )
-    `)
+    `,
+    )
     .eq("assessment_id", assessmentId)
     .order("submitted_at", {
       ascending: false,
@@ -698,3 +708,71 @@ export const getAssessmentResults = async (
     error: null,
   };
 };
+
+export const getAttempt = async (
+  attemptId: string,
+  candidateId: string,
+  token: string,
+) => {
+  const supabase = getSupabase(token);
+
+  const { data: attempt, error } = await supabase
+    .from("assessment_attempts")
+    .select(
+      `
+        id,
+        status,
+        started_at,
+
+        assessments (
+          id,
+          title,
+          duration_minutes,
+          total_questions,
+          total_marks
+        )
+      `,
+    )
+    .eq("id", attemptId)
+    .eq("candidate_id", candidateId)
+    .single();
+
+  if (error) throw error;
+
+  const assessmentId = (attempt.assessments as any).id;
+
+  const { data: questions } = await supabase
+    .from("questions")
+    .select(
+      `
+        id,
+        question,
+        option_a,
+        option_b,
+        option_c,
+        option_d,
+        marks
+      `,
+    )
+    .eq("assessment_id", assessmentId)
+    .order("created_at");
+
+  const { data: answers } = await supabase
+    .from("candidate_answers")
+    .select(
+      `
+        question_id,
+        selected_answer
+      `,
+    )
+    .eq("attempt_id", attemptId);
+
+  return {
+    attempt,
+    questions,
+    answers,
+  };
+};
+
+
+

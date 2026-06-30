@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 import {
   getCandidateAssessmentById,
@@ -25,16 +26,14 @@ export default function AssessmentDetailsPage() {
   const params = useParams();
   const router = useRouter();
 
-  const assessmentId =
-    params.assessmentId as string;
+  const assessmentId = params.assessmentId as string;
 
-  const [assessment, setAssessment] =
-    useState<Assessment | null>(null);
+  const [assessment, setAssessment] = useState<Assessment | null>(null);
 
   const [loading, setLoading] = useState(true);
-
-  const [starting, setStarting] =
-    useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const [starting, setStarting] = useState(false);
+  
 
   useEffect(() => {
     fetchAssessment();
@@ -42,10 +41,7 @@ export default function AssessmentDetailsPage() {
 
   const fetchAssessment = async () => {
     try {
-      const res =
-        await getCandidateAssessmentById(
-          assessmentId
-        );
+      const res = await getCandidateAssessmentById(assessmentId);
 
       setAssessment(res.data);
     } catch (error) {
@@ -59,18 +55,15 @@ export default function AssessmentDetailsPage() {
     try {
       setStarting(true);
 
-      const res = await startAssessment(
-        assessmentId
-      );
+      const res = await startAssessment(assessmentId);
 
       const attemptId = res.data.id;
+      await document.documentElement.requestFullscreen();
 
-      router.push(
-        `/candidate/attempts/${attemptId}`
-      );
-    } catch (error) {
+      router.push(`/candidate/attempts/${attemptId}`);
+    } catch (error:any) {
       console.error(error);
-      alert("Failed to start assessment");
+      toast.error(error?.response.data.message);
     } finally {
       setStarting(false);
     }
@@ -85,125 +78,218 @@ export default function AssessmentDetailsPage() {
   }
 
   if (!assessment) {
-    return (
-      <div className="text-center mt-20">
-        Assessment not found
-      </div>
-    );
+    return <div className="text-center mt-20">Assessment not found</div>;
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <div
-        className="
-        bg-white
-        dark:bg-zinc-900
-        border
-        border-gray-200
-        dark:border-zinc-800
-        rounded-2xl
-        p-8
-        shadow
-      "
-      >
-        <h1 className="text-3xl font-bold mb-4">
-          {assessment.title}
-        </h1>
+   <div className="min-h-screen bg-gray-50 dark:bg-black">
+  <div className="max-w-5xl mx-auto px-4 py-8">
 
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
-          {assessment.description}
-        </p>
+{/* Header */}
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <p className="text-gray-500">
-              Duration
-            </p>
+<div
+  className="
+  bg-gradient-to-r
+  from-blue-600
+  to-indigo-600
+  rounded-3xl
+  p-8
+  text-white
+  mb-8
+"
+>
+  <h1 className="text-3xl md:text-4xl font-bold">
+    {assessment.title}
+  </h1>
 
-            <p className="font-semibold text-lg">
-              {assessment.duration_minutes} Minutes
-            </p>
-          </div>
+  <p className="mt-3 text-blue-100 max-w-2xl">
+    {assessment.description ||
+      "Complete this assessment carefully. Your performance will be evaluated by the recruiter."}
+  </p>
+</div>
 
-          <div>
-            <p className="text-gray-500">
-              Questions
-            </p>
+{/* Summary Cards */}
 
-            <p className="font-semibold text-lg">
-              {assessment.total_questions}
-            </p>
-          </div>
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
-          <div>
-            <p className="text-gray-500">
-              Total Marks
-            </p>
+  <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 p-5">
+    <p className="text-sm text-gray-500">
+      Questions
+    </p>
 
-            <p className="font-semibold text-lg">
-              {assessment.total_marks}
-            </p>
-          </div>
+    <p className="text-2xl font-bold mt-1">
+      {assessment.total_questions}
+    </p>
+  </div>
 
-          <div>
-            <p className="text-gray-500">
-              Passing Score
-            </p>
+  <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 p-5">
+    <p className="text-sm text-gray-500">
+      Total Marks
+    </p>
 
-            <p className="font-semibold text-lg">
-              {assessment.passing_score}
-            </p>
-          </div>
+    <p className="text-2xl font-bold mt-1">
+      {assessment.total_marks}
+    </p>
+  </div>
 
-          <div>
-            <p className="text-gray-500">
-              Start Time
-            </p>
+  <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 p-5">
+    <p className="text-sm text-gray-500">
+      Passing Score
+    </p>
 
-            <p className="font-semibold">
-              {assessment.start_time
-                ? new Date(
-                    assessment.start_time
-                  ).toLocaleString()
-                : "Not Set"}
-            </p>
-          </div>
+    <p className="text-2xl font-bold mt-1">
+      {assessment.passing_score}
+    </p>
+  </div>
 
-          <div>
-            <p className="text-gray-500">
-              End Time
-            </p>
+  <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 p-5">
+    <p className="text-sm text-gray-500">
+      Duration
+    </p>
 
-            <p className="font-semibold">
-              {assessment.end_time
-                ? new Date(
-                    assessment.end_time
-                  ).toLocaleString()
-                : "Not Set"}
-            </p>
-          </div>
-        </div>
+    <p className="text-2xl font-bold mt-1">
+      {assessment.duration_minutes}m
+    </p>
+  </div>
 
-        <div className="mt-10">
-          <button
-            onClick={handleStartAssessment}
-            disabled={starting}
-            className="
-              bg-blue-600
-              hover:bg-blue-700
-              text-white
-              px-6
-              py-3
-              rounded-lg
-              font-medium
-            "
-          >
-            {starting
-              ? "Starting..."
-              : "Start Assessment"}
-          </button>
-        </div>
-      </div>
+</div>
+
+{/* Instructions */}
+
+<div
+  className="
+  bg-white
+  dark:bg-zinc-900
+  border
+  border-gray-200
+  dark:border-zinc-800
+  rounded-3xl
+  p-8
+  mb-6
+"
+>
+  <h2 className="text-2xl font-bold mb-6">
+    Assessment Instructions
+  </h2>
+
+  <div className="space-y-4">
+
+    <div className="flex gap-3">
+      <span>✅</span>
+      <p>Read every question carefully before answering.</p>
     </div>
+
+    <div className="flex gap-3">
+      <span>✅</span>
+      <p>Click Save Answer before moving to the next question.</p>
+    </div>
+
+    <div className="flex gap-3">
+      <span>✅</span>
+      <p>You may revisit questions before final submission.</p>
+    </div>
+
+    <div className="flex gap-3">
+      <span>✅</span>
+      <p>The timer starts immediately after beginning the assessment.</p>
+    </div>
+
+    <div className="flex gap-3">
+      <span>✅</span>
+      <p>Ensure you have a stable internet connection.</p>
+    </div>
+
+  </div>
+</div>
+
+{/* Warning Box */}
+
+<div
+  className="
+  bg-amber-50
+  dark:bg-amber-950/20
+  border
+  border-amber-200
+  dark:border-amber-900
+  rounded-3xl
+  p-6
+  mb-8
+"
+>
+  <h3 className="font-bold text-amber-700 dark:text-amber-400 mb-3">
+    Important Rules
+  </h3>
+
+  <ul className="space-y-2 text-sm">
+    <li>
+      ⚠️ Do not refresh the page during the assessment.
+    </li>
+
+    <li>
+      ⚠️ Tab switching may be tracked and reported.
+    </li>
+
+    <li>
+      ⚠️ Once submitted, answers cannot be changed.
+    </li>
+
+    <li>
+      ⚠️ If time expires, the assessment will be submitted automatically.
+    </li>
+  </ul>
+</div>
+
+{/* Declaration */}
+
+<div
+  className="
+  bg-white
+  dark:bg-zinc-900
+  border
+  border-gray-200
+  dark:border-zinc-800
+  rounded-3xl
+  p-6
+"
+>
+  <label className="flex items-start gap-3 cursor-pointer">
+    <input
+      type="checkbox"
+      checked={agreed}
+      onChange={(e) => setAgreed(e.target.checked)}
+      className="mt-1 h-4 w-4"
+    />
+
+    <span>
+      I have read and understood all instructions and agree to follow the assessment rules.
+    </span>
+  </label>
+
+  <button
+    onClick={handleStartAssessment}
+    disabled={!agreed || starting}
+    className="
+    mt-6
+    w-full
+    md:w-auto
+    bg-green-600
+    hover:bg-green-700
+    disabled:bg-gray-400
+    text-white
+    px-8
+    py-3
+    rounded-xl
+    font-semibold
+    transition
+  "
+  >
+    {starting
+      ? "Starting Assessment..."
+      : "Start Assessment"}
+  </button>
+</div>
+  </div>
+</div>
+
   );
 }

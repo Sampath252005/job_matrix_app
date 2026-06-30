@@ -13,7 +13,8 @@ import jobsRoutes from "./modules/jobs/jobs.routes.js";
 import applicationRoutes from "./modules/applications/applications.routes.js";
 import dashboardroutes from "./modules/dashboard/dashboard.routes.js";
 import assessmentRoutes from "./modules/assessments/assessments.routes.js";
-import questionRoutes from "./modules/questions/questions.routes.js"
+import questionRoutes from "./modules/questions/questions.routes.js";
+import resultRoutes from "./modules/result/result.route.js"
 const app = express();
 
 // CORS FIRST
@@ -36,6 +37,7 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/dashboard", dashboardroutes);
 app.use("/api/assessments", assessmentRoutes);
 app.use("/api", questionRoutes);
+app.use("/api",resultRoutes)
 // app.use("/api/candidate", candidateRoutes);
 
 // Test route
