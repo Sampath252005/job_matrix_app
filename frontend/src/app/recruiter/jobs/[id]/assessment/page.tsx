@@ -3,6 +3,20 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import {
+  ClipboardList,
+  FileText,
+  Clock3,
+  Trophy,
+  PlusCircle,
+  Settings2,
+  CalendarDays,
+  CheckCircle2,
+  Save,
+  Trash2,
+  FileQuestion,
+  Rocket,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import {
   createAssessment,
@@ -49,10 +63,10 @@ export default function AssessmentPage() {
   }, []);
 
   const handlePublish = async () => {
-     if (!assessment) return;
+    if (!assessment) return;
     try {
       const res = await publishAssessment(assessment.id);
-        toast.success("Assessment published");
+      toast.success("Assessment published");
       fetchAssessment();
     } catch (error: any) {
       const message = error?.response?.data?.message;
@@ -149,321 +163,516 @@ export default function AssessmentPage() {
       {assessment ? (
         <div
           className="
-      bg-white
-      dark:bg-zinc-900
-      border
-      border-gray-200
-      dark:border-zinc-800
-      rounded-xl
-      p-6
-      shadow
-    "
+    rounded-3xl
+    border
+    border-gray-200
+    dark:border-gray-800
+    bg-white
+    dark:bg-gray-900
+    shadow-xl
+    overflow-hidden
+  "
         >
-          <h2 className="text-2xl font-bold mb-6">Assessment Settings</h2>
+          {/* Header */}
 
-          <div className="space-y-4">
-            <div>
-              <label className="block mb-2 font-medium">Title</label>
-
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+          <div className="border-b border-gray-200 dark:border-gray-800 p-8">
+            <div className="flex items-center gap-5">
+              <div
                 className="
-            w-full
-            border
-            border-gray-300
-            dark:border-zinc-700
-            bg-white
-            dark:bg-zinc-950
-            rounded-lg
-            p-3
-          "
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium">Description</label>
-
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="
-            w-full
-            border
-            border-gray-300
-            dark:border-zinc-700
-            bg-white
-            dark:bg-zinc-950
-            rounded-lg
-            p-3
-          "
-                rows={4}
-              />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block mb-2 font-medium">
-                  Duration (Minutes)
-                </label>
-
-                <input
-                  type="number"
-                  value={durationMinutes}
-                  onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                  className="
-              w-full
-              border
-              border-gray-300
-              dark:border-zinc-700
-              bg-white
-              dark:bg-zinc-950
-              rounded-lg
-              p-3
-            "
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2 font-medium">Passing Score</label>
-
-                <input
-                  type="number"
-                  value={passingScore}
-                  onChange={(e) => setPassingScore(Number(e.target.value))}
-                  className="
-              w-full
-              border
-              border-gray-300
-              dark:border-zinc-700
-              bg-white
-              dark:bg-zinc-950
-              rounded-lg
-              p-3
-            "
-                />
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block mb-2 font-medium">Start Time</label>
-
-                <input
-                  type="datetime-local"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="
-              w-full
-              border
-              border-gray-300
-              dark:border-zinc-700
-              bg-white
-              dark:bg-zinc-950
-              rounded-lg
-              p-3
-            "
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2 font-medium">End Time</label>
-
-                <input
-                  type="datetime-local"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="
-              w-full
-              border
-              border-gray-300
-              dark:border-zinc-700
-              bg-white
-              dark:bg-zinc-950
-              rounded-lg
-              p-3
-            "
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium">Status</label>
-
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="
-            w-full
-            border
-            border-gray-300
-            dark:border-zinc-700
-            bg-white
-            dark:bg-zinc-950
-            rounded-lg
-            p-3
-          "
+          h-16
+          w-16
+          rounded-2xl
+          bg-gradient-to-br
+          from-blue-600
+          to-indigo-600
+          flex
+          items-center
+          justify-center
+          text-white
+        "
               >
-                <option value="ACTIVE">ACTIVE</option>
+                <Settings2 size={30} />
+              </div>
 
-                <option value="INACTIVE">INACTIVE</option>
-              </select>
+              <div>
+                <h2 className="text-3xl font-bold">Assessment Settings</h2>
+
+                <p className="text-gray-500 mt-1">
+                  Configure assessment information, schedule, scoring and
+                  publishing.
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              onClick={handleSaveSettings}
-              className="
-          px-4
-          py-2
-          rounded-lg
-          bg-green-600
-          hover:bg-green-700
-          text-white
-        "
-            >
-              Save Settings
-            </button>
+          {/* Form */}
 
-            <button
-              onClick={() =>
-                router.push(`assessment/${assessment.id}/questions`)
-              }
-              className="
-          px-4
-          py-2
-          rounded-lg
-          bg-blue-600
-          hover:bg-blue-700
-          text-white
-        "
-            >
-              Manage Questions
-            </button>
-            <button
-              onClick={handlePublish}
-              className="
-    px-4
-    py-2
-    rounded-lg
-    bg-green-600
-    hover:bg-green-700
-    text-white
-  "
-            >
-              Publish Assessment
-            </button>
+          <div className="p-8 space-y-8">
+            {/* Basic Information */}
 
-            <button
-              className="
-          px-4
-          py-2
-          rounded-lg
-          bg-red-600
-          hover:bg-red-700
+            <div>
+              <h3 className="text-xl font-semibold mb-5">Basic Information</h3>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block mb-2 font-medium">
+                    Assessment Title
+                  </label>
+
+                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                    <ClipboardList className="text-blue-600" size={18} />
+
+                    <input
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full bg-transparent py-3 px-3 outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block mb-2 font-medium">Description</label>
+
+                  <div className="flex rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
+                    <FileText className="text-blue-600 mt-1" size={18} />
+
+                    <textarea
+                      rows={5}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="w-full ml-3 bg-transparent outline-none resize-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Configuration */}
+
+            <div>
+              <h3 className="text-xl font-semibold mb-5">
+                Assessment Configuration
+              </h3>
+
+              <div className="grid lg:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 font-medium">Duration</label>
+
+                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                    <Clock3 className="text-blue-600" size={18} />
+
+                    <input
+                      type="number"
+                      value={durationMinutes}
+                      onChange={(e) =>
+                        setDurationMinutes(Number(e.target.value))
+                      }
+                      className="w-full bg-transparent py-3 px-3 outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block mb-2 font-medium">
+                    Passing Score (%)
+                  </label>
+
+                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                    <Trophy className="text-yellow-500" size={18} />
+
+                    <input
+                      type="number"
+                      value={passingScore}
+                      onChange={(e) => setPassingScore(Number(e.target.value))}
+                      className="w-full bg-transparent py-3 px-3 outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block mb-2 font-medium">Start Time</label>
+
+                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                    <CalendarDays className="text-blue-600" size={18} />
+
+                    <input
+                      type="datetime-local"
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                      className="w-full bg-transparent py-3 px-3 outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block mb-2 font-medium">End Time</label>
+
+                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                    <CalendarDays className="text-blue-600" size={18} />
+
+                    <input
+                      type="datetime-local"
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                      className="w-full bg-transparent py-3 px-3 outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Status */}
+
+            <div>
+              <label className="block mb-2 font-medium">
+                Assessment Status
+              </label>
+
+              <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                <CheckCircle2 className="text-green-600" size={18} />
+
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="w-full bg-transparent py-3 px-3 outline-none"
+                >
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Footer Buttons */}
+
+            <div className="border-t border-gray-200 dark:border-gray-800 pt-8 flex flex-wrap gap-4">
+              <button
+                onClick={handleSaveSettings}
+                className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-xl
+          bg-gradient-to-r
+          from-green-600
+          to-emerald-600
+          px-6
+          py-3
           text-white
+          font-semibold
+          hover:scale-105
+          transition
         "
-            >
-              Delete Assessment
-            </button>
+              >
+                <Save size={18} />
+                Save Settings
+              </button>
+
+              <button
+                onClick={() =>
+                  router.push(`assessment/${assessment.id}/questions`)
+                }
+                className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-xl
+          bg-gradient-to-r
+          from-blue-600
+          to-indigo-600
+          px-6
+          py-3
+          text-white
+          font-semibold
+          hover:scale-105
+          transition
+        "
+              >
+                <FileQuestion size={18} />
+                Manage Questions
+              </button>
+
+              <button
+                onClick={handlePublish}
+                className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-xl
+          bg-gradient-to-r
+          from-purple-600
+          to-pink-600
+          px-6
+          py-3
+          text-white
+          font-semibold
+          hover:scale-105
+          transition
+        "
+              >
+                <Rocket size={18} />
+                Publish
+              </button>
+
+              <button
+                className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-xl
+          border
+          border-red-300
+          dark:border-red-700
+          px-6
+          py-3
+          text-red-600
+          hover:bg-red-50
+          dark:hover:bg-red-900/20
+          transition
+        "
+              >
+                <Trash2 size={18} />
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       ) : (
         <div
           className="
-          bg-white
-          dark:bg-zinc-900
-          border
-          border-gray-200
-          dark:border-zinc-800
-          rounded-xl
-          p-6
-          shadow
-          "
+    rounded-3xl
+    border
+    border-gray-200
+    dark:border-gray-800
+    bg-white
+    dark:bg-gray-900
+    shadow-xl
+    overflow-hidden
+  "
         >
-          <h2 className="text-xl font-semibold mb-4">Create Assessment</h2>
+          {/* Header */}
 
-          <div className="space-y-4">
-            <input
-              className="
+          <div
+            className="
+      border-b
+      border-gray-200
+      dark:border-gray-800
+      p-8
+    "
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className="
+          h-14
+          w-14
+          rounded-2xl
+          bg-gradient-to-br
+          from-blue-600
+          to-indigo-600
+          flex
+          items-center
+          justify-center
+          text-white
+        "
+              >
+                <ClipboardList size={26} />
+              </div>
+
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  Create Assessment
+                </h2>
+
+                <p className="mt-1 text-gray-500 dark:text-gray-400">
+                  Design an assessment for candidates applying to this job.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Form */}
+
+          <div className="p-8 space-y-7">
+            {/* Title */}
+
+            <div>
+              <label className="block mb-2 font-medium">Assessment Title</label>
+
+              <div
+                className="
+          flex
+          items-center
+          rounded-xl
+          border
+          border-gray-300
+          dark:border-gray-700
+          bg-gray-50
+          dark:bg-gray-800
+          px-4
+          focus-within:ring-2
+          focus-within:ring-blue-500
+        "
+              >
+                <ClipboardList size={18} className="text-blue-600" />
+
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Frontend Developer Technical Test"
+                  className="
+            w-full
+            bg-transparent
+            px-3
+            py-3
+            outline-none
+          "
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+
+            <div>
+              <label className="block mb-2 font-medium">Description</label>
+
+              <div
+                className="
+          flex
+          rounded-xl
+          border
+          border-gray-300
+          dark:border-gray-700
+          bg-gray-50
+          dark:bg-gray-800
+          p-4
+          focus-within:ring-2
+          focus-within:ring-blue-500
+        "
+              >
+                <FileText size={18} className="text-blue-600 mt-1" />
+
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Describe the purpose and instructions for this assessment..."
+                  className="
+            ml-3
+            w-full
+            bg-transparent
+            outline-none
+            resize-none
+            min-h-[140px]
+          "
+                />
+              </div>
+            </div>
+
+            {/* Duration + Passing Score */}
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block mb-2 font-medium">
+                  Duration (Minutes)
+                </label>
+
+                <div
+                  className="
+            flex
+            items-center
+            rounded-xl
+            border
+            border-gray-300
+            dark:border-gray-700
+            bg-gray-50
+            dark:bg-gray-800
+            px-4
+            focus-within:ring-2
+            focus-within:ring-blue-500
+          "
+                >
+                  <Clock3 size={18} className="text-blue-600" />
+
+                  <input
+                    type="number"
+                    value={durationMinutes}
+                    onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                    placeholder="60"
+                    className="
               w-full
-              border
-              border-gray-300
-              dark:border-zinc-700
-              bg-white
-              dark:bg-zinc-950
-              rounded-lg
-              p-3
-              "
-              placeholder="Assessment Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-
-            <textarea
-              className="
-              w-full
-              border
-              border-gray-300
-              dark:border-zinc-700
-              bg-white
-              dark:bg-zinc-950
-              rounded-lg
-              p-3
-              "
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-
-            <input
-              type="number"
-              className="
-              w-full
-              border
-              border-gray-300
-              dark:border-zinc-700
-              bg-white
-              dark:bg-zinc-950
-              rounded-lg
-              p-3
-              "
-              placeholder="Duration"
-              value={durationMinutes}
-              onChange={(e) => setDurationMinutes(Number(e.target.value))}
-            />
-
-            <input
-              type="number"
-              className="
-              w-full
-              border
-              border-gray-300
-              dark:border-zinc-700
-              bg-white
-              dark:bg-zinc-950
-              rounded-lg
-              p-3
-              "
-              placeholder="Passing Score"
-              value={passingScore}
-              onChange={(e) => setPassingScore(Number(e.target.value))}
-            />
-
-            <button
-              onClick={handleCreateAssessment}
-              className="
-              bg-blue-600
-              hover:bg-blue-700
-              text-white
-              px-5
+              bg-transparent
+              px-3
               py-3
-              rounded-lg
-              "
-            >
-              Create Assessment
-            </button>
+              outline-none
+            "
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-2 font-medium">
+                  Passing Score (%)
+                </label>
+
+                <div
+                  className="
+            flex
+            items-center
+            rounded-xl
+            border
+            border-gray-300
+            dark:border-gray-700
+            bg-gray-50
+            dark:bg-gray-800
+            px-4
+            focus-within:ring-2
+            focus-within:ring-blue-500
+          "
+                >
+                  <Trophy size={18} className="text-yellow-500" />
+
+                  <input
+                    type="number"
+                    value={passingScore}
+                    onChange={(e) => setPassingScore(Number(e.target.value))}
+                    placeholder="70"
+                    className="
+              w-full
+              bg-transparent
+              px-3
+              py-3
+              outline-none
+            "
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+
+            <div className="flex justify-end pt-4">
+              <button
+                onClick={handleCreateAssessment}
+                className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-xl
+          bg-gradient-to-r
+          from-blue-600
+          to-indigo-600
+          px-8
+          py-3
+          text-white
+          font-semibold
+          shadow-lg
+          hover:scale-105
+          transition-all
+          duration-300
+        "
+              >
+                <PlusCircle size={18} />
+                Create Assessment
+              </button>
+            </div>
           </div>
         </div>
       )}

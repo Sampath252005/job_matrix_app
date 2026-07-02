@@ -74,6 +74,10 @@ export const getJobAssessmentResults = async (
         name,
         email,
         phone
+      ),
+      applications(
+      id,
+      status
       )
     `)
     .eq("assessment_id", assessment.id)
@@ -88,5 +92,81 @@ export const getJobAssessmentResults = async (
   return {
     assessment,
     attempts,
+  };
+};
+
+
+
+export const getAttemptDetails = async (
+  attemptId: string,
+  token: string,
+) => {
+  const supabase = getSupabase(token);
+
+  // Attempt Details
+
+  const { data: attempt, error: attemptError } =
+    await supabase
+      .from("assessment_attempts")
+      .select(`
+        id,
+        score,
+        status,
+        started_at,
+        submitted_at,
+
+        users(
+          id,
+          name,
+          email,
+          phone
+        ),
+
+        assessments(
+          id,
+          title,
+          total_marks,
+          passing_score
+        ),
+        applications(
+        id,
+        status
+        )
+      `)
+      .eq("id", attemptId)
+      .single();
+
+  if (attemptError) {
+    throw attemptError;
+  }
+
+  // Answers
+
+  const { data: answers, error: answersError } =
+    await supabase
+      .from("candidate_answers")
+      .select(`
+        selected_answer,
+
+        questions(
+          id,
+          question,
+          option_a,
+          option_b,
+          option_c,
+          option_d,
+          correct_answer,
+          marks
+        )
+      `)
+      .eq("attempt_id", attemptId);
+
+  if (answersError) {
+    throw answersError;
+  }
+
+  return {
+    attempt,
+    questions: answers,
   };
 };

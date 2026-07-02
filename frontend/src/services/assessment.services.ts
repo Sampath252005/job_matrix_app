@@ -48,7 +48,6 @@ export const deleteAssessment = async (assessmentId: string) => {
   return res.data;
 };
 
-
 // ==========================
 // Question APIs
 // ==========================
@@ -104,7 +103,7 @@ export const saveAnswer = async (
   attemptId: string,
   data: {
     question_id: string;
-    selected_answer:"A"|"B"|"C"|"D";
+    selected_answer: "A" | "B" | "C" | "D";
   },
 ) => {
   const res = await api.post(`/assessments/attempts/${attemptId}/answer`, data);
@@ -124,13 +123,8 @@ export const getAssessmentResult = async (attemptId: string) => {
   return res.data;
 };
 
-
-export const publishAssessment = async (
-  assessmentId: string
-) => {
-  const res = await api.patch(
-    `/assessments/${assessmentId}/publish`
-  );
+export const publishAssessment = async (assessmentId: string) => {
+  const res = await api.patch(`/assessments/${assessmentId}/publish`);
 
   return res.data;
 };
@@ -140,26 +134,25 @@ export const getCandidateAssessments = async () => {
   return res.data;
 };
 
-export const getCandidateAssessmentById = async (
-  assessmentId: string
-) => {
-  const res = await api.get(
-    `/assessments/candidate/${assessmentId}`
-  );
+export const getCandidateAssessmentById = async (assessmentId: string) => {
+  const res = await api.get(`/assessments/candidate/${assessmentId}`);
 
   return res.data;
 };
 
-export const getAttemptById = async (
-  attemptId: string
-) => {
-  const res = await api.get(
-    `/assessments/candidate/attempts/${attemptId}`
-  );
+export const getAttemptById = async (attemptId: string) => {
+  const res = await api.get(`/assessments/candidate/attempts/${attemptId}`);
 
   return res.data;
 };
 
+export const getJobAssessmentResults = async (jobId: string) => {
+  const res = await api.get(`/recruiter/jobs/${jobId}/results`);
 
+  return res.data;
+};
 
-
+export const getAttemptDetails = async (attemptId: string) => {
+  const res = await api.get(`/recruiter/attempts/${attemptId}`);
+  return res.data;
+};

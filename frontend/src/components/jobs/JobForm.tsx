@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Briefcase, MapPin, IndianRupee, Clock, FileText } from "lucide-react";
 
 export default function JobForm({ initialData, onSubmit }: any) {
-
   // console.log("Intial Data",initialData.title);
 
   const [form, setForm] = useState({
@@ -30,123 +29,219 @@ export default function JobForm({ initialData, onSubmit }: any) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 px-4">
-      <div className="bg-white dark:bg-gray-900 shadow-2xl rounded-2xl p-6 space-y-6 border border-gray-200 dark:border-gray-700">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-10 px-4">
+      <div className="max-w-5xl mx-auto">
+        {/* Page Header */}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-              Job Title
-            </label>
-            <div className="flex items-center border rounded-lg px-3 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus-within:ring-2 focus-within:ring-blue-500">
-              <Briefcase className="text-gray-400 mr-2" size={18} />
-              <input
-                type="text"
-                placeholder="Frontend Developer"
-                value={form.title}
-                onChange={(e) => handleChange("title", e.target.value)}
-                className="w-full py-2 bg-transparent outline-none"
-              />
-            </div>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+            Create New Job
+          </h1>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-              Description
-            </label>
-            <div className="flex border rounded-lg px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus-within:ring-2 focus-within:ring-blue-500">
-              <FileText className="text-gray-400 mr-2 mt-1" size={18} />
-              <textarea
-                placeholder="Describe the role..."
-                value={form.description}
-                onChange={(e) => handleChange("description", e.target.value)}
-                className="w-full bg-transparent outline-none min-h-[100px]"
-              />
-            </div>
-          </div>
+          <p className="mt-2 text-gray-500 dark:text-gray-400">
+            Fill in the details below to publish a new job opening.
+          </p>
+        </div>
 
-          {/* Location + Type */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Card */}
+
+        <div
+          className="
+      rounded-3xl
+      border
+      border-gray-200
+      dark:border-gray-800
+      bg-white
+      dark:bg-gray-900
+      shadow-xl
+      p-8
+      "
+        >
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* ================= BASIC INFORMATION ================= */}
+
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                Location
-              </label>
-              <div className="flex items-center border rounded-lg px-3 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus-within:ring-2 focus-within:ring-blue-500">
-                <MapPin className="text-gray-400 mr-2" size={18} />
-                <input
-                  type="text"
-                  placeholder="Bangalore"
-                  value={form.location}
-                  onChange={(e) => handleChange("location", e.target.value)}
-                  className="w-full py-2 bg-transparent outline-none"
+              <h2 className="text-xl font-semibold mb-6">Basic Information</h2>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Title */}
+
+                <div>
+                  <label className="block mb-2 font-medium">Job Title</label>
+
+                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                    <Briefcase size={18} className="text-blue-500" />
+
+                    <input
+                      type="text"
+                      placeholder="Frontend Developer"
+                      value={form.title}
+                      onChange={(e) => handleChange("title", e.target.value)}
+                      className="w-full bg-transparent py-3 px-3 outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Location */}
+
+                <div>
+                  <label className="block mb-2 font-medium">Location</label>
+
+                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                    <MapPin size={18} className="text-blue-500" />
+
+                    <input
+                      type="text"
+                      placeholder="Bangalore"
+                      value={form.location}
+                      onChange={(e) => handleChange("location", e.target.value)}
+                      className="w-full bg-transparent py-3 px-3 outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ================= DESCRIPTION ================= */}
+
+            <div>
+              <h2 className="text-xl font-semibold mb-6">Description</h2>
+
+              <div className="flex rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
+                <FileText className="text-blue-500 mt-1" size={18} />
+
+                <textarea
+                  placeholder="Describe the role, responsibilities, requirements..."
+                  value={form.description}
+                  onChange={(e) => handleChange("description", e.target.value)}
+                  className="
+              w-full
+              ml-3
+              bg-transparent
+              outline-none
+              min-h-[180px]
+              resize-none
+              "
                 />
               </div>
             </div>
 
+            {/* ================= JOB DETAILS ================= */}
+
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                Job Type
-              </label>
-              <select
-                value={form.type}
-                onChange={(e) => handleChange("type", e.target.value)}
-                className="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500"
+              <h2 className="text-xl font-semibold mb-6">Job Details</h2>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                {/* Type */}
+
+                <div>
+                  <label className="block mb-2 font-medium">Job Type</label>
+
+                  <select
+                    value={form.type}
+                    onChange={(e) => handleChange("type", e.target.value)}
+                    className="
+                w-full
+                rounded-xl
+                border
+                border-gray-300
+                dark:border-gray-700
+                bg-gray-50
+                dark:bg-gray-800
+                py-3
+                px-4
+                outline-none
+                "
+                  >
+                    <option>Select Type</option>
+                    <option>Full-time</option>
+                    <option>Part-time</option>
+                    <option>Remote</option>
+                    <option>Internship</option>
+                  </select>
+                </div>
+
+                {/* Salary */}
+
+                <div>
+                  <label className="block mb-2 font-medium">Salary</label>
+
+                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                    <IndianRupee size={18} className="text-blue-500" />
+
+                    <input
+                      placeholder="8-12 LPA"
+                      value={form.salary}
+                      onChange={(e) => handleChange("salary", e.target.value)}
+                      className="w-full bg-transparent py-3 px-3 outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Experience */}
+
+                <div>
+                  <label className="block mb-2 font-medium">Experience</label>
+
+                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                    <Clock size={18} className="text-blue-500" />
+
+                    <input
+                      placeholder="2+ Years"
+                      value={form.experience}
+                      onChange={(e) =>
+                        handleChange("experience", e.target.value)
+                      }
+                      className="w-full bg-transparent py-3 px-3 outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ================= ACTION BUTTONS ================= */}
+
+            <div className="flex justify-end gap-4 pt-4">
+              <button
+                type="button"
+                className="
+            rounded-xl
+            border
+            border-gray-300
+            dark:border-gray-700
+            px-6
+            py-3
+            hover:bg-gray-100
+            dark:hover:bg-gray-800
+            transition
+            "
               >
-                <option value="">Select Type</option>
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Remote">Remote</option>
-                <option value="Internship">Internship</option>
-              </select>
-            </div>
-          </div>
+                Cancel
+              </button>
 
-          {/* Salary + Experience */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                Salary
-              </label>
-              <div className="flex items-center border rounded-lg px-3 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus-within:ring-2 focus-within:ring-blue-500">
-                <IndianRupee className="text-gray-400 mr-2" size={18} />
-                <input
-                  type="text"
-                  placeholder="6 LPA"
-                  value={form.salary}
-                  onChange={(e) => handleChange("salary", e.target.value)}
-                  className="w-full py-2 bg-transparent outline-none"
-                />
-              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="
+            rounded-xl
+            bg-gradient-to-r
+            from-blue-600
+            to-indigo-600
+            px-8
+            py-3
+            text-white
+            font-semibold
+            shadow-lg
+            hover:scale-105
+            transition
+            disabled:opacity-50
+            "
+              >
+                {loading ? "Publishing..." : "Publish Job"}
+              </button>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                Experience
-              </label>
-              <div className="flex items-center border rounded-lg px-3 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus-within:ring-2 focus-within:ring-blue-500">
-                <Clock className="text-gray-400 mr-2" size={18} />
-                <input
-                  type="text"
-                  placeholder="2+ years"
-                  value={form.experience}
-                  onChange={(e) => handleChange("experience", e.target.value)}
-                  className="w-full py-2 bg-transparent outline-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            {loading ? "Submitting..." : "Submit Job"}
-          </button>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

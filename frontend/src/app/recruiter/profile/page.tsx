@@ -84,173 +84,443 @@ export default function RecruiterProfilePage() {
   }
 
   return (
-    <div className="w-full min-h-screen p-4 md:p-8 bg-gray-50 dark:bg-gray-950">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* HEADER */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">Company Profile</h1>
-            <p className="text-sm text-gray-500">
-              Manage your company information
-            </p>
-          </div>
+   <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-[#09090B] dark:via-[#0F172A] dark:to-[#020617] p-5 md:p-8">
 
-          {!editMode ? (
-            <button
-              onClick={() => setEditMode(true)}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+  <div className="max-w-7xl mx-auto space-y-8">
+
+    {/* ================= Header ================= */}
+
+    <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-5">
+
+      <div>
+
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+          Company Profile
+        </h1>
+
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
+          Manage your company branding, information and public profile.
+        </p>
+
+      </div>
+
+      {!editMode ? (
+
+        <button
+          onClick={() => setEditMode(true)}
+          className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-xl
+          bg-gradient-to-r
+          from-blue-600
+          to-indigo-600
+          px-6
+          py-3
+          text-white
+          font-semibold
+          shadow-lg
+          hover:scale-105
+          transition-all
+        "
+        >
+          <Pencil size={18} />
+          Edit Profile
+        </button>
+
+      ) : (
+
+        <button
+          disabled={saving}
+          onClick={handleSave}
+          className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-xl
+          bg-gradient-to-r
+          from-emerald-500
+          to-green-600
+          px-6
+          py-3
+          text-white
+          font-semibold
+          shadow-lg
+          hover:scale-105
+          disabled:opacity-60
+          disabled:hover:scale-100
+          transition-all
+        "
+        >
+          <Save size={18} />
+          {saving ? "Saving..." : "Save Profile"}
+        </button>
+
+      )}
+
+    </div>
+
+    {/* ================= Card ================= */}
+
+    <div
+      className="
+      overflow-hidden
+      rounded-3xl
+      border
+      border-gray-200
+      dark:border-gray-800
+      bg-white/80
+      dark:bg-gray-900/70
+      backdrop-blur-xl
+      shadow-2xl
+    "
+    >
+
+      {/* Banner */}
+
+      <div
+        className="
+        relative
+        h-48
+        bg-gradient-to-r
+        from-blue-600
+        via-indigo-600
+        to-purple-600
+      "
+      >
+
+        <div className="absolute inset-0 bg-black/20" />
+
+      </div>
+
+      {/* Profile */}
+
+      <div className="px-8 pb-8">
+
+        <div className="flex flex-col lg:flex-row gap-8 -mt-16">
+
+          {/* Logo */}
+
+          <div className="relative">
+
+            <div
+              className="
+              h-32
+              w-32
+              rounded-3xl
+              border-4
+              border-white
+              dark:border-gray-900
+              bg-gradient-to-br
+              from-blue-500
+              to-indigo-600
+              shadow-xl
+              flex
+              items-center
+              justify-center
+              text-5xl
+              font-bold
+              text-white
+            "
             >
-              <Pencil size={16} />
-              Edit Profile
-            </button>
-          ) : (
-            <button
-              disabled={saving}
-              onClick={handleSave}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-green-600 hover:bg-green-700"
-              }`}
-            >
-              <Save size={16} />
-              {saving ? "Saving..." : "Save Profile"}
-            </button>
-          )}
-        </div>
-
-        {/* PROFILE CARD */}
-        <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
-          {/* BANNER */}
-          <div className="h-36 bg-gradient-to-r from-blue-500 to-indigo-600" />
-
-          {/* LOGO + COMPANY NAME */}
-          <div className="p-6 flex flex-col md:flex-row md:items-center gap-6">
-            <div className="relative -mt-16">
-              <div className="w-28 h-28 rounded-2xl bg-gray-200 dark:bg-gray-800 shadow flex items-center justify-center text-3xl font-bold border">
-                {profile.company_name?.charAt(0) || "C"}
-              </div>
-
-              {editMode && (
-                <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full shadow">
-                  <ImageIcon size={14} />
-                </button>
-              )}
+              {profile.company_name?.charAt(0) || "C"}
             </div>
 
-            <div className="flex-1 space-y-1">
-              {editMode ? (
-                <input
-                  type="text"
-                  name="company_name"
-                  value={profile.company_name}
-                  onChange={handleChange}
-                  className="text-xl font-bold border rounded-lg p-2 w-full"
-                />
-              ) : (
-                <h2 className="text-2xl font-bold">{profile.company_name}</h2>
-              )}
-
-              <p className="text-sm text-gray-500">Recruiter Organization</p>
-            </div>
-          </div>
-
-          {/* FORM GRID */}
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* WEBSITE */}
-            <div className="space-y-1">
-              <label className="text-sm font-medium">Website</label>
-
-              {editMode ? (
-                <input
-                  type="text"
-                  name="website"
-                  value={profile.website}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg p-2"
-                />
-              ) : (
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Globe size={18} />
-                  {profile.website}
-                </div>
-              )}
-            </div>
-
-            {/* INDUSTRY */}
-            <div className="space-y-1">
-              <label className="text-sm font-medium">Industry</label>
-
-              {editMode ? (
-                <input
-                  type="text"
-                  name="industry"
-                  value={profile.industry}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg p-2"
-                />
-              ) : (
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Briefcase size={18} />
-                  {profile.industry}
-                </div>
-              )}
-            </div>
-
-            {/* COMPANY SIZE */}
-            <div className="space-y-1">
-              <label className="text-sm font-medium">Company Size</label>
-
-              {editMode ? (
-                <input
-                  type="number"
-                  name="company_size"
-                  value={profile.company_size}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg p-2"
-                />
-              ) : (
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Users size={18} />
-                  {profile.company_size} Employees
-                </div>
-              )}
-            </div>
-
-            {/* LOGO URL */}
             {editMode && (
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Logo URL</label>
 
-                <input
-                  type="text"
-                  name="logo_url"
-                  value={profile.logo_url}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg p-2"
-                />
-              </div>
+              <button
+                className="
+                absolute
+                bottom-2
+                right-2
+                rounded-full
+                bg-blue-600
+                p-2
+                text-white
+                shadow-lg
+                hover:bg-blue-700
+              "
+              >
+                <ImageIcon size={16} />
+              </button>
+
             )}
+
           </div>
 
-          {/* DESCRIPTION */}
-          <div className="p-6 pt-0 space-y-1">
-            <label className="text-sm font-medium">Description</label>
+          {/* Name */}
+
+          <div className="flex-1 mt-4">
 
             {editMode ? (
-              <textarea
-                rows={4}
-                name="description"
-                value={profile.description}
+
+              <input
+                name="company_name"
+                value={profile.company_name}
                 onChange={handleChange}
-                className="w-full border rounded-lg p-2"
+                className="
+                w-full
+                rounded-xl
+                border
+                border-gray-300
+                dark:border-gray-700
+                bg-gray-50
+                dark:bg-gray-800
+                p-3
+                text-3xl
+                font-bold
+                outline-none
+                focus:ring-2
+                focus:ring-blue-500
+              "
               />
+
             ) : (
-              <p className="text-gray-600">{profile.description}</p>
+
+              <>
+
+                <h2 className="text-4xl font-bold">
+                  {profile.company_name}
+                </h2>
+
+                <p className="mt-2 text-gray-500 dark:text-gray-400">
+                  Recruiter Organization
+                </p>
+
+              </>
+
             )}
+
           </div>
+
         </div>
+
+        {/* ================= Information ================= */}
+
+        <div className="grid lg:grid-cols-2 gap-6 mt-10">
+
+          {/* Website */}
+
+          <div className="space-y-2">
+
+            <label className="font-semibold">
+              Website
+            </label>
+
+            {editMode ? (
+
+              <input
+                name="website"
+                value={profile.website}
+                onChange={handleChange}
+                className="
+                w-full
+                rounded-xl
+                border
+                border-gray-300
+                dark:border-gray-700
+                bg-gray-50
+                dark:bg-gray-800
+                p-3
+                outline-none
+                focus:ring-2
+                focus:ring-blue-500
+              "
+              />
+
+            ) : (
+
+              <div className="flex items-center gap-3 rounded-xl bg-gray-100 dark:bg-gray-800 p-4">
+
+                <Globe className="text-blue-500" size={20} />
+
+                <span>{profile.website || "-"}</span>
+
+              </div>
+
+            )}
+
+          </div>
+
+          {/* Industry */}
+
+          <div className="space-y-2">
+
+            <label className="font-semibold">
+              Industry
+            </label>
+
+            {editMode ? (
+
+              <input
+                name="industry"
+                value={profile.industry}
+                onChange={handleChange}
+                className="
+                w-full
+                rounded-xl
+                border
+                border-gray-300
+                dark:border-gray-700
+                bg-gray-50
+                dark:bg-gray-800
+                p-3
+                outline-none
+                focus:ring-2
+                focus:ring-blue-500
+              "
+              />
+
+            ) : (
+
+              <div className="flex items-center gap-3 rounded-xl bg-gray-100 dark:bg-gray-800 p-4">
+
+                <Briefcase className="text-blue-500" size={20} />
+
+                <span>{profile.industry || "-"}</span>
+
+              </div>
+
+            )}
+
+          </div>
+
+          {/* Company Size */}
+
+          <div className="space-y-2">
+
+            <label className="font-semibold">
+              Company Size
+            </label>
+
+            {editMode ? (
+
+              <input
+                type="number"
+                name="company_size"
+                value={profile.company_size}
+                onChange={handleChange}
+                className="
+                w-full
+                rounded-xl
+                border
+                border-gray-300
+                dark:border-gray-700
+                bg-gray-50
+                dark:bg-gray-800
+                p-3
+                outline-none
+                focus:ring-2
+                focus:ring-blue-500
+              "
+              />
+
+            ) : (
+
+              <div className="flex items-center gap-3 rounded-xl bg-gray-100 dark:bg-gray-800 p-4">
+
+                <Users className="text-blue-500" size={20} />
+
+                <span>{profile.company_size} Employees</span>
+
+              </div>
+
+            )}
+
+          </div>
+
+          {/* Logo */}
+
+          {editMode && (
+
+            <div className="space-y-2">
+
+              <label className="font-semibold">
+                Logo URL
+              </label>
+
+              <input
+                name="logo_url"
+                value={profile.logo_url}
+                onChange={handleChange}
+                className="
+                w-full
+                rounded-xl
+                border
+                border-gray-300
+                dark:border-gray-700
+                bg-gray-50
+                dark:bg-gray-800
+                p-3
+                outline-none
+                focus:ring-2
+                focus:ring-blue-500
+              "
+              />
+
+            </div>
+
+          )}
+
+        </div>
+
+        {/* Description */}
+
+        <div className="mt-8">
+
+          <label className="font-semibold block mb-3">
+            Company Description
+          </label>
+
+          {editMode ? (
+
+            <textarea
+              rows={6}
+              name="description"
+              value={profile.description}
+              onChange={handleChange}
+              className="
+              w-full
+              rounded-2xl
+              border
+              border-gray-300
+              dark:border-gray-700
+              bg-gray-50
+              dark:bg-gray-800
+              p-4
+              outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
+            />
+
+          ) : (
+
+            <div
+              className="
+              rounded-2xl
+              bg-gray-100
+              dark:bg-gray-800
+              p-5
+              leading-7
+              text-gray-700
+              dark:text-gray-300
+            "
+            >
+              {profile.description || "No company description added."}
+            </div>
+
+          )}
+
+        </div>
+
       </div>
+
     </div>
+
+  </div>
+
+</div>
   );
 }

@@ -95,6 +95,9 @@ export const updateAssessment = async (
 ) => {
   const supabase = getSupabase(token);
 
+
+
+
   return supabase
     .from("assessments")
     .update(payload)
@@ -547,13 +550,19 @@ export const publishAssessment = async (
 
   const { data: assessment } = await supabase
     .from("assessments")
-    .select("is_published")
+    .select("*")
     .eq("id", assessmentId)
     .single();
 
   if (assessment?.is_published) {
     throw new Error("Assessment already published");
   }
+
+  if(assessment?.total_marks<=assessment?.passing_score)
+  {
+    throw new Error("passing score is less than total marks");
+  }
+  
 
   const { data, error } = await supabase
     .from("assessments")
@@ -567,6 +576,9 @@ export const publishAssessment = async (
   if (error) throw error;
 
   return data;
+
+
+  
 };
 
 //to get all assments for the candidates

@@ -1,8 +1,8 @@
-import  * as resultSerivces from "./result.services.js"
-import { Request,Response } from "express";
+import * as resultSerivces from "./result.services.js";
+import { Request, Response } from "express";
 export const getAssessmentResultsController = async (
   req: Request<{ assessmentId: string }>,
-  res: Response
+  res: Response,
 ) => {
   try {
     const token = req.accessToken;
@@ -16,11 +16,10 @@ export const getAssessmentResultsController = async (
 
     const { assessmentId } = req.params;
 
-    const results =
-      await resultSerivces.getAssessmentResults(
-        assessmentId,
-        token
-      );
+    const results = await resultSerivces.getAssessmentResults(
+      assessmentId,
+      token,
+    );
 
     return res.status(200).json({
       data: results,
@@ -33,7 +32,6 @@ export const getAssessmentResultsController = async (
     });
   }
 };
-
 
 export const getJobAssessmentResultsController = async (
   req: Request<{ jobId: string }>,
@@ -50,15 +48,46 @@ export const getJobAssessmentResultsController = async (
     }
 
     const { jobId } = req.params;
+    console.log("job id", jobId);
+    const results = await resultSerivces.getJobAssessmentResults(jobId, token);
 
-    const results =
-      await resultSerivces.getJobAssessmentResults(
-        jobId,
+    return res.status(200).json({
+      data: results,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+
+export const getAttemptDetailsController = async (
+  req: Request<{ attemptId: string }>,
+  res: Response,
+) => {
+  try {
+    const { attemptId } = req.params;
+
+    const token = req.accessToken;
+
+    if (!token) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const data =
+      await resultSerivces.getAttemptDetails(
+        attemptId,
         token,
       );
 
     return res.status(200).json({
-      data: results,
+      data,
     });
   } catch (error) {
     console.error(error);
