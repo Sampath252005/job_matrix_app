@@ -2,23 +2,56 @@
 
 import { useState } from "react";
 import toast from "react-hot-toast";
+import {
+  ArrowUpRight,
+  Briefcase,
+  CalendarDays,
+  Clock3,
+  MapPin,
+  Wallet,
+  X,
+} from "lucide-react";
 
 import {
   getApplicationDetails,
   withdrawApplication,
 } from "@/services/application.services";
 
+type ApplicationStatus = "PENDING" | "ACCEPTED" | "REJECTED";
+
+interface ApplicationJob {
+  id?: string;
+  title: string;
+  location: string;
+  salary: string;
+  type: string;
+  description?: string;
+}
+
+interface CandidateApplication {
+  id: string;
+  status: ApplicationStatus;
+  applied_at: string;
+  jobs: ApplicationJob;
+}
+
 interface Props {
-  application: any;
+  application: CandidateApplication;
   reload: () => void;
 }
+
+type ApplicationDetails = CandidateApplication & {
+  jobs: CandidateApplication["jobs"] & {
+    description?: string;
+  };
+};
 
 export default function CandidateApplicationCard({
   application,
   reload,
 }: Props) {
   const [showDetails, setShowDetails] = useState(false);
-  const [details, setDetails] = useState<any>(null);
+  const [details, setDetails] = useState<ApplicationDetails | null>(null);
 
   const handleViewDetails = async () => {
     try {
@@ -37,170 +70,238 @@ export default function CandidateApplicationCard({
 
       toast.success("Application withdrawn");
       reload();
-    } catch (error) {
+    } catch {
       toast.error("Failed to withdraw");
     }
   };
 
-  const statusColor = {
+  const statusColor: Record<CandidateApplication["status"], string> = {
     PENDING:
-      "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300",
+      "bg-amber-50 text-amber-700 ring-amber-100 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-900/60",
     ACCEPTED:
-      "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300",
+      "bg-emerald-50 text-emerald-700 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900/60",
     REJECTED:
-      "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300",
+      "bg-red-50 text-red-700 ring-red-100 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900/60",
   };
+
+  const appliedDate = new Date(application.applied_at).toLocaleDateString(
+    undefined,
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    },
+  );
 
   return (
     <>
-      <div
+      <article
         className="
-        bg-white
-        dark:bg-zinc-900
-        border
-        border-gray-200
-        dark:border-zinc-800
+        group
+        relative
+        overflow-hidden
         rounded-2xl
-        p-6
-        shadow-sm
+        border
+        border-slate-200
+        bg-white/90
+        p-5
+        shadow-[0_1px_2px_rgba(15,23,42,0.06)]
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:border-blue-200
+        hover:shadow-[0_18px_45px_rgba(37,99,235,0.12)]
+        dark:border-slate-800
+        dark:bg-slate-950/80
+        dark:hover:border-blue-900/70
+        sm:p-6
         "
       >
-        <div className="flex justify-between">
-          <div>
-            <h2 className="text-xl font-bold">
-              {application.jobs.title}
-            </h2>
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+        <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-blue-500/10 blur-3xl transition group-hover:bg-blue-500/20" />
 
-            <p className="text-gray-500">
-              📍 {application.jobs.location}
-            </p>
+        <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex min-w-0 items-start gap-4">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-lg font-bold text-white shadow-lg shadow-blue-600/20">
+              {application.jobs.title.charAt(0).toUpperCase()}
+            </div>
+
+            <div className="min-w-0">
+              <h2 className="line-clamp-2 text-lg font-bold text-slate-950 dark:text-white sm:text-xl">
+                {application.jobs.title}
+              </h2>
+
+              <p className="mt-2 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <MapPin size={16} className="shrink-0 text-blue-500" />
+                <span className="truncate">
+                  {application.jobs.location || "Location not specified"}
+                </span>
+              </p>
+            </div>
           </div>
 
           <span
             className={`
-              px-3 py-1 rounded-full text-sm
-              ${statusColor[
-                application.status as keyof typeof statusColor
-              ]}
+              inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold ring-1
+              ${statusColor[application.status]}
             `}
           >
+            <Clock3 size={14} />
             {application.status}
           </span>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4 mt-5">
-          <div>
-            <p className="text-sm text-gray-500">Salary</p>
-            <p>{application.jobs.salary}</p>
+        <div className="my-5 border-t border-slate-100 dark:border-slate-800" />
+
+        <div className="grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/70">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase text-slate-500">
+              <Wallet size={14} className="text-emerald-500" />
+              Salary
+            </p>
+            <p className="mt-2 font-bold text-emerald-600 dark:text-emerald-400">
+              {application.jobs.salary || "Not disclosed"}
+            </p>
           </div>
 
-          <div>
-            <p className="text-sm text-gray-500">Job Type</p>
-            <p>{application.jobs.type}</p>
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/70">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase text-slate-500">
+              <Briefcase size={14} className="text-indigo-500" />
+              Job Type
+            </p>
+            <p className="mt-2 font-bold text-slate-900 dark:text-white">
+              {application.jobs.type || "Not specified"}
+            </p>
           </div>
 
-          <div>
-            <p className="text-sm text-gray-500">Applied On</p>
-            <p>
-              {new Date(
-                application.applied_at
-              ).toLocaleDateString()}
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/70">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase text-slate-500">
+              <CalendarDays size={14} className="text-blue-500" />
+              Applied On
+            </p>
+            <p className="mt-2 font-bold text-slate-900 dark:text-white">
+              {appliedDate}
             </p>
           </div>
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
           <button
             onClick={handleViewDetails}
             className="
-            px-4 py-2
-            rounded-lg
-            bg-blue-600
+            inline-flex
+            items-center
+            justify-center
+            gap-2
+            rounded-xl
+            bg-gradient-to-r
+            from-blue-600
+            to-indigo-600
+            px-5
+            py-3
+            text-sm
+            font-bold
             text-white
+            shadow-lg
+            shadow-blue-600/20
+            transition-all
+            hover:-translate-y-0.5
+            hover:shadow-xl
             "
           >
+            <ArrowUpRight size={17} />
             View Details
           </button>
 
           <button
             onClick={handleWithdraw}
             className="
-            px-4 py-2
-            rounded-lg
-            bg-red-600
-            text-white
+            inline-flex
+            items-center
+            justify-center
+            rounded-xl
+            border
+            border-red-200
+            px-5
+            py-3
+            text-sm
+            font-bold
+            text-red-600
+            transition
+            hover:bg-red-50
+            dark:border-red-900/70
+            dark:text-red-300
+            dark:hover:bg-red-950/40
             "
           >
             Withdraw
           </button>
         </div>
-      </div>
+      </article>
 
       {showDetails && details && (
-        <div
-          className="
-          fixed inset-0
-          bg-black/50
-          flex items-center justify-center
-          z-50
-          "
-        >
-          <div
-            className="
-            bg-white
-            dark:bg-zinc-900
-            p-8
-            rounded-2xl
-            max-w-2xl
-            w-full
-            mx-4
-            "
-          >
-            <h2 className="text-2xl font-bold mb-4">
-              {details.jobs.title}
-            </h2>
-
-            <div className="space-y-3">
-              <p>
-                <strong>Location:</strong>{" "}
-                {details.jobs.location}
-              </p>
-
-              <p>
-                <strong>Type:</strong>{" "}
-                {details.jobs.type}
-              </p>
-
-              <p>
-                <strong>Salary:</strong>{" "}
-                {details.jobs.salary}
-              </p>
-
-              <p>
-                <strong>Status:</strong>{" "}
-                {details.status}
-              </p>
-
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6">
+          <div className="max-h-[92vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950">
+            <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white/95 px-5 py-5 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 sm:px-6">
               <div>
-                <strong>Description:</strong>
-                <p className="mt-2 text-gray-600 dark:text-gray-300">
-                  {details.jobs.description}
+                <span
+                  className={`
+                    inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold ring-1
+                    ${statusColor[details.status]}
+                  `}
+                >
+                  <Clock3 size={14} />
+                  {details.status}
+                </span>
+
+                <h2 className="mt-3 text-2xl font-black text-slate-950 dark:text-white">
+                  {details.jobs.title}
+                </h2>
+              </div>
+
+              <button
+                onClick={() => setShowDetails(false)}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+                aria-label="Close application details"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-5 overflow-y-auto px-5 py-6 sm:px-6">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-xl bg-slate-50 p-4 dark:bg-slate-900/70">
+                  <p className="text-xs font-semibold uppercase text-slate-500">
+                    Location
+                  </p>
+                  <p className="mt-2 font-bold">{details.jobs.location}</p>
+                </div>
+
+                <div className="rounded-xl bg-slate-50 p-4 dark:bg-slate-900/70">
+                  <p className="text-xs font-semibold uppercase text-slate-500">
+                    Type
+                  </p>
+                  <p className="mt-2 font-bold">{details.jobs.type}</p>
+                </div>
+
+                <div className="rounded-xl bg-slate-50 p-4 dark:bg-slate-900/70">
+                  <p className="text-xs font-semibold uppercase text-slate-500">
+                    Salary
+                  </p>
+                  <p className="mt-2 font-bold">{details.jobs.salary}</p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 p-5 dark:border-slate-800">
+                <h3 className="text-lg font-bold text-slate-950 dark:text-white">
+                  Job Description
+                </h3>
+
+                <p className="mt-3 whitespace-pre-line leading-7 text-slate-600 dark:text-slate-300">
+                  {details.jobs.description || "No description available."}
                 </p>
               </div>
             </div>
-
-            <button
-              onClick={() => setShowDetails(false)}
-              className="
-              mt-6
-              px-4 py-2
-              bg-gray-700
-              text-white
-              rounded-lg
-              "
-            >
-              Close
-            </button>
           </div>
         </div>
       )}

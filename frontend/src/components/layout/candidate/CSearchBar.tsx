@@ -1,146 +1,112 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Bell, ChevronDown, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-type CSearchBarProps = {
-  onMenuClick?: () => void;
-};
 
 const name = "Sampath";
 
-export default function CSearchBar({
-  onMenuClick,
-}: CSearchBarProps) {
-  const [mounted, setMounted] =
-    useState(false);
-
-  const [openProfile, setOpenProfile] =
-    useState(false);
+export default function CSearchBar() {
+  const [openProfile, setOpenProfile] = useState(false);
 
   const router = useRouter();
 
-  const dropdownRef =
-    useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (
-      event: MouseEvent,
-    ) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(
-          event.target as Node,
-        )
+        !dropdownRef.current.contains(event.target as Node)
       ) {
         setOpenProfile(false);
       }
     };
 
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside,
-    );
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside,
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (!mounted) return null;
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
 
-  const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 18) return "Good Afternoon";
+    return "Good Evening";
+  }, []);
 
-  let greeting = "Hello";
-
-  if (hour < 12)
-    greeting = "Good Morning ☀️";
-  else if (hour < 18)
-    greeting = "Good Afternoon 🌤";
-  else greeting = "Good Evening 🌙";
-
-  const initial =
-    name.charAt(0).toUpperCase();
+  const initial = name.charAt(0).toUpperCase();
 
   return (
-    <header
-      className="
-      w-full
-      flex
-      justify-between
-      items-center
-      px-6
-      py-4
-      bg-white
-      dark:bg-gray-900
-      border-b
-      border-gray-200
-      dark:border-gray-800
-      "
-    >
-      {/* Greeting */}
-
-      <div className="flex flex-col">
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+    <div className="flex w-full items-center justify-between gap-3">
+      <div className="min-w-0">
+        <h1 className="truncate text-base font-bold text-slate-950 dark:text-white sm:text-lg">
           {greeting}
         </h1>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Explore jobs and track your
-          applications.
+        <p className="hidden text-sm text-slate-500 dark:text-slate-400 sm:block">
+          Explore jobs, assessments, and applications from one place.
         </p>
       </div>
 
-      {/* Profile */}
+      <div className="hidden min-w-0 flex-1 justify-center px-4 md:flex">
+        <label className="flex w-full max-w-xl items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-500 transition focus-within:border-blue-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-100 dark:border-slate-800 dark:bg-slate-900 dark:focus-within:border-blue-900 dark:focus-within:bg-slate-950 dark:focus-within:ring-blue-950/60">
+          <Search size={18} />
+          <input
+            placeholder="Search jobs, companies, applications"
+            className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
+          />
+        </label>
+      </div>
 
-      <div
-        ref={dropdownRef}
-        className="relative"
-      >
+      <div className="flex items-center gap-2">
         <button
-          onClick={() =>
-            setOpenProfile(
-              !openProfile,
-            )
-          }
-          className="
+          type="button"
+          className="hidden rounded-full border border-slate-200 bg-white p-2.5 text-slate-600 transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 sm:inline-flex"
+          aria-label="Notifications"
+        >
+          <Bell size={18} />
+        </button>
+
+        <div ref={dropdownRef} className="relative">
+          <button
+            onClick={() => setOpenProfile(!openProfile)}
+            className="
           flex items-center gap-3
-          px-3 py-2
+          px-2 py-2 sm:px-3
           rounded-full
           transition
-          hover:bg-gray-100
-          dark:hover:bg-gray-800
+          border border-transparent
+          hover:border-slate-200
+          hover:bg-slate-50
+          dark:hover:border-slate-800
+          dark:hover:bg-slate-900
           "
-        >
-          <div
-            className="
+          >
+            <div
+              className="
             w-9 h-9
             flex items-center justify-center
             rounded-full
             bg-gradient-to-r
-            from-green-500
-            to-emerald-600
+            from-blue-600
+            to-cyan-500
             text-white
             font-semibold
             "
-          >
-            {initial}
-          </div>
+            >
+              {initial}
+            </div>
 
-          <span className="hidden md:block font-medium text-gray-800 dark:text-gray-200">
-            {name}
-          </span>
+            <span className="hidden font-medium text-slate-800 dark:text-slate-200 md:block">
+              {name}
+            </span>
 
-          <ChevronDown
-            size={18}
-            className={`
+            <ChevronDown
+              size={18}
+              className={`
               transition-transform
               ${
                 openProfile
@@ -148,68 +114,66 @@ export default function CSearchBar({
                   : ""
               }
             `}
-          />
-        </button>
+            />
+          </button>
 
-        {/* Dropdown */}
+          {/* Dropdown */}
 
-        <div
-          className={`
-          absolute right-0 mt-3 w-48
-          bg-white dark:bg-gray-800
-          border border-gray-200 dark:border-gray-700
-          rounded-xl shadow-lg
+          <div
+            className={`
+          absolute right-0 mt-3 w-52
+          bg-white dark:bg-slate-900
+          border border-slate-200 dark:border-slate-800
+          rounded-2xl shadow-xl
           overflow-hidden
           transition-all
+          origin-top-right
           ${
             openProfile
               ? "opacity-100 scale-100"
               : "opacity-0 scale-95 pointer-events-none"
           }
           `}
-        >
-          <button
-            className="
-            w-full text-left
-            px-4 py-2 text-sm
-            hover:bg-gray-100
-            dark:hover:bg-gray-700
-            "
-            onClick={() =>
-              router.push(
-                "/candidate/profile",
-              )
-            }
           >
-            Open Profile
-          </button>
-
-          <button
-            className="
+            <button
+              className="
             w-full text-left
-            px-4 py-2 text-sm
-            hover:bg-gray-100
-            dark:hover:bg-gray-700
+            px-4 py-3 text-sm
+            hover:bg-slate-100
+            dark:hover:bg-slate-800
             "
-          >
-            Settings
-          </button>
+              onClick={() => router.push("/candidate/profile")}
+            >
+              Open Profile
+            </button>
 
-          <div className="border-t border-gray-200 dark:border-gray-700" />
-
-          <button
-            className="
+            <button
+              className="
             w-full text-left
-            px-4 py-2 text-sm
+            px-4 py-3 text-sm
+            hover:bg-slate-100
+            dark:hover:bg-slate-800
+            "
+            >
+              Settings
+            </button>
+
+            <div className="border-t border-slate-200 dark:border-slate-800" />
+
+            <button
+              className="
+            w-full text-left
+            px-4 py-3 text-sm
             text-red-500
             hover:bg-red-50
-            dark:hover:bg-red-900/40
+            dark:hover:bg-red-950/40
             "
-          >
-            Log Out
-          </button>
+            >
+              Log Out
+            </button>
+          </div>
         </div>
       </div>
-    </header>
+    </div>
   );
 }

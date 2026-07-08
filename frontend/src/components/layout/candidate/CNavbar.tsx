@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTheme } from "next-themes";
 import Ntabs from "@/components/ui/Ntabs";
 
@@ -57,31 +57,19 @@ export default function CNavbar({
 }: CNavbarProps) {
   const { theme, setTheme } = useTheme();
 
-  const [mounted, setMounted] =
-    useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
   return (
     <aside
       className="
-      w-72
-      min-h-screen
+      h-full
+      w-full
       flex
       flex-col
       justify-between
-      border-r
-      border-gray-200
-      dark:border-gray-800
-      bg-white/90
-      dark:bg-gray-950
+      bg-white/95
+      dark:bg-slate-950/95
       backdrop-blur-xl
-      px-6
-      py-6
+      px-5
+      py-5
       "
     >
       {/* ================= TOP ================= */}
@@ -90,20 +78,21 @@ export default function CNavbar({
 
         {/* Logo */}
 
-        <div className="flex items-center gap-4 mb-12">
+        <div className="mb-10 flex items-center gap-3">
 
           <div
             className="
-            w-12
-            h-12
-            rounded-2xl
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-xl
             bg-gradient-to-br
             from-blue-600
             to-indigo-600
-            flex
-            items-center
-            justify-center
             shadow-lg
+            shadow-blue-600/20
             "
           >
             <BriefcaseBusiness
@@ -114,11 +103,11 @@ export default function CNavbar({
 
           <div>
 
-            <h2 className="font-bold text-xl">
+            <h2 className="text-lg font-black tracking-tight text-slate-950 dark:text-white">
               Job Matrix
             </h2>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Candidate Portal
             </p>
 
@@ -137,6 +126,7 @@ export default function CNavbar({
               name={nav.name}
               icon={<nav.icon size={20} />}
               link={nav.link}
+              onClick={onClose}
             />
 
           ))}
@@ -147,11 +137,11 @@ export default function CNavbar({
 
       {/* ================= BOTTOM ================= */}
 
-      <div className="space-y-6">
+      <div className="space-y-5">
 
         {/* Theme */}
 
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-2">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-1.5 dark:border-slate-800 dark:bg-slate-900/70">
 
           <div className="grid grid-cols-2 gap-2">
 
@@ -167,8 +157,8 @@ export default function CNavbar({
               transition
               ${
                 theme === "light"
-                  ? "bg-white shadow text-gray-900"
-                  : "text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800"
+                  ? "bg-white shadow-sm text-slate-950"
+                  : "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800"
               }
               `}
             >
@@ -189,7 +179,7 @@ export default function CNavbar({
               ${
                 theme === "dark"
                   ? "bg-blue-600 text-white shadow"
-                  : "text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800"
+                  : "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800"
               }
               `}
             >
@@ -205,16 +195,18 @@ export default function CNavbar({
 
         <div
           className="
-          rounded-2xl
+          rounded-xl
           border
-          border-gray-200
-          dark:border-gray-800
+          border-blue-100
           bg-gradient-to-br
           from-blue-50
-          to-indigo-50
-          dark:from-gray-900
-          dark:to-gray-800
+          via-white
+          to-cyan-50
           p-4
+          dark:border-blue-950/70
+          dark:from-slate-900
+          dark:via-slate-900
+          dark:to-blue-950/40
           "
         >
 
@@ -222,8 +214,8 @@ export default function CNavbar({
 
             <div
               className="
-              w-12
-              h-12
+              h-11
+              w-11
               rounded-full
               bg-gradient-to-r
               from-blue-600
@@ -240,12 +232,12 @@ export default function CNavbar({
 
             <div>
 
-              <h3 className="font-semibold">
+              <h3 className="font-semibold text-slate-950 dark:text-white">
                 Candidate
               </h3>
 
-              <p className="text-sm text-gray-500">
-                Ready to get hired 🚀
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Ready to get hired
               </p>
 
             </div>
@@ -256,14 +248,14 @@ export default function CNavbar({
 
         {/* Footer */}
 
-        <div className="border-t border-gray-200 dark:border-gray-800 pt-5">
+        <div className="border-t border-slate-200 pt-4 dark:border-slate-800">
 
-          <p className="text-center text-xs text-gray-500">
+          <p className="text-center text-xs text-slate-500">
             © {new Date().getFullYear()} Job Matrix
           </p>
 
-          <p className="mt-1 text-center text-xs text-gray-400">
-            Built with ❤️ using Next.js
+          <p className="mt-1 text-center text-xs text-slate-400">
+            Built with Next.js
           </p>
 
         </div>

@@ -8,12 +8,14 @@ type NtabsProps = {
   icon: React.ReactNode;
   name: string;
   link: string;
+  onClick?: () => void;
 };
 
 export default function Ntabs({
   icon,
   name,
   link,
+  onClick,
 }: NtabsProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -24,7 +26,10 @@ export default function Ntabs({
 
   return (
     <button
-      onClick={() => router.push(link)}
+      onClick={() => {
+        router.push(link);
+        onClick?.();
+      }}
       className={`
         group
         relative
@@ -32,15 +37,15 @@ export default function Ntabs({
         flex
         items-center
         justify-between
-        rounded-2xl
+        rounded-xl
         px-4
         py-3
         transition-all
         duration-300
         ${
           active
-            ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
-            : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/20"
+            : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
         }
       `}
     >
@@ -55,12 +60,12 @@ export default function Ntabs({
             w-10
             items-center
             justify-center
-            rounded-xl
+            rounded-lg
             transition
             ${
               active
                 ? "bg-white/20"
-                : "bg-gray-100 dark:bg-gray-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30"
+                : "bg-slate-100 dark:bg-slate-900 group-hover:bg-blue-100 dark:group-hover:bg-blue-950/60"
             }
           `}
         >
