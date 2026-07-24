@@ -74,6 +74,33 @@ export const updateStatusService = async (applicationId, recruiter_id, status, t
         throw error;
     return data;
 };
+export const getShortListedApplication = async (jobId, token) => {
+    const supabase = getSupabase(token);
+    return await supabase
+        .from("applications")
+        .select(`
+  id,
+  status,
+  applied_at,
+  users!applications_candidate_id_fkey (
+    id,
+    name,
+    email,
+    candidate_profiles (
+      education,
+      college,
+      degree,
+      branch,
+      skills,
+      resume_url,
+      portfolio_url,
+      location
+    )
+  )
+`)
+        .eq("job_id", jobId)
+        .eq("status", "SHORTLISTED");
+};
 //------------------------------------------------------candidate side application services--------------------------------//
 export const applyToJobServices = async (jobId, candidateId, token) => {
     const supabase = getSupabase(token);

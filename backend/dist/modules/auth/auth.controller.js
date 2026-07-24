@@ -76,4 +76,16 @@ export const login = async (req, res) => {
         return res.status(500).json({ error: err.message });
     }
 };
+// logout user ------------------------------------------------------------------
+export const logout = (_req, res) => {
+    const cookieOptions = {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+    };
+    res.clearCookie("access_token", cookieOptions);
+    res.clearCookie("refresh_token", cookieOptions);
+    return res.status(200).json({ message: "Logout successful" });
+};
 //# sourceMappingURL=auth.controller.js.map

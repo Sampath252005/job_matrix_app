@@ -18,6 +18,7 @@ import {
   Rocket,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { toastApiWarning } from "@/lib/toast";
 import {
   createAssessment,
   getAssessmentByJob,
@@ -65,7 +66,7 @@ export default function AssessmentPage() {
   const handlePublish = async () => {
     if (!assessment) return;
     try {
-      const res = await publishAssessment(assessment.id);
+      await publishAssessment(assessment.id);
       toast.success("Assessment published");
       fetchAssessment();
     } catch (error: any) {
@@ -102,6 +103,7 @@ export default function AssessmentPage() {
       }
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to load assessment");
     } finally {
       setLoading(false);
     }
@@ -121,12 +123,12 @@ export default function AssessmentPage() {
         status,
       });
 
-      alert("Assessment updated successfully");
+      toast.success("Assessment updated successfully");
 
       fetchAssessment();
     } catch (error) {
       console.error(error);
-      alert("Failed to update assessment");
+      toastApiWarning(error, "Failed to update assessment");
     }
   };
   const handleCreateAssessment = async () => {
@@ -141,10 +143,10 @@ export default function AssessmentPage() {
 
       setAssessment(res.data);
 
-      alert("Assessment created successfully");
+      toast.success("Assessment created successfully");
     } catch (error) {
       console.error(error);
-      alert("Failed to create assessment");
+      toastApiWarning(error, "Failed to create assessment");
     }
   };
 
@@ -157,8 +159,8 @@ export default function AssessmentPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">Assessment Management</h1>
+    <div className="mx-auto max-w-5xl p-3 sm:p-5 lg:p-8">
+      <h1 className="mb-6 text-2xl font-bold sm:text-3xl">Assessment Management</h1>
 
       {assessment ? (
         <div
@@ -175,12 +177,15 @@ export default function AssessmentPage() {
         >
           {/* Header */}
 
-          <div className="border-b border-gray-200 dark:border-gray-800 p-8">
-            <div className="flex items-center gap-5">
+          <div className="border-b border-gray-200 p-4 dark:border-gray-800 sm:p-6 lg:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
               <div
                 className="
-          h-16
-          w-16
+          h-14
+          w-14
+          shrink-0
+          sm:h-16
+          sm:w-16
           rounded-2xl
           bg-gradient-to-br
           from-blue-600
@@ -195,7 +200,7 @@ export default function AssessmentPage() {
               </div>
 
               <div>
-                <h2 className="text-3xl font-bold">Assessment Settings</h2>
+                <h2 className="text-2xl font-bold sm:text-3xl">Assessment Settings</h2>
 
                 <p className="text-gray-500 mt-1">
                   Configure assessment information, schedule, scoring and
@@ -207,7 +212,7 @@ export default function AssessmentPage() {
 
           {/* Form */}
 
-          <div className="p-8 space-y-8">
+          <div className="space-y-8 p-4 sm:p-6 lg:p-8">
             {/* Basic Information */}
 
             <div>
@@ -254,7 +259,7 @@ export default function AssessmentPage() {
                 Assessment Configuration
               </h3>
 
-              <div className="grid lg:grid-cols-2 gap-6">
+              <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
                 <div>
                   <label className="block mb-2 font-medium">Duration</label>
 
@@ -344,12 +349,13 @@ export default function AssessmentPage() {
 
             {/* Footer Buttons */}
 
-            <div className="border-t border-gray-200 dark:border-gray-800 pt-8 flex flex-wrap gap-4">
+            <div className="grid gap-3 border-t border-gray-200 pt-8 dark:border-gray-800 sm:grid-cols-2 lg:flex lg:flex-wrap lg:gap-4">
               <button
                 onClick={handleSaveSettings}
                 className="
           inline-flex
           items-center
+          justify-center
           gap-2
           rounded-xl
           bg-gradient-to-r
@@ -374,6 +380,7 @@ export default function AssessmentPage() {
                 className="
           inline-flex
           items-center
+          justify-center
           gap-2
           rounded-xl
           bg-gradient-to-r
@@ -396,6 +403,7 @@ export default function AssessmentPage() {
                 className="
           inline-flex
           items-center
+          justify-center
           gap-2
           rounded-xl
           bg-gradient-to-r
@@ -417,6 +425,7 @@ export default function AssessmentPage() {
                 className="
           inline-flex
           items-center
+          justify-center
           gap-2
           rounded-xl
           border
@@ -456,10 +465,12 @@ export default function AssessmentPage() {
       border-b
       border-gray-200
       dark:border-gray-800
-      p-8
+      p-4
+      sm:p-6
+      lg:p-8
     "
           >
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <div
                 className="
           h-14
@@ -478,7 +489,7 @@ export default function AssessmentPage() {
               </div>
 
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
                   Create Assessment
                 </h2>
 
@@ -491,7 +502,7 @@ export default function AssessmentPage() {
 
           {/* Form */}
 
-          <div className="p-8 space-y-7">
+          <div className="space-y-7 p-4 sm:p-6 lg:p-8">
             {/* Title */}
 
             <div>
@@ -568,7 +579,7 @@ export default function AssessmentPage() {
 
             {/* Duration + Passing Score */}
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-5 md:grid-cols-2 lg:gap-6">
               <div>
                 <label className="block mb-2 font-medium">
                   Duration (Minutes)

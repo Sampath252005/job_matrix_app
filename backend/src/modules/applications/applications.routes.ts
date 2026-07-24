@@ -20,6 +20,13 @@ router.get(
   getApplicationsByJob,
 );
 
+router.get(
+  "/job/:jobId/shortlisted",
+  protect,
+  allowRoles("ADMIN", "RECRUITER"),
+  getApplicationsByJob,
+);
+
 // Update application status
 router.patch(
   "/:applicationId/status",

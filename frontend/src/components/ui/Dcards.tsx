@@ -15,10 +15,11 @@ const Dcards = ({ count, title, icon }: DCardProps) => {
       w-full
       p-5
       rounded-xl
-      bg-white dark:bg-gray-900
-      border border-gray-200 dark:border-gray-800
-      shadow-sm
-      hover:shadow-lg
+      bg-white/90 dark:bg-gray-900
+      border border-slate-200/80 dark:border-gray-800
+      shadow-sm shadow-slate-200/70
+      hover:shadow-lg hover:shadow-blue-100/70
+      dark:shadow-none dark:hover:shadow-none
       transition-all duration-300
       hover:-translate-y-1
       cursor-pointer
@@ -26,7 +27,7 @@ const Dcards = ({ count, title, icon }: DCardProps) => {
     >
       {/* Top Section */}
 
-      <div className="flex items-start justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
+      <div className="flex items-start justify-between pb-4 border-b border-slate-200/80 dark:border-gray-800">
         <div className="flex flex-col gap-1">
           <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             {count}

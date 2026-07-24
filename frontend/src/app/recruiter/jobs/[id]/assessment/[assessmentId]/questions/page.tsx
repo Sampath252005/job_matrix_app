@@ -16,6 +16,8 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import toast from "react-hot-toast";
+import { toastApiWarning } from "@/lib/toast";
 
 import {
   getQuestions,
@@ -73,6 +75,7 @@ export default function QuestionsPage() {
       setQuestions(res.data || []);
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to load questions");
     } finally {
       setLoading(false);
     }
@@ -94,9 +97,11 @@ export default function QuestionsPage() {
 
       setShowForm(false);
 
+      toast.success("Question created successfully");
       fetchQuestions();
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to create question");
     }
   };
   const handleUpdateQuestion = async () => {
@@ -120,9 +125,11 @@ export default function QuestionsPage() {
         difficulty: "EASY",
       });
 
+      toast.success("Question updated successfully");
       fetchQuestions();
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to update question");
     }
   };
 
@@ -130,28 +137,33 @@ export default function QuestionsPage() {
     try {
       await deleteQuestion(questionId);
 
+      toast.success("Question deleted successfully");
       fetchQuestions();
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to delete question");
     }
   };
 
   // const handleDeleteQuestions=async(questionId:string)
 
   if (loading) {
-    return <div className="p-8">Loading...</div>;
+    return <div className="p-4 sm:p-8">Loading...</div>;
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-8">
+    <div className="mx-auto max-w-6xl p-3 sm:p-5 lg:p-8">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-10">
         {/* Left */}
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <div
             className="
-        h-16
-        w-16
+        h-14
+        w-14
+        shrink-0
+        sm:h-16
+        sm:w-16
         rounded-2xl
         bg-gradient-to-br
         from-blue-600
@@ -167,7 +179,7 @@ export default function QuestionsPage() {
           </div>
 
           <div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white lg:text-4xl">
               Quiz Questions
             </h1>
 
@@ -202,6 +214,7 @@ export default function QuestionsPage() {
           onClick={() => setShowForm(!showForm)}
           className="
       inline-flex
+      w-full
       items-center
       justify-center
       gap-2
@@ -218,6 +231,7 @@ export default function QuestionsPage() {
       hover:scale-105
       transition-all
       duration-300
+      sm:w-auto
     "
         >
           <PlusCircle size={20} />
@@ -242,8 +256,8 @@ export default function QuestionsPage() {
         >
           {/* Header */}
 
-          <div className="border-b border-gray-200 dark:border-gray-800 p-6">
-            <div className="flex items-center gap-4">
+          <div className="border-b border-gray-200 p-4 dark:border-gray-800 sm:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <div
                 className="
           h-14
@@ -273,7 +287,7 @@ export default function QuestionsPage() {
 
           {/* Form */}
 
-          <div className="p-8 space-y-6">
+          <div className="space-y-6 p-4 sm:p-6 lg:p-8">
             {/* Question */}
 
             <div>
@@ -310,7 +324,7 @@ export default function QuestionsPage() {
             <div>
               <h3 className="font-semibold mb-4">Answer Options</h3>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid gap-4 md:grid-cols-2">
                 <input
                   value={form.option_a}
                   placeholder="Option A"
@@ -363,7 +377,7 @@ export default function QuestionsPage() {
 
             {/* Settings */}
 
-            <div className="grid lg:grid-cols-3 gap-5">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               <div>
                 <label className="block mb-2 font-medium">Correct Answer</label>
 
@@ -453,12 +467,14 @@ export default function QuestionsPage() {
 
             {/* Footer */}
 
-            <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-800">
+            <div className="flex border-t border-gray-200 pt-4 dark:border-gray-800 sm:justify-end">
               <button
                 onClick={handleCreateQuestion}
                 className="
           inline-flex
+          w-full
           items-center
+          justify-center
           gap-2
           rounded-xl
           bg-gradient-to-r
@@ -472,6 +488,7 @@ export default function QuestionsPage() {
           hover:scale-105
           hover:shadow-xl
           transition-all
+          sm:w-auto
         "
               >
                 <Save size={18} />
@@ -500,12 +517,12 @@ export default function QuestionsPage() {
         duration-300
       "
           >
-            <div className="p-7">
+            <div className="p-4 sm:p-6 lg:p-7">
               {/* Header */}
 
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="mb-3 flex items-start gap-3">
                     <span
                       className="
                   flex
@@ -524,7 +541,7 @@ export default function QuestionsPage() {
                       {index + 1}
                     </span>
 
-                    <h2 className="text-xl font-bold">{question.question}</h2>
+                    <h2 className="break-words text-lg font-bold sm:text-xl">{question.question}</h2>
                   </div>
                 </div>
 
@@ -570,7 +587,7 @@ export default function QuestionsPage() {
 
               {/* Options */}
 
-              <div className="grid md:grid-cols-2 gap-4 mt-6">
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
                 {[
                   ["A", question.option_a],
                   ["B", question.option_b],
@@ -649,7 +666,7 @@ export default function QuestionsPage() {
                   </span>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="grid gap-3 sm:grid-cols-2 md:flex">
                   <button
                     onClick={() => {
                       setEditingQuestionId(question.id);
@@ -669,6 +686,7 @@ export default function QuestionsPage() {
                     }}
                     className="
                 inline-flex
+                justify-center
                 items-center
                 gap-2
                 rounded-xl
@@ -697,6 +715,7 @@ export default function QuestionsPage() {
                     }}
                     className="
                 inline-flex
+                justify-center
                 items-center
                 gap-2
                 rounded-xl
@@ -750,8 +769,8 @@ export default function QuestionsPage() {
           >
             {/* Header */}
 
-            <div className="border-b border-gray-200 dark:border-gray-800 p-7">
-              <div className="flex items-center gap-4">
+            <div className="border-b border-gray-200 p-4 dark:border-gray-800 sm:p-6 lg:p-7">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 <div
                   className="
             h-14
@@ -770,7 +789,7 @@ export default function QuestionsPage() {
                 </div>
 
                 <div>
-                  <h2 className="text-3xl font-bold">Edit Question</h2>
+                  <h2 className="text-2xl font-bold sm:text-3xl">Edit Question</h2>
 
                   <p className="text-gray-500 dark:text-gray-400 mt-1">
                     Modify the question, options and grading details.
@@ -781,7 +800,7 @@ export default function QuestionsPage() {
 
             {/* Body */}
 
-            <div className="p-8 space-y-6">
+            <div className="max-h-[70dvh] space-y-6 overflow-y-auto p-4 sm:p-6 lg:p-8">
               {/* Question */}
 
               <div>
@@ -818,7 +837,7 @@ export default function QuestionsPage() {
               <div>
                 <h3 className="font-semibold mb-4">Answer Options</h3>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid gap-4 md:grid-cols-2">
                   <input
                     value={form.option_a}
                     placeholder="Option A"
@@ -859,7 +878,7 @@ export default function QuestionsPage() {
 
               {/* Settings */}
 
-              <div className="grid lg:grid-cols-3 gap-5">
+              <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 <div>
                   <label className="block mb-2 font-medium">
                     Correct Answer
@@ -956,16 +975,20 @@ export default function QuestionsPage() {
         border-t
         border-gray-200
         dark:border-gray-800
-        p-6
-        flex
-        justify-end
-        gap-4
+        p-4
+        sm:p-6
+        grid
+        gap-3
+        sm:flex
+        sm:justify-end
+        sm:gap-4
       "
             >
               <button
                 onClick={() => setIsEditModalOpen(false)}
                 className="
           inline-flex
+          justify-center
           items-center
           gap-2
           rounded-xl
@@ -991,6 +1014,7 @@ export default function QuestionsPage() {
                 }}
                 className="
           inline-flex
+          justify-center
           items-center
           gap-2
           rounded-xl

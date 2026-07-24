@@ -51,11 +51,12 @@ export default function Ntabs({
     >
       {/* Left Section */}
 
-      <div className="flex items-center gap-4">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
 
         <div
           className={`
             flex
+            shrink-0
             h-10
             w-10
             items-center
@@ -72,7 +73,7 @@ export default function Ntabs({
           {icon}
         </div>
 
-        <span className="font-medium">
+        <span className="truncate font-medium">
           {name}
         </span>
 
@@ -81,6 +82,7 @@ export default function Ntabs({
       <ChevronRight
         size={18}
         className={`
+          shrink-0
           transition-all
           duration-300
           ${

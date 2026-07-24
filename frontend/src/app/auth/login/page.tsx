@@ -5,6 +5,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { loginService } from "@/services/auth.services";
 import { Eye, EyeOff } from "lucide-react";
+import { toastApiWarning } from "@/lib/toast";
 
 type RegisterForm = {
   email: string;
@@ -54,12 +55,13 @@ const LoginPage = () => {
       );
     } catch (error: any) {
       console.log("LOGIN ERROR:", error.response?.data);
-      console.log(error.response.data.error);
+      console.log(error.response?.data?.error);
 
       const message =
         error.response?.data?.error || "Something went wrong while logging in";
 
       setApiError(message);
+      toastApiWarning(error, message);
     } finally {
       setLoading(false);
     }
@@ -113,7 +115,7 @@ const LoginPage = () => {
         <div className="p-8 md:p-12">
           <button
             type="button"
-            onClick={() => router.push("/register")}
+            onClick={() => router.push("/auth/register")}
             className="mb-8 text-blue-600 hover:text-blue-700 font-semibold"
           >
             ← Create New Account

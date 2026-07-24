@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Dcards from "@/components/ui/Dcards";
 import { DashboardRecruiterService } from "@/services/dashboard.services";
+import { toastApiWarning } from "@/lib/toast";
 
 import {
   Briefcase,
@@ -46,6 +47,7 @@ export default function Page() {
         const data = await DashboardRecruiterService();
         setStats(data);
       } catch (error) {
+        toastApiWarning(error, "Please login to view recruiter dashboard");
         router.push("/auth/login");
       }
     };
@@ -56,9 +58,9 @@ export default function Page() {
   if (!stats) return <div>Loading...</div>;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-1 sm:p-3 lg:p-6">
       <div>
-        <h1 className="text-2xl font-bold">Recruiter Dashboard</h1>
+        <h1 className="text-2xl font-bold sm:text-3xl">Recruiter Dashboard</h1>
         <p className="text-gray-500">Overview of your hiring activities</p>
       </div>
 

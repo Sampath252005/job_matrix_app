@@ -65,7 +65,7 @@ export default function CNavbar({
       flex
       flex-col
       justify-between
-      bg-white/95
+      bg-white/90
       dark:bg-slate-950/95
       backdrop-blur-xl
       px-5
@@ -141,7 +141,7 @@ export default function CNavbar({
 
         {/* Theme */}
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-1.5 dark:border-slate-800 dark:bg-slate-900/70">
+        <div className="rounded-2xl border border-slate-200/80 bg-slate-100/80 p-1.5 shadow-inner shadow-white/70 dark:border-slate-800 dark:bg-slate-900/70 dark:shadow-none">
 
           <div className="grid grid-cols-2 gap-2">
 
@@ -157,7 +157,7 @@ export default function CNavbar({
               transition
               ${
                 theme === "light"
-                  ? "bg-white shadow-sm text-slate-950"
+                  ? "bg-white shadow-sm shadow-slate-200/80 text-slate-950"
                   : "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800"
               }
               `}
@@ -197,11 +197,13 @@ export default function CNavbar({
           className="
           rounded-xl
           border
-          border-blue-100
+          border-blue-100/80
           bg-gradient-to-br
           from-blue-50
           via-white
           to-cyan-50
+          shadow-sm
+          shadow-blue-100/70
           p-4
           dark:border-blue-950/70
           dark:from-slate-900

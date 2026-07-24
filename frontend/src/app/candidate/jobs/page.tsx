@@ -6,6 +6,7 @@ import { Briefcase, Loader2, MapPin, Search, SlidersHorizontal } from "lucide-re
 import CandidateJobCard from "@/components/jobs/CandidateJobCard";
 import { applyJob } from "@/services/jobs.services";
 import { toast } from "react-hot-toast";
+import { toastApiWarning } from "@/lib/toast";
 
 import {
   getAllJobs,
@@ -81,6 +82,7 @@ export default function JobsPage() {
       setJobs(res.data || []);
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to load jobs");
     } finally {
       setLoading(false);
     }
@@ -95,6 +97,7 @@ export default function JobsPage() {
       setOpenModal(true);
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to load job details");
     }
   };
 
@@ -108,6 +111,7 @@ export default function JobsPage() {
       setJobs(data);
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to search jobs");
     }
   };
 
@@ -120,7 +124,7 @@ export default function JobsPage() {
       toast.success(res.message || "Application submitted");
     } catch (error: unknown) {
       const apiError = error as ApiError;
-      toast.error(apiError.response?.data?.message || "Failed to apply");
+      toastApiWarning(error, apiError.response?.data?.message || "Failed to apply");
     } finally {
       setApplying(false);
     }

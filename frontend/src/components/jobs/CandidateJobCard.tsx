@@ -30,12 +30,12 @@ export default function CandidateJobCard({ job, onView }: Props) {
       border-slate-200
       bg-white/90
       p-5
-      shadow-[0_1px_2px_rgba(15,23,42,0.06)]
+      shadow-[0_12px_32px_rgba(15,23,42,0.08)]
       transition-all
       duration-300
       hover:-translate-y-1
       hover:border-blue-200
-      hover:shadow-[0_18px_45px_rgba(37,99,235,0.14)]
+      hover:shadow-[0_18px_45px_rgba(37,99,235,0.17)]
       dark:border-slate-800
       dark:bg-slate-950/80
       dark:hover:border-blue-900/70

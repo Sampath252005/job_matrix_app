@@ -22,6 +22,29 @@ export const getApplicationsByJob = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+export const getAllShortlistedApplication = async (req, res) => {
+    try {
+        const { jobId } = req.params;
+        const recruiter_id = req.user?.id;
+        const token = req.accessToken;
+        if (!recruiter_id || !token) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const { data: job, error: jobError } = await ApplicationServices.checkJobOwnership(jobId, recruiter_id, token);
+        if (jobError || !job) {
+            return res.status(403).json({ message: "Not authorized for this job" });
+        }
+        const { data, error } = await ApplicationServices.getShortListedApplication(jobId, token);
+        if (error) {
+            return res.status(400).json({ error: error.message });
+        }
+        return res.status(200).json(data);
+    }
+    catch (error) {
+        console.error("Fetch applications error:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
 export const updateApplicationStatus = async (req, res) => {
     const { applicationId } = req.params;
     const recruiter_id = req.user.id;

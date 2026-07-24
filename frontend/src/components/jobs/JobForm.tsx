@@ -29,12 +29,12 @@ export default function JobForm({ initialData, onSubmit }: any) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-10 px-4">
+    <div className="min-h-screen bg-transparent px-0 py-4 dark:bg-gray-950 sm:px-4 sm:py-8 lg:py-10">
       <div className="max-w-5xl mx-auto">
         {/* Page Header */}
 
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
             Create New Job
           </h1>
 
@@ -49,12 +49,16 @@ export default function JobForm({ initialData, onSubmit }: any) {
           className="
       rounded-3xl
       border
-      border-gray-200
+      border-slate-200/80
       dark:border-gray-800
-      bg-white
+      bg-white/90
       dark:bg-gray-900
       shadow-xl
-      p-8
+      shadow-slate-200/70
+      dark:shadow-none
+      p-4
+      sm:p-6
+      lg:p-8
       "
         >
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -63,13 +67,13 @@ export default function JobForm({ initialData, onSubmit }: any) {
             <div>
               <h2 className="text-xl font-semibold mb-6">Basic Information</h2>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid gap-5 md:grid-cols-2 lg:gap-6">
                 {/* Title */}
 
                 <div>
                   <label className="block mb-2 font-medium">Job Title</label>
 
-                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                  <div className="flex items-center rounded-xl border border-slate-200 bg-white/80 px-4 shadow-sm shadow-slate-200/50 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none">
                     <Briefcase size={18} className="text-blue-500" />
 
                     <input
@@ -87,7 +91,7 @@ export default function JobForm({ initialData, onSubmit }: any) {
                 <div>
                   <label className="block mb-2 font-medium">Location</label>
 
-                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                  <div className="flex items-center rounded-xl border border-slate-200 bg-white/80 px-4 shadow-sm shadow-slate-200/50 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none">
                     <MapPin size={18} className="text-blue-500" />
 
                     <input
@@ -107,7 +111,7 @@ export default function JobForm({ initialData, onSubmit }: any) {
             <div>
               <h2 className="text-xl font-semibold mb-6">Description</h2>
 
-              <div className="flex rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
+              <div className="flex rounded-xl border border-slate-200 bg-white/80 p-4 shadow-sm shadow-slate-200/50 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none">
                 <FileText className="text-blue-500 mt-1" size={18} />
 
                 <textarea
@@ -131,7 +135,7 @@ export default function JobForm({ initialData, onSubmit }: any) {
             <div>
               <h2 className="text-xl font-semibold mb-6">Job Details</h2>
 
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 lg:gap-6">
                 {/* Type */}
 
                 <div>
@@ -144,10 +148,13 @@ export default function JobForm({ initialData, onSubmit }: any) {
                 w-full
                 rounded-xl
                 border
-                border-gray-300
+                border-slate-200
                 dark:border-gray-700
-                bg-gray-50
+                bg-white/80
                 dark:bg-gray-800
+                shadow-sm
+                shadow-slate-200/50
+                dark:shadow-none
                 py-3
                 px-4
                 outline-none
@@ -166,7 +173,7 @@ export default function JobForm({ initialData, onSubmit }: any) {
                 <div>
                   <label className="block mb-2 font-medium">Salary</label>
 
-                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                  <div className="flex items-center rounded-xl border border-slate-200 bg-white/80 px-4 shadow-sm shadow-slate-200/50 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none">
                     <IndianRupee size={18} className="text-blue-500" />
 
                     <input
@@ -183,7 +190,7 @@ export default function JobForm({ initialData, onSubmit }: any) {
                 <div>
                   <label className="block mb-2 font-medium">Experience</label>
 
-                  <div className="flex items-center rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4">
+                  <div className="flex items-center rounded-xl border border-slate-200 bg-white/80 px-4 shadow-sm shadow-slate-200/50 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none">
                     <Clock size={18} className="text-blue-500" />
 
                     <input
@@ -201,7 +208,7 @@ export default function JobForm({ initialData, onSubmit }: any) {
 
             {/* ================= ACTION BUTTONS ================= */}
 
-            <div className="flex justify-end gap-4 pt-4">
+            <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end sm:gap-4">
               <button
                 type="button"
                 className="
@@ -214,6 +221,8 @@ export default function JobForm({ initialData, onSubmit }: any) {
             hover:bg-gray-100
             dark:hover:bg-gray-800
             transition
+            w-full
+            sm:w-auto
             "
               >
                 Cancel
@@ -235,6 +244,8 @@ export default function JobForm({ initialData, onSubmit }: any) {
             hover:scale-105
             transition
             disabled:opacity-50
+            w-full
+            sm:w-auto
             "
               >
                 {loading ? "Publishing..." : "Publish Job"}

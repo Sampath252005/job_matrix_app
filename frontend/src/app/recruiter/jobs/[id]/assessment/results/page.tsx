@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { updateApplicationStatus } from "@/services/application.services";
 import { getJobAssessmentResults } from "@/services/assessment.services";
+import toast from "react-hot-toast";
+import { toastApiWarning } from "@/lib/toast";
 
 interface Assessment {
   id: string;
@@ -66,6 +68,7 @@ export default function AssessmentResultsPage() {
       setAttempts(res.data.attempts);
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to load assessment results");
     } finally {
       setLoading(false);
     }
@@ -80,11 +83,12 @@ export default function AssessmentResultsPage() {
     try {
       await updateApplicationStatus(applicationId, status);
 
+      toast.success(`Candidate moved to ${status}`);
       fetchResults();
     } catch (error) {
       console.error(error);
 
-      alert("Failed to update status");
+      toastApiWarning(error, "Failed to update status");
     }
   };
 
@@ -160,19 +164,19 @@ export default function AssessmentResultsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
-      <div className="max-w-7xl mx-auto p-8">
+    <div className="min-h-screen bg-transparent dark:bg-black">
+      <div className="mx-auto max-w-7xl p-3 sm:p-5 lg:p-8">
         {/* Header */}
 
         <div className="mb-10">
-          <h1 className="text-4xl font-bold">Assessment Results</h1>
+          <h1 className="text-3xl font-bold sm:text-4xl">Assessment Results</h1>
 
           <p className="text-gray-500 mt-2">{assessment.title}</p>
         </div>
 
         {/* Search + Filter */}
 
-        <div className="flex flex-col lg:flex-row gap-4 justify-between mb-8">
+        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:justify-between">
           <input
             placeholder="Search candidate..."
             value={search}
@@ -190,7 +194,7 @@ export default function AssessmentResultsPage() {
           "
           />
 
-          <div className="flex gap-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:flex">
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value as any)}
@@ -237,14 +241,14 @@ export default function AssessmentResultsPage() {
 
         {/* Statistics */}
 
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-5 mb-10">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 border dark:border-zinc-800">
+        <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-5">
+          <div className="rounded-xl border bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <p className="text-gray-500">Candidates</p>
 
             <h2 className="text-3xl font-bold mt-3">{attempts.length}</h2>
           </div>
 
-          <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 border dark:border-zinc-800">
+          <div className="rounded-xl border bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <p className="text-gray-500">Passed</p>
 
             <h2 className="text-3xl font-bold text-green-600 mt-3">
@@ -252,7 +256,7 @@ export default function AssessmentResultsPage() {
             </h2>
           </div>
 
-          <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 border dark:border-zinc-800">
+          <div className="rounded-xl border bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <p className="text-gray-500">Failed</p>
 
             <h2 className="text-3xl font-bold text-red-600 mt-3">
@@ -260,7 +264,7 @@ export default function AssessmentResultsPage() {
             </h2>
           </div>
 
-          <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 border dark:border-zinc-800">
+          <div className="rounded-xl border bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <p className="text-gray-500">Average Score</p>
 
             <h2 className="text-3xl font-bold mt-3">{averageScore}</h2>
@@ -269,7 +273,7 @@ export default function AssessmentResultsPage() {
 
         <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="min-w-full">
+            <table className="min-w-[920px]">
               <thead className="bg-gray-100 dark:bg-zinc-800">
                 <tr>
                   <th className="px-6 py-4 text-left font-semibold">

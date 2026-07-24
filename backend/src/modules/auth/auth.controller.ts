@@ -4,6 +4,8 @@ interface RegisterBody {
   email: string;
   password: string;
   role: string;
+  name:string,
+  phone:string
 }
 
 // for register------------------------------------------------------------
@@ -13,7 +15,7 @@ export const register = async (
   res: Response,
 ) => {
   try {
-    const { email, password, role } = req.body;
+    const { name,phone,email, password, role } = req.body;
 
     // Runtime validation (still required even if TS types say "required")
     if (!email || !password || !role) {
@@ -44,6 +46,8 @@ export const register = async (
       userId,
       normalizedEmail,
       role,
+      name,
+      phone
     );
 
     if (dbError) {
@@ -108,4 +112,20 @@ export const login = async (
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
+};
+
+// logout user ------------------------------------------------------------------
+export const 
+logout = (_req: Request, res: Response) => {
+  const cookieOptions = {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax" as const,
+    path: "/",
+  };
+
+  res.clearCookie("access_token", cookieOptions);
+  res.clearCookie("refresh_token", cookieOptions);
+
+  return res.status(200).json({ message: "Logout successful" });
 };

@@ -16,6 +16,7 @@ import {
   getApplicationDetails,
   withdrawApplication,
 } from "@/services/application.services";
+import { toastApiWarning } from "@/lib/toast";
 
 type ApplicationStatus = "PENDING" | "ACCEPTED" | "REJECTED";
 
@@ -61,6 +62,7 @@ export default function CandidateApplicationCard({
       setShowDetails(true);
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to load application details");
     }
   };
 
@@ -70,8 +72,8 @@ export default function CandidateApplicationCard({
 
       toast.success("Application withdrawn");
       reload();
-    } catch {
-      toast.error("Failed to withdraw");
+    } catch (error) {
+      toastApiWarning(error, "Failed to withdraw");
     }
   };
 
@@ -105,12 +107,12 @@ export default function CandidateApplicationCard({
         border-slate-200
         bg-white/90
         p-5
-        shadow-[0_1px_2px_rgba(15,23,42,0.06)]
+        shadow-[0_12px_32px_rgba(15,23,42,0.08)]
         transition-all
         duration-300
         hover:-translate-y-1
         hover:border-blue-200
-        hover:shadow-[0_18px_45px_rgba(37,99,235,0.12)]
+        hover:shadow-[0_18px_45px_rgba(37,99,235,0.16)]
         dark:border-slate-800
         dark:bg-slate-950/80
         dark:hover:border-blue-900/70
@@ -241,7 +243,7 @@ export default function CandidateApplicationCard({
 
       {showDetails && details && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6">
-          <div className="max-h-[92vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950">
+          <div className="max-h-[92vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-2xl shadow-slate-950/10 dark:border-slate-800 dark:bg-slate-950 dark:shadow-2xl">
             <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white/95 px-5 py-5 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 sm:px-6">
               <div>
                 <span

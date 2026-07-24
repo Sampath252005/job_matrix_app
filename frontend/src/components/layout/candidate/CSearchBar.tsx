@@ -52,7 +52,7 @@ export default function CSearchBar() {
       </div>
 
       <div className="hidden min-w-0 flex-1 justify-center px-4 md:flex">
-        <label className="flex w-full max-w-xl items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-500 transition focus-within:border-blue-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-100 dark:border-slate-800 dark:bg-slate-900 dark:focus-within:border-blue-900 dark:focus-within:bg-slate-950 dark:focus-within:ring-blue-950/60">
+        <label className="flex w-full max-w-xl items-center gap-3 rounded-full border border-slate-200/80 bg-white/80 px-4 py-2.5 text-slate-500 shadow-sm shadow-slate-200/60 transition focus-within:border-blue-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-100 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none dark:focus-within:border-blue-900 dark:focus-within:bg-slate-950 dark:focus-within:ring-blue-950/60">
           <Search size={18} />
           <input
             placeholder="Search jobs, companies, applications"
@@ -64,7 +64,7 @@ export default function CSearchBar() {
       <div className="flex items-center gap-2">
         <button
           type="button"
-          className="hidden rounded-full border border-slate-200 bg-white p-2.5 text-slate-600 transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 sm:inline-flex"
+          className="hidden rounded-full border border-slate-200/80 bg-white/80 p-2.5 text-slate-600 shadow-sm shadow-slate-200/60 transition hover:bg-white dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:shadow-none dark:hover:bg-slate-800 sm:inline-flex"
           aria-label="Notifications"
         >
           <Bell size={18} />
@@ -122,9 +122,9 @@ export default function CSearchBar() {
           <div
             className={`
           absolute right-0 mt-3 w-52
-          bg-white dark:bg-slate-900
-          border border-slate-200 dark:border-slate-800
-          rounded-2xl shadow-xl
+          bg-white/95 dark:bg-slate-900
+          border border-slate-200/80 dark:border-slate-800
+          rounded-2xl shadow-xl shadow-slate-200/70 dark:shadow-none
           overflow-hidden
           transition-all
           origin-top-right

@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
-      <body className="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors">
+      <body className="bg-background text-foreground transition-colors dark:bg-gray-900 dark:text-gray-100">
         <ThemeProvider>
           {children}
            <Toaster position="top-right" />

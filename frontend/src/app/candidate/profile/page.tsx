@@ -7,6 +7,7 @@ import {
   fetchCandidateProfile,
   updateCandidateProfile,
 } from "@/services/profile.services";
+import { toastApiWarning } from "@/lib/toast";
 
 import {
   GraduationCap,
@@ -68,6 +69,7 @@ export default function CandidateProfilePage() {
       setSkillsInput(res.data.skills?.join(", ") || "");
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to load profile");
     } finally {
       setLoading(false);
     }
@@ -102,8 +104,8 @@ export default function CandidateProfilePage() {
 
       loadProfile();
     } catch (error) {
-      toast.error("Failed to update profile");
       console.error(error);
+      toastApiWarning(error, "Failed to update profile");
     } finally {
       setSaving(false);
     }
@@ -639,4 +641,3 @@ function ProfileField({
     </div>
   );
 }
-

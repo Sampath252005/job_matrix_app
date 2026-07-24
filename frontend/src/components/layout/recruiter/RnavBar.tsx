@@ -35,12 +35,6 @@ const navs = [
     link: "/recruiter/IterView",
   },
   {
-    id: 3,
-    name: "Job Board",
-    icon: Briefcase,
-    link: "/recruiter/jobBoard",
-  },
-  {
     id: 4,
     name: "Jobs",
     icon: Layers,
@@ -53,22 +47,10 @@ const navs = [
     link: "/recruiter/assesments",
   },
   {
-    id: 6,
-    name: "Interview Designer",
-    icon: ClipboardList,
-    link: "/recruiter/dashboard",
-  },
-  {
-    id: 7,
-    name: "Categories",
-    icon: Layers,
-    link: "/recruiter/dashboard",
-  },
-  {
     id: 8,
     name: "Shortlisted",
     icon: UserCheck,
-    link: "/recruiter/dashboard",
+    link: "/recruiter/Shortlisted",
   },
   {
     id: 9,
@@ -95,10 +77,11 @@ export default function RNavbar({
   return (
     <aside
       className="
-      w-72
+      w-full
       sticky
       top-0
-      h-screen
+      h-dvh
+      min-w-0
       flex
       flex-col
       justify-between
@@ -108,8 +91,10 @@ export default function RNavbar({
       bg-white/90
       dark:bg-gray-950
       backdrop-blur-xl
-      px-6
-      py-6
+      px-4
+      py-5
+      sm:px-6
+      sm:py-6
       "
     >
       {/* ================= TOP ================= */}
@@ -118,12 +103,15 @@ export default function RNavbar({
 
         {/* Logo */}
 
-        <div className="flex items-center gap-4 mb-10">
+        <div className="mb-8 flex min-w-0 items-center gap-4 sm:mb-10">
 
           <div
             className="
-            w-12
-            h-12
+            h-11
+            w-11
+            shrink-0
+            sm:h-12
+            sm:w-12
             rounded-2xl
             bg-gradient-to-br
             from-indigo-600
@@ -140,13 +128,13 @@ export default function RNavbar({
             />
           </div>
 
-          <div>
+          <div className="min-w-0">
 
-            <h2 className="font-bold text-xl">
+            <h2 className="truncate text-xl font-bold">
               Job Matrix
             </h2>
 
-            <p className="text-sm text-gray-500">
+            <p className="truncate text-sm text-gray-500">
               Recruiter Portal
             </p>
 
@@ -156,7 +144,7 @@ export default function RNavbar({
 
         {/* Navigation */}
 
-        <nav className="space-y-2 overflow-y-auto">
+        <nav className="max-h-[calc(100dvh-320px)] space-y-2 overflow-y-auto pr-1">
 
           {navs.map((nav) => (
 
@@ -165,6 +153,7 @@ export default function RNavbar({
               name={nav.name}
               icon={<nav.icon size={20} />}
               link={nav.link}
+              onClick={onClose}
             />
 
           ))}
@@ -185,9 +174,12 @@ export default function RNavbar({
           border
           border-gray-200
           dark:border-gray-800
-          bg-gray-50
+          bg-slate-100/80
           dark:bg-gray-900
           p-2
+          shadow-inner
+          shadow-white/70
+          dark:shadow-none
           "
         >
 
@@ -205,7 +197,7 @@ export default function RNavbar({
               transition
               ${
                 theme === "light"
-                  ? "bg-white shadow text-gray-900"
+                  ? "bg-white shadow shadow-slate-200/80 text-gray-900"
                   : "text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800"
               }
               `}
@@ -248,20 +240,25 @@ export default function RNavbar({
           border-gray-200
           dark:border-gray-800
           bg-gradient-to-br
-          from-indigo-50
+          from-blue-50
           to-purple-50
+          shadow-sm
+          shadow-blue-100/70
           dark:from-gray-900
           dark:to-gray-800
           p-4
           "
         >
 
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
 
             <div
               className="
-              w-12
-              h-12
+              h-11
+              w-11
+              shrink-0
+              sm:h-12
+              sm:w-12
               rounded-full
               bg-gradient-to-r
               from-indigo-600
@@ -276,13 +273,13 @@ export default function RNavbar({
               HR
             </div>
 
-            <div>
+            <div className="min-w-0">
 
-              <h3 className="font-semibold">
+              <h3 className="truncate font-semibold">
                 Recruiter
               </h3>
 
-              <p className="text-sm text-gray-500">
+              <p className="truncate text-sm text-gray-500">
                 Hiring made easy 🚀
               </p>
 

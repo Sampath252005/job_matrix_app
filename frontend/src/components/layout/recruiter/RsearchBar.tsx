@@ -8,25 +8,95 @@ import {
   Settings,
   LogOut,
   UserCircle,
+  Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { fetchRecruiterProfile } from "@/services/profile.services";
+import { logoutService } from "@/services/auth.services";
 
-type RsearchBarProps = {
-  onMenuClick?: () => void;
-};
+const PROFILE_UPDATED_EVENT = "recruiter-profile-updated";
 
-const name = "Sampath";
+function getStoredUserName() {
+  try {
+    const storedUser = localStorage.getItem("User");
+    if (!storedUser) return "Recruiter";
 
-export default function RsearchBar({ onMenuClick }: RsearchBarProps) {
+    const user: unknown = JSON.parse(storedUser);
+    if (
+      user &&
+      typeof user === "object" &&
+      "name" in user &&
+      typeof user.name === "string" &&
+      user.name.trim()
+    ) {
+      return user.name.trim();
+    }
+  } catch {
+    // Invalid or unavailable local storage should not break the header.
+  }
+
+  return "Recruiter";
+}
+
+export default function RsearchBar() {
   const [mounted, setMounted] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
+  const [name, setName] = useState("Recruiter");
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const router = useRouter();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const handleLogout = async () => {
+    if (loggingOut) return;
+
+    setLoggingOut(true);
+    try {
+      await logoutService();
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    } finally {
+      localStorage.removeItem("User");
+      setOpenProfile(false);
+      router.replace("/auth/login");
+      router.refresh();
+    }
+  };
+
   useEffect(() => {
-    setMounted(true);
+    const initializeHeader = window.setTimeout(() => {
+      setMounted(true);
+      setName(getStoredUserName());
+    }, 0);
+
+    const loadProfileName = async () => {
+      try {
+        const response = await fetchRecruiterProfile();
+        const companyName = response.data?.company_name;
+        if (typeof companyName === "string" && companyName.trim()) {
+          setName(companyName.trim());
+        }
+      } catch {
+        // Keep the authenticated user's name when a company profile is absent.
+      }
+    };
+
+    const handleProfileUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<{ companyName?: string }>;
+      const companyName = customEvent.detail?.companyName;
+      if (typeof companyName === "string" && companyName.trim()) {
+        setName(companyName.trim());
+      }
+    };
+
+    void loadProfileName();
+    window.addEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdate);
+
+    return () => {
+      window.clearTimeout(initializeHeader);
+      window.removeEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdate);
+    };
   }, []);
 
   /* Close dropdown when clicking outside */
@@ -57,31 +127,27 @@ export default function RsearchBar({ onMenuClick }: RsearchBarProps) {
   const initial = name.charAt(0).toUpperCase();
 
   return (
-    <header
+    <div
       className="
-    sticky top-0 z-40
-    flex items-center justify-between
-    px-6 py-4
-    border-b border-gray-200 dark:border-gray-800
-    bg-white/80 dark:bg-gray-950/80
-    backdrop-blur-xl
+    flex min-w-0 items-center justify-between gap-3
+    bg-transparent dark:bg-gray-950/80
   "
     >
       {/* Left Section */}
 
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+      <div className="min-w-0">
+        <h1 className="truncate text-base font-bold text-gray-900 dark:text-white sm:text-xl lg:text-2xl">
           {greeting}, {name} 👋
         </h1>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Here's what you need to focus on today.
+        <p className="mt-1 hidden text-sm text-gray-500 dark:text-gray-400 sm:block">
+          Here&apos;s what you need to focus on today.
         </p>
       </div>
 
       {/* Right Section */}
 
-      <div className="flex items-center gap-4">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3 lg:gap-4">
         {/* Search */}
 
         <div className="hidden lg:block relative">
@@ -96,8 +162,9 @@ export default function RsearchBar({ onMenuClick }: RsearchBarProps) {
             className="
           w-72
           rounded-xl
-          border border-gray-200 dark:border-gray-700
-          bg-gray-50 dark:bg-gray-900
+          border border-slate-200/80 dark:border-gray-700
+          bg-white/80 dark:bg-gray-900
+          shadow-sm shadow-slate-200/60 dark:shadow-none
           py-3 pl-11 pr-4
           focus:outline-none
           focus:ring-2
@@ -111,10 +178,12 @@ export default function RsearchBar({ onMenuClick }: RsearchBarProps) {
         <button
           className="
         relative
-        p-3
+          p-2.5
+          sm:p-3
         rounded-xl
-        border border-gray-200 dark:border-gray-700
-        hover:bg-gray-100 dark:hover:bg-gray-800
+        border border-slate-200/80 bg-white/80 dark:border-gray-700 dark:bg-transparent
+        shadow-sm shadow-slate-200/60 dark:shadow-none
+        hover:bg-white dark:hover:bg-gray-800
         transition
       "
         >
@@ -141,8 +210,9 @@ export default function RsearchBar({ onMenuClick }: RsearchBarProps) {
             className="
           flex items-center gap-3
           rounded-2xl
-          border border-gray-200 dark:border-gray-700
-          bg-white dark:bg-gray-900
+          border border-slate-200/80 dark:border-gray-700
+          bg-white/85 dark:bg-gray-900
+          shadow-sm shadow-slate-200/60 dark:shadow-none
           px-3 py-2
           hover:shadow-lg
           transition
@@ -152,7 +222,8 @@ export default function RsearchBar({ onMenuClick }: RsearchBarProps) {
 
             <div
               className="
-            w-11 h-11
+            h-9 w-9
+            sm:h-11 sm:w-11
             rounded-full
             bg-gradient-to-r
             from-blue-600
@@ -246,6 +317,9 @@ export default function RsearchBar({ onMenuClick }: RsearchBarProps) {
             {/* Logout */}
 
             <button
+              type="button"
+              onClick={() => void handleLogout()}
+              disabled={loggingOut}
               className="
             w-full
             flex items-center gap-3
@@ -253,15 +327,21 @@ export default function RsearchBar({ onMenuClick }: RsearchBarProps) {
             text-red-500
             hover:bg-red-50
             dark:hover:bg-red-900/20
+            disabled:cursor-not-allowed
+            disabled:opacity-60
             transition
           "
             >
-              <LogOut size={18} />
-              Log Out
+              {loggingOut ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <LogOut size={18} />
+              )}
+              {loggingOut ? "Signing out..." : "Log Out"}
             </button>
           </div>
         </div>
       </div>
-    </header>
+    </div>
   );
 }

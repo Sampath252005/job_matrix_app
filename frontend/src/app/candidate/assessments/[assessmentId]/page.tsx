@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { toastApiWarning } from "@/lib/toast";
 
 import {
   getCandidateAssessmentById,
@@ -46,6 +46,7 @@ export default function AssessmentDetailsPage() {
       setAssessment(res.data);
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to load assessment details");
     } finally {
       setLoading(false);
     }
@@ -63,7 +64,7 @@ export default function AssessmentDetailsPage() {
       router.push(`/candidate/attempts/${attemptId}`);
     } catch (error:any) {
       console.error(error);
-      toast.error(error?.response.data.message);
+      toastApiWarning(error, "Failed to start assessment");
     } finally {
       setStarting(false);
     }
@@ -82,7 +83,7 @@ export default function AssessmentDetailsPage() {
   }
 
   return (
-   <div className="min-h-screen bg-gray-50 dark:bg-black">
+   <div className="min-h-screen bg-transparent dark:bg-black">
   <div className="max-w-5xl mx-auto px-4 py-8">
 
 {/* Header */}

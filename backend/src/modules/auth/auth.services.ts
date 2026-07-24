@@ -12,7 +12,7 @@ export const loginUser = async (email: string, password: string) => {
   return supabase.auth.signInWithPassword({ email, password });
 };
 
-export const insertUserRole = async (id: string, email: string, role: string) => {
+export const insertUserRole = async (id: string, email: string, role: string,name:string,phone:string) => {
   const supabase = getSupabase();
   return supabase.from("users").insert({ id, email, role });
 };

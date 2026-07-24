@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { getMyApplications } from "@/services/application.services";
 import CandidateApplicationCard from "@/components/layout/candidate/CandidateApplicationCard";
+import { toastApiWarning } from "@/lib/toast";
 
 type ApplicationStatus = "PENDING" | "ACCEPTED" | "REJECTED";
 
@@ -43,6 +44,7 @@ export default function ApplicationsPage() {
       setApplications(data.data || []);
     } catch (err) {
       console.error(err);
+      toastApiWarning(err, "Failed to load applications");
     } finally {
       setLoading(false);
     }

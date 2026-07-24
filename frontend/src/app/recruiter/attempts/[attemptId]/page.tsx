@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 
 import { getAttemptDetails, } from "@/services/assessment.services";
 import { updateApplicationStatus } from "@/services/application.services";
+import toast from "react-hot-toast";
+import { toastApiWarning } from "@/lib/toast";
 
 interface User {
   id: string;
@@ -78,6 +80,7 @@ export default function RecruiterAttemptPage() {
       setQuestions(res.data.questions);
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to load attempt details");
     } finally {
       setLoading(false);
     }
@@ -95,13 +98,13 @@ export default function RecruiterAttemptPage() {
 
     await updateApplicationStatus(attempt!.applications.id, status);
 
-      alert(`Candidate moved to ${status}`);
+      toast.success(`Candidate moved to ${status}`);
 
       router.back();
     } catch (error) {
       console.error(error);
 
-      alert("Failed to update status");
+      toastApiWarning(error, "Failed to update status");
     } finally {
       setUpdating(false);
     }
@@ -126,8 +129,8 @@ export default function RecruiterAttemptPage() {
   const passed = attempt.score >= attempt.assessments.passing_score;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
-      <div className="max-w-7xl mx-auto p-8">
+    <div className="min-h-screen bg-transparent dark:bg-black">
+      <div className="mx-auto max-w-7xl p-3 sm:p-5 lg:p-8">
         {/* Back */}
 
         <button
@@ -139,11 +142,11 @@ export default function RecruiterAttemptPage() {
 
         {/* Heading */}
 
-        <h1 className="text-4xl font-bold mb-8">Candidate Assessment Review</h1>
+        <h1 className="mb-8 text-3xl font-bold sm:text-4xl">Candidate Assessment Review</h1>
 
         {/* Top Cards */}
 
-        <div className="grid lg:grid-cols-2 gap-6 mb-10">
+        <div className="mb-10 grid gap-5 lg:grid-cols-2 lg:gap-6">
           {/* Candidate */}
 
           <div
@@ -153,10 +156,11 @@ export default function RecruiterAttemptPage() {
             rounded-2xl
             border
             dark:border-zinc-800
-            p-6
+            p-4
+            sm:p-6
           "
           >
-            <h2 className="text-2xl font-bold mb-6">Candidate</h2>
+            <h2 className="mb-6 text-xl font-bold sm:text-2xl">Candidate</h2>
 
             <div className="space-y-4">
               <div>
@@ -188,10 +192,11 @@ export default function RecruiterAttemptPage() {
             rounded-2xl
             border
             dark:border-zinc-800
-            p-6
+            p-4
+            sm:p-6
           "
           >
-            <h2 className="text-2xl font-bold mb-6">Assessment</h2>
+            <h2 className="mb-6 text-xl font-bold sm:text-2xl">Assessment</h2>
 
             <div className="space-y-4">
               <div>
@@ -243,7 +248,7 @@ export default function RecruiterAttemptPage() {
         {/* Questions */}
 
         <div className="space-y-8">
-          <h2 className="text-3xl font-bold">Question Review</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">Question Review</h2>
 
           {questions.map((item, index) => {
             const question = item.questions;
@@ -263,16 +268,18 @@ export default function RecruiterAttemptPage() {
           dark:border-zinc-800
           rounded-2xl
           shadow-sm
-          p-8
+          p-4
+          sm:p-6
+          lg:p-8
         "
               >
                 {/* Question */}
 
-                <div className="flex justify-between items-start mb-8">
+                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <h3 className="text-xl font-bold">Question {index + 1}</h3>
 
-                    <p className="mt-3 text-lg">{question.question}</p>
+                    <p className="mt-3 break-words text-base sm:text-lg">{question.question}</p>
                   </div>
 
                   <div>
@@ -284,7 +291,7 @@ export default function RecruiterAttemptPage() {
 
                 {/* Options */}
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid gap-4 md:grid-cols-2">
                   {[
                     {
                       key: "A",
@@ -329,7 +336,7 @@ export default function RecruiterAttemptPage() {
 
                 {/* Result */}
 
-                <div className="mt-8 grid md:grid-cols-3 gap-6">
+                <div className="mt-8 grid gap-4 md:grid-cols-3 lg:gap-6">
                   {/* Candidate */}
 
                   <div
@@ -406,12 +413,13 @@ export default function RecruiterAttemptPage() {
     border-t
     border-gray-200
     dark:border-zinc-800
-    p-6
+    p-4
+    sm:p-6
     rounded-t-2xl
     shadow-lg
   "
         >
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h3 className="text-xl font-bold">Recruiter Decision</h3>
 
@@ -420,7 +428,7 @@ export default function RecruiterAttemptPage() {
               </p>
             </div>
 
-            <div className="flex gap-3">
+            <div className="grid w-full gap-3 sm:grid-cols-2 md:w-auto md:flex">
               <button
                 onClick={() => handleUpdateStatus("REJECTED")}
                 disabled={updating}
@@ -433,6 +441,8 @@ export default function RecruiterAttemptPage() {
           text-white
           font-semibold
           disabled:opacity-50
+          w-full
+          md:w-auto
         "
               >
                 Reject
@@ -450,6 +460,8 @@ export default function RecruiterAttemptPage() {
           text-white
           font-semibold
           disabled:opacity-50
+          w-full
+          md:w-auto
         "
               >
                 Move To Interview

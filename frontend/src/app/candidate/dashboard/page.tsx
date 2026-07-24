@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DasshboardCandidateService } from "@/services/dashboard.services";
+import { toastApiWarning } from "@/lib/toast";
 
 interface DashboardData {
   totalApplications: number;
@@ -27,6 +28,7 @@ export default function CandidateDashboardPage() {
       setDashboard(data);
     } catch (error) {
       console.error(error);
+      toastApiWarning(error, "Failed to load dashboard");
     } finally {
       setLoading(false);
     }

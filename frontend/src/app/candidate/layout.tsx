@@ -13,16 +13,17 @@ export default function CandidateLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-slate-100">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.10),transparent_32rem),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.08),transparent_28rem)]" />
+    <div className="min-h-screen bg-transparent text-slate-950 dark:bg-slate-950 dark:text-slate-100">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.12),transparent_32rem),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.10),transparent_28rem)] dark:bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.10),transparent_32rem),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.08),transparent_28rem)]" />
 
       {/* Sidebar */}
       <aside
         className={`
         fixed inset-y-0 left-0 z-50
         w-72
-        bg-white dark:bg-slate-950
-        border-r border-slate-200 dark:border-slate-800
+        bg-white/90 dark:bg-slate-950
+        border-r border-slate-200/80 dark:border-slate-800
+        shadow-xl shadow-slate-200/60 dark:shadow-none
         transition-transform duration-300 ease-in-out
         lg:translate-x-0
         ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
@@ -46,8 +47,9 @@ export default function CandidateLayout({
           className="
           sticky top-0 z-30
           flex items-center gap-4
-          border-b border-slate-200/80 dark:border-slate-800
-          bg-white/80 dark:bg-slate-950/80
+          border-b border-slate-200/70 dark:border-slate-800
+          bg-white/75 dark:bg-slate-950/80
+          shadow-sm shadow-slate-200/50 dark:shadow-none
           backdrop-blur-xl
           px-3 py-3 sm:px-5
         "

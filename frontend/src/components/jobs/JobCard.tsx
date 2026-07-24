@@ -17,13 +17,15 @@ export default function JobCard({
       group
       rounded-2xl
       border
-      border-gray-200
+      border-slate-200/80
       dark:border-gray-800
-      bg-white
+      bg-white/90
       dark:bg-gray-900
-      p-6
-      shadow-sm
-      hover:shadow-xl
+      p-4
+      sm:p-6
+      shadow-sm shadow-slate-200/70
+      hover:shadow-xl hover:shadow-blue-100/70
+      dark:shadow-none dark:hover:shadow-none
       hover:-translate-y-1
       transition-all
       duration-300
@@ -31,14 +33,17 @@ export default function JobCard({
     >
       {/* Header */}
 
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 
-        <div className="flex gap-4">
+        <div className="flex min-w-0 gap-4">
 
           <div
             className="
-            h-14
-            w-14
+            h-12
+            w-12
+            shrink-0
+            sm:h-14
+            sm:w-14
             rounded-2xl
             bg-gradient-to-br
             from-blue-600
@@ -55,14 +60,16 @@ export default function JobCard({
             />
           </div>
 
-          <div>
+          <div className="min-w-0">
 
             <h2
               className="
-              text-xl
+              text-lg
+              sm:text-xl
               font-bold
               text-gray-900
               dark:text-white
+              truncate
               "
             >
               {job.title}
@@ -108,7 +115,7 @@ export default function JobCard({
             items-center
             gap-2
             rounded-full
-            bg-gray-100
+            bg-slate-100/80
             dark:bg-gray-800
             px-3
             py-2
@@ -127,7 +134,7 @@ export default function JobCard({
             items-center
             gap-2
             rounded-full
-            bg-gray-100
+            bg-slate-100/80
             dark:bg-gray-800
             px-3
             py-2
@@ -143,7 +150,7 @@ export default function JobCard({
 
       {/* Footer */}
 
-      <div className="mt-6 flex items-center justify-between">
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
         <span
           className={`
@@ -153,18 +160,18 @@ export default function JobCard({
           text-sm
           font-medium
           ${
-            job.status === "open"
+            job.status === "OPEN"
               ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
               : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
           }
           `}
         >
-          {job.status === "open"
+          {job.status === "OPEN"
             ? "🟢 Open"
             : "🔴 Closed"}
         </span>
 
-        <span className="text-sm text-gray-400">
+        <span className="break-all text-sm text-gray-400">
           ID #{job.id}
         </span>
 

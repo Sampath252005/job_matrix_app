@@ -6,6 +6,7 @@ const router = express.Router();
 //------------------------------------------recruiter side routes--------------------------------------
 // Get all applications for a job
 router.get("/job/:jobId", protect, allowRoles("ADMIN", "RECRUITER"), getApplicationsByJob);
+router.get("/job/:jobId/shortlisted", protect, allowRoles("ADMIN", "RECRUITER"), getApplicationsByJob);
 // Update application status
 router.patch("/:applicationId/status", protect, allowRoles("ADMIN", "RECRUITER"), updateApplicationStatus);
 //-----------------------------------------candidate side routes-------------------------------

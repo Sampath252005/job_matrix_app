@@ -14,6 +14,7 @@ import {
 } from "@/services/assessment.services";
 
 import { toast } from "react-hot-toast";
+import { toastApiWarning } from "@/lib/toast";
 
 export default function AttemptPage() {
   const params = useParams();
@@ -62,7 +63,7 @@ export default function AttemptPage() {
 
   useEffect(() => {
     if (tabWarnings >= 3) {
-      alert("Assessment submitted because of repeated tab switching.");
+      toast.error("Assessment submitted because of repeated tab switching.");
 
       handleSubmitAssessment();
     }
@@ -140,7 +141,7 @@ export default function AttemptPage() {
       setAnswers(answerMap);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to load assessment");
+      toastApiWarning(error, "Failed to load assessment");
     } finally {
       setLoading(false);
     }
@@ -167,7 +168,7 @@ export default function AttemptPage() {
     } catch (error: any) {
       console.error(error);
 
-      toast.error(error?.message || "Failed to save answer");
+      toastApiWarning(error, "Failed to save answer");
     }
   };
 
@@ -181,7 +182,7 @@ export default function AttemptPage() {
     } catch (error) {
       console.error(error);
 
-      toast.error("Failed to submit");
+      toastApiWarning(error, "Failed to submit assessment");
     }
   };
 
@@ -197,7 +198,7 @@ export default function AttemptPage() {
 
   return (
     <>
-      <div className="bg-gray-50 dark:bg-black select-none">
+      <div className="bg-transparent dark:bg-black select-none">
         <div
           className="
     z-50

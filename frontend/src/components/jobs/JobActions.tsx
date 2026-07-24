@@ -3,14 +3,21 @@
 
 import { useRouter } from "next/navigation";
 import { deleteJob, closeJob } from "@/services/jobs.services";
+import toast from "react-hot-toast";
+import { toastApiWarning } from "@/lib/toast";
 
 export default function JobActions({ job, refresh }: any) {
   const router = useRouter();
 
   const handleDelete = async (job_id:string) => {
-    // console.log("job id", job.id);
-    await deleteJob(job_id);
-    refresh();
+    try {
+      await deleteJob(job_id);
+      toast.success("Job deleted successfully");
+      refresh();
+    } catch (error) {
+      console.error(error);
+      toastApiWarning(error, "Failed to delete job");
+    }
   };
 
   const handleClose = async (job_id:string) => {
@@ -19,15 +26,18 @@ export default function JobActions({ job, refresh }: any) {
     try {
       const res = await closeJob(job_id);
       console.log("success:", res);
+      toast.success("Job closed successfully");
+      refresh();
     } catch (error: any) {
       console.log("status:", error.response?.status);
       console.log("backend error:", error.response?.data);
       console.log("url:", error.config?.url);
+      toastApiWarning(error, "Failed to close job");
     }
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-3 sm:justify-end">
       <button
         onClick={() => router.push(`/recruiter/jobs/${job.id}/update`)}
         className="text-blue-500 text-sm"

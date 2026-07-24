@@ -5,7 +5,6 @@
 //   const handleUpdate = async (data: any) => {
 //     try {
 //       await updateJob(params.id, data);
-//       alert("Job updated successfully");
 //     } catch (err) {
 //       console.error(err);
 //     }

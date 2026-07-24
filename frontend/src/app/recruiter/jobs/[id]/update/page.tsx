@@ -5,6 +5,8 @@ import { updateJob, getJobById } from "@/services/jobs.services";
 import JobForm from "@/components/jobs/JobForm";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { toastApiWarning } from "@/lib/toast";
 
 export default function EditJobPage() {
   const [job, setJob] = useState(null);
@@ -18,6 +20,7 @@ export default function EditJobPage() {
         setJob(data.data[0]);
       } catch (err) {
         console.error(err);
+        toastApiWarning(err, "Failed to load job details");
       }
     };
 
@@ -35,12 +38,18 @@ export default function EditJobPage() {
   }
 
   const handleSubmit = async (data: any) => {
-    await updateJob(id as string, data);
-    router.push("/recruiter/jobs");
+    try {
+      await updateJob(id as string, data);
+      toast.success("Job updated successfully");
+      router.push("/recruiter/jobs");
+    } catch (error) {
+      console.error(error);
+      toastApiWarning(error, "Failed to update job");
+    }
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
+    <div className="mx-auto max-w-5xl p-1 sm:p-4">
       <h1 className="text-xl font-bold mb-4">Update Job</h1>
       <JobForm onSubmit={handleSubmit} initialData={job} />
     </div>
