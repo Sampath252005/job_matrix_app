@@ -96,11 +96,20 @@ export default function RecruiterAttemptPage() {
     try {
       setUpdating(true);
 
-    await updateApplicationStatus(attempt!.applications.id, status);
+      await updateApplicationStatus(attempt!.applications.id, status);
 
-      toast.success(`Candidate moved to ${status}`);
-
-      router.back();
+      setAttempt((current) =>
+        current
+          ? {
+              ...current,
+              applications: {
+                ...current.applications,
+                status,
+              },
+            }
+          : current,
+      );
+      toast.success(`Application status updated to ${status}`);
     } catch (error) {
       console.error(error);
 
@@ -227,6 +236,22 @@ export default function RecruiterAttemptPage() {
                   }`}
                 >
                   {passed ? "PASSED" : "FAILED"}
+                </span>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Exam Status</p>
+                <span className="mt-2 inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  {attempt.status === "SUBMITTED"
+                    ? "EXAM SUBMITTED"
+                    : attempt.status}
+                </span>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Application Status</p>
+                <span className="mt-2 inline-flex rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                  {attempt.applications.status}
                 </span>
               </div>
 
@@ -424,7 +449,7 @@ export default function RecruiterAttemptPage() {
               <h3 className="text-xl font-bold">Recruiter Decision</h3>
 
               <p className="text-gray-500 mt-1">
-                Review the candidate's answers before taking the next action.
+                Review the candidate&apos;s answers before taking the next action.
               </p>
             </div>
 

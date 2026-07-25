@@ -288,16 +288,22 @@ export const publishAssessment = async (req, res) => {
                 message: "Unauthorized",
             });
         }
-        const assessment = await AssessmentServices.publishAssessment(assessmentId, token);
+        const assessment = await AssessmentServices.publishAssessment(assessmentId, user.id, token);
         return res.status(200).json({
             message: "Assessment published successfully",
             data: assessment,
         });
     }
     catch (error) {
-        if (error.message === "Assessment already published") {
+        const publishErrors = [
+            "Assessment already published",
+            "Add at least one question before publishing",
+            "Assessment not found or you are not authorized",
+            "passing score is less than total marks",
+        ];
+        if (publishErrors.includes(error.message)) {
             return res.status(400).json({
-                message: "Assessment already published",
+                message: error.message,
             });
         }
         console.error(error);

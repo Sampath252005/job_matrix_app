@@ -1,17 +1,60 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Bell, ChevronDown, Search } from "lucide-react";
+import { Bell, ChevronDown, Loader2, LogOut, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { logoutService } from "@/services/auth.services";
 
-const name = "Sampath";
+function getStoredUserName() {
+  try {
+    const storedUser = localStorage.getItem("User");
+    if (!storedUser) return "Candidate";
+
+    const user: unknown = JSON.parse(storedUser);
+    if (
+      user &&
+      typeof user === "object" &&
+      "name" in user &&
+      typeof user.name === "string" &&
+      user.name.trim()
+    ) {
+      return user.name.trim();
+    }
+  } catch {
+    // Invalid or unavailable local storage should not break the header.
+  }
+
+  return "Candidate";
+}
 
 export default function CSearchBar() {
   const [openProfile, setOpenProfile] = useState(false);
+  const [name, setName] = useState("Candidate");
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const router = useRouter();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setName(getStoredUserName());
+  }, []);
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+
+    setLoggingOut(true);
+    try {
+      await logoutService();
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    } finally {
+      localStorage.removeItem("User");
+      setOpenProfile(false);
+      router.replace("/auth/login");
+      router.refresh();
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -161,15 +204,25 @@ export default function CSearchBar() {
             <div className="border-t border-slate-200 dark:border-slate-800" />
 
             <button
+              type="button"
+              onClick={() => void handleLogout()}
+              disabled={loggingOut}
               className="
-            w-full text-left
+            flex w-full items-center gap-2 text-left
             px-4 py-3 text-sm
             text-red-500
             hover:bg-red-50
             dark:hover:bg-red-950/40
+            disabled:cursor-not-allowed
+            disabled:opacity-60
             "
             >
-              Log Out
+              {loggingOut ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                <LogOut size={16} />
+              )}
+              {loggingOut ? "Signing out..." : "Log Out"}
             </button>
           </div>
         </div>

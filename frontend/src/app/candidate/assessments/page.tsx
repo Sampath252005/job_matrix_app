@@ -45,8 +45,14 @@ export default function CandidateAssessmentsPage() {
   const [assessmentStatus, setAssessmentStatus] = useState<
     AssessmentStatus[]
   >([]);
+  const [showSubmittedConfirmation, setShowSubmittedConfirmation] =
+    useState(false);
 
   useEffect(() => {
+    if (sessionStorage.getItem("assessment-submitted") === "true") {
+      setShowSubmittedConfirmation(true);
+      sessionStorage.removeItem("assessment-submitted");
+    }
     fetchAssessments();
   }, []);
 
@@ -92,7 +98,7 @@ export default function CandidateAssessmentsPage() {
 
     if (status === "STARTED") return "Continue Assessment";
     if (status === "SUBMITTED" || status === "PASSED" || status === "FAILED") {
-      return "View Result";
+      return "Exam Submitted";
     }
 
     return "View Assessment";
@@ -122,6 +128,32 @@ export default function CandidateAssessmentsPage() {
   return (
     <div className="min-h-screen bg-transparent p-3 dark:bg-black sm:p-5 lg:p-6">
       <div className="mx-auto max-w-7xl space-y-6">
+        {showSubmittedConfirmation && (
+          <div
+            role="status"
+            className="flex items-start justify-between gap-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 shadow-sm dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200 sm:p-5"
+          >
+            <div className="flex gap-3">
+              <CheckCircle2 className="mt-0.5 shrink-0" size={22} />
+              <div>
+                <h2 className="font-bold">Exam submitted successfully</h2>
+                <p className="mt-1 text-sm text-emerald-700 dark:text-emerald-300">
+                  Your answers were recorded and the recruiter can now review
+                  your assessment.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowSubmittedConfirmation(false)}
+              aria-label="Dismiss submission confirmation"
+              className="rounded-lg p-1 transition hover:bg-emerald-100 dark:hover:bg-emerald-900/50"
+            >
+              <XCircle size={19} />
+            </button>
+          </div>
+        )}
+
         <section className="relative overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-slate-950 via-blue-700 to-indigo-600 p-5 text-white shadow-xl shadow-blue-600/20 dark:border-blue-950 sm:p-7">
           <div className="absolute -right-16 -top-16 h-52 w-52 rounded-full bg-white/10 blur-3xl" />
           <div className="absolute bottom-0 left-10 h-32 w-64 rounded-full bg-cyan-300/10 blur-3xl" />
@@ -252,6 +284,9 @@ export default function CandidateAssessmentsPage() {
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {assessments.map((assessment) => {
             const status = getDisplayStatus(assessment);
+            const isCompleted = ["SUBMITTED", "PASSED", "FAILED"].includes(
+              status,
+            );
 
             return (
               <article
@@ -364,6 +399,7 @@ export default function CandidateAssessmentsPage() {
                 </div>
 
                 <button
+                  disabled={isCompleted}
                   onClick={() =>
                     router.push(`/candidate/assessments/${assessment.id}`)
                   }
@@ -388,6 +424,10 @@ export default function CandidateAssessmentsPage() {
                   transition-all
                   hover:-translate-y-0.5
                   hover:shadow-xl
+                  disabled:cursor-default
+                  disabled:from-emerald-600
+                  disabled:to-emerald-700
+                  disabled:hover:translate-y-0
                 "
                 >
                   {getActionLabel(assessment)}

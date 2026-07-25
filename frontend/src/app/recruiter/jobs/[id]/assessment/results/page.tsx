@@ -197,7 +197,9 @@ export default function AssessmentResultsPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:flex">
             <select
               value={filter}
-              onChange={(e) => setFilter(e.target.value as any)}
+              onChange={(e) =>
+                setFilter(e.target.value as "ALL" | "PASSED" | "FAILED")
+              }
               className="
               px-4
               py-3
@@ -289,6 +291,10 @@ export default function AssessmentResultsPage() {
                   </th>
 
                   <th className="px-6 py-4 text-left font-semibold">
+                    Exam Status
+                  </th>
+
+                  <th className="px-6 py-4 text-left font-semibold">
                     Application
                   </th>
 
@@ -301,7 +307,7 @@ export default function AssessmentResultsPage() {
               <tbody>
                 {filteredAttempts.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-12 text-gray-500">
+                    <td colSpan={7} className="text-center py-12 text-gray-500">
                       No candidates found.
                     </td>
                   </tr>
@@ -380,6 +386,22 @@ export default function AssessmentResultsPage() {
 
                         <td className="px-6 py-5 text-sm">
                           {new Date(attempt.submitted_at).toLocaleString()}
+                        </td>
+
+                        {/* Exam Status */}
+
+                        <td className="px-6 py-5">
+                          <span
+                            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                              attempt.status === "SUBMITTED"
+                                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                                : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                            }`}
+                          >
+                            {attempt.status === "SUBMITTED"
+                              ? "EXAM SUBMITTED"
+                              : attempt.status}
+                          </span>
                         </td>
 
                         {/* Application Status */}

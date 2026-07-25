@@ -14,11 +14,11 @@ export default function DashboardLayout({
   const [collapsed] = useState(false);
 
   return (
-    <div className="flex h-dvh overflow-hidden bg-transparent dark:bg-gray-950">
+    <div className="flex h-dvh overflow-hidden bg-slate-50/45 dark:bg-slate-950">
       {/* ================= SIDEBAR ================= */}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 ${collapsed ? "w-20" : "w-72 max-w-[85vw]"} bg-white/90 dark:bg-gray-900 border-r border-gray-200/80 dark:border-gray-800 shadow-xl shadow-slate-200/60 dark:shadow-none transform transition-all duration-300 lg:static lg:max-w-none ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} `}
+        className={`fixed inset-y-0 left-0 z-50 ${collapsed ? "w-20" : "w-72 max-w-[85vw]"} transform border-r border-slate-200/80 bg-white/95 shadow-xl shadow-slate-200/60 transition-all duration-300 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none lg:static lg:max-w-none ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} `}
       >
         <RNavabar onClose={() => setMobileOpen(false)} />
       </aside>
@@ -38,7 +38,7 @@ export default function DashboardLayout({
         {/* ================= HEADER ================= */}
 
         <header
-          className="sticky top-0 z-30 flex items-center gap-3 border-b border-gray-200/70 bg-white/75 px-3 py-3 shadow-sm shadow-slate-200/50 backdrop-blur-xl dark:border-gray-800 dark:bg-gray-900 dark:shadow-none sm:px-4"
+          className="sticky top-0 z-30 flex items-center gap-3 border-b border-slate-200/70 bg-white/90 px-3 py-3 shadow-sm shadow-slate-200/50 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900 dark:shadow-none sm:px-4"
         >
           {/* Mobile Hamburger */}
 

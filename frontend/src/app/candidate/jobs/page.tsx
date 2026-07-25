@@ -5,6 +5,7 @@ import { Briefcase, Loader2, MapPin, Search, SlidersHorizontal } from "lucide-re
 
 import CandidateJobCard from "@/components/jobs/CandidateJobCard";
 import { applyJob } from "@/services/jobs.services";
+import { getMyApplications } from "@/services/application.services";
 import { toast } from "react-hot-toast";
 import { toastApiWarning } from "@/lib/toast";
 
@@ -58,10 +59,17 @@ interface ApiError {
   };
 }
 
+interface CandidateApplication {
+  jobs?: {
+    id?: string;
+  } | null;
+}
+
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setselectedJob] = useState<JobDetails | null>(null);
-  const [applying, setApplying] = useState(false);
+  const [applyingJobId, setApplyingJobId] = useState<string | null>(null);
+  const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set());
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -77,9 +85,22 @@ export default function JobsPage() {
 
   const fetchJobs = async () => {
     try {
-      const res = await getAllJobs();
+      const [jobsResponse, applicationsResponse] = await Promise.all([
+        getAllJobs(),
+        getMyApplications(),
+      ]);
 
-      setJobs(res.data || []);
+      setJobs(jobsResponse.data || []);
+
+      const applications: CandidateApplication[] =
+        applicationsResponse.data || [];
+      setAppliedJobIds(
+        new Set(
+          applications
+            .map((application) => application.jobs?.id)
+            .filter((jobId): jobId is string => Boolean(jobId)),
+        ),
+      );
     } catch (error) {
       console.error(error);
       toastApiWarning(error, "Failed to load jobs");
@@ -116,17 +137,23 @@ export default function JobsPage() {
   };
 
   const handleApply = async (jobId: string) => {
+    if (appliedJobIds.has(jobId) || applyingJobId !== null) return;
+
     try {
-      setApplying(true);
+      setApplyingJobId(jobId);
 
       const res = await applyJob(jobId);
 
+      setAppliedJobIds((current) => new Set(current).add(jobId));
       toast.success(res.message || "Application submitted");
     } catch (error: unknown) {
       const apiError = error as ApiError;
+      if (apiError.response?.data?.message === "Already applied to this job") {
+        setAppliedJobIds((current) => new Set(current).add(jobId));
+      }
       toastApiWarning(error, apiError.response?.data?.message || "Failed to apply");
     } finally {
-      setApplying(false);
+      setApplyingJobId(null);
     }
   };
 
@@ -721,7 +748,10 @@ export default function JobsPage() {
                       </button>
 
                       <button
-                        disabled={applying}
+                        disabled={
+                          appliedJobIds.has(selectedJob.id) ||
+                          applyingJobId !== null
+                        }
                         onClick={() => handleApply(selectedJob.id)}
                         className="
         flex-1
@@ -745,7 +775,7 @@ export default function JobsPage() {
         hover:-translate-y-0.5
       "
                       >
-                        {applying ? (
+                        {applyingJobId === selectedJob.id ? (
                           <span className="flex items-center justify-center gap-2">
                             <svg
                               className="h-5 w-5 animate-spin"
@@ -768,6 +798,8 @@ export default function JobsPage() {
                             </svg>
                             Applying...
                           </span>
+                        ) : appliedJobIds.has(selectedJob.id) ? (
+                          "✓ Applied"
                         ) : (
                           "🚀 Apply Now"
                         )}

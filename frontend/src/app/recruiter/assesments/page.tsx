@@ -17,6 +17,7 @@ import {
   Timer,
 } from "lucide-react";
 import { getMyJobs } from "@/services/jobs.services";
+import { getAssessmentByJob } from "@/services/assessment.services";
 import { toastApiWarning } from "@/lib/toast";
 
 type JobStatus = "OPEN" | "CLOSED";
@@ -28,6 +29,7 @@ interface Job {
   location: string;
   type: string;
   status: JobStatus;
+  hasAssessment: boolean;
 }
 
 const statusFilters: Array<{ value: StatusFilter; label: string }> = [
@@ -61,22 +63,30 @@ export default function AssessmentsPage() {
     try {
       const response: unknown = await getMyJobs();
       const rawJobs = Array.isArray(response) ? response : [];
-      const validJobs = rawJobs.filter(isValidJob).map((job) => ({
-        ...job,
-        location:
-          typeof job.location === "string" && job.location.trim()
-            ? job.location
-            : "Location not specified",
-        type:
-          typeof job.type === "string" && job.type.trim()
-            ? job.type
-            : "Type not specified",
-        status:
-          String(job.status).toUpperCase() === "OPEN"
-            ? ("OPEN" as const)
-            : ("CLOSED" as const),
-      }));
-      setJobs(validJobs);
+      const validJobs = rawJobs.filter(isValidJob);
+      const jobsWithAssessmentStatus = await Promise.all(
+        validJobs.map(async (job) => {
+          const assessmentResponse = await getAssessmentByJob(job.id);
+
+          return {
+            ...job,
+            location:
+              typeof job.location === "string" && job.location.trim()
+                ? job.location
+                : "Location not specified",
+            type:
+              typeof job.type === "string" && job.type.trim()
+                ? job.type
+                : "Type not specified",
+            status:
+              String(job.status).toUpperCase() === "OPEN"
+                ? ("OPEN" as const)
+                : ("CLOSED" as const),
+            hasAssessment: Boolean(assessmentResponse?.data),
+          };
+        }),
+      );
+      setJobs(jobsWithAssessmentStatus);
     } catch (error) {
       console.error("Failed to fetch jobs:", error);
       setJobs([]);
@@ -324,12 +334,18 @@ export default function AssessmentsPage() {
                       className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-blue-600 px-3 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
                     >
                       <FileQuestion size={16} />
-                      Manage
+                      {job.hasAssessment ? "Manage" : "Create assessment"}
                     </button>
                     <button
                       type="button"
                       onClick={() => openResults(job.id)}
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-900 dark:hover:bg-blue-950/30 dark:hover:text-blue-300 dark:focus:ring-offset-slate-900"
+                      disabled={!job.hasAssessment}
+                      title={
+                        job.hasAssessment
+                          ? "View assessment results"
+                          : "Create an assessment before viewing results"
+                      }
+                      className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400 disabled:hover:border-slate-200 disabled:hover:bg-slate-50 disabled:hover:text-slate-400 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-900 dark:hover:bg-blue-950/30 dark:hover:text-blue-300 dark:disabled:bg-slate-900 dark:disabled:text-slate-600 dark:disabled:hover:border-slate-700 dark:disabled:hover:bg-slate-900 dark:disabled:hover:text-slate-600 dark:focus:ring-offset-slate-900"
                     >
                       <BarChart3 size={16} />
                       Results
@@ -341,7 +357,9 @@ export default function AssessmentsPage() {
                     onClick={() => openAssessment(job.id)}
                     className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-50 group-hover:gap-2 dark:text-blue-400 dark:hover:bg-blue-950/30"
                   >
-                    Open assessment
+                    {job.hasAssessment
+                      ? "Open assessment"
+                      : "Set up assessment"}
                     <ArrowRight size={14} />
                   </button>
                 </article>

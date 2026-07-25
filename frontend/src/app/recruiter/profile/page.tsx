@@ -18,6 +18,7 @@ import {
   updateRecruiterProfile,
 } from "@/services/profile.services";
 import { toastApiWarning } from "@/lib/toast";
+import { isHttpUrl } from "@/lib/validation";
 
 interface RecruiterProfile {
   company_name: string;
@@ -86,6 +87,14 @@ export default function RecruiterProfilePage() {
   const handleSave = async () => {
     if (!profile.company_name.trim()) {
       toast.error("Company name is required");
+      return;
+    }
+    if (!isHttpUrl(profile.website)) {
+      toast.error("Enter a valid company website starting with http:// or https://");
+      return;
+    }
+    if (profile.logo_url && !isHttpUrl(profile.logo_url)) {
+      toast.error("Enter a valid logo URL starting with http:// or https://");
       return;
     }
 

@@ -12,7 +12,13 @@ import { getMyApplications } from "@/services/application.services";
 import CandidateApplicationCard from "@/components/layout/candidate/CandidateApplicationCard";
 import { toastApiWarning } from "@/lib/toast";
 
-type ApplicationStatus = "PENDING" | "ACCEPTED" | "REJECTED";
+type ApplicationStatus =
+  | "PENDING"
+  | "SHORTLISTED"
+  | "INTERVIEW"
+  | "HIRED"
+  | "REJECTED"
+  | "ACCEPTED";
 
 interface ApplicationJob {
   id?: string;
@@ -63,8 +69,10 @@ export default function ApplicationsPage() {
   const pendingCount = applications.filter(
     (application) => application.status === "PENDING",
   ).length;
-  const acceptedCount = applications.filter(
-    (application) => application.status === "ACCEPTED",
+  const shortlistedCount = applications.filter(
+    (application) =>
+      application.status === "SHORTLISTED" ||
+      application.status === "ACCEPTED",
   ).length;
 
   return (
@@ -100,8 +108,10 @@ export default function ApplicationsPage() {
               <p className="text-xs font-medium text-blue-50/80">Pending</p>
             </div>
             <div className="rounded-xl bg-white/10 p-4 ring-1 ring-white/20">
-              <p className="text-2xl font-black">{acceptedCount}</p>
-              <p className="text-xs font-medium text-blue-50/80">Accepted</p>
+              <p className="text-2xl font-black">{shortlistedCount}</p>
+              <p className="text-xs font-medium text-blue-50/80">
+                Shortlisted
+              </p>
             </div>
           </div>
         </div>

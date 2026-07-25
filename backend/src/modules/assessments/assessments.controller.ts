@@ -450,6 +450,7 @@ export const publishAssessment = async (
 
     const assessment = await AssessmentServices.publishAssessment(
       assessmentId,
+      user.id,
       token,
     );
 
@@ -458,9 +459,15 @@ export const publishAssessment = async (
       data: assessment,
     });
   } catch (error: any) {
-    if (error.message === "Assessment already published") {
+    const publishErrors = [
+      "Assessment already published",
+      "Add at least one question before publishing",
+      "Assessment not found or you are not authorized",
+    ];
+
+    if (publishErrors.includes(error.message)) {
       return res.status(400).json({
-        message: "Assessment already published",
+        message: error.message,
       });
     }
 

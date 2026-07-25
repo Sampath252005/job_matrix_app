@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   Users,
   UserCheck,
-  Briefcase,
   ClipboardList,
   FileQuestion,
   Layers,
@@ -69,7 +68,8 @@ export default function RNavbar({
     useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const mountTimer = window.setTimeout(() => setMounted(true), 0);
+    return () => window.clearTimeout(mountTimer);
   }, []);
 
   if (!mounted) return null;

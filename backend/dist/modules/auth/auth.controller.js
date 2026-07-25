@@ -2,7 +2,7 @@ import * as authServices from "./auth.services.js";
 // for register------------------------------------------------------------
 export const register = async (req, res) => {
     try {
-        const { email, password, role } = req.body;
+        const { name, phone, email, password, role } = req.body;
         // Runtime validation (still required even if TS types say "required")
         if (!email || !password || !role) {
             return res
@@ -20,7 +20,7 @@ export const register = async (req, res) => {
                 .json({ error: "User not created. Please verify your email." });
         }
         const userId = data.user.id;
-        const { error: dbError } = await authServices.insertUserRole(userId, normalizedEmail, role);
+        const { error: dbError } = await authServices.insertUserRole(userId, normalizedEmail, role, name, phone);
         if (dbError) {
             return res.status(400).json({ message: dbError.message });
         }

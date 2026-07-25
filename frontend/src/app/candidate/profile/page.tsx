@@ -8,6 +8,7 @@ import {
   updateCandidateProfile,
 } from "@/services/profile.services";
 import { toastApiWarning } from "@/lib/toast";
+import { isHttpUrl } from "@/lib/validation";
 
 import {
   GraduationCap,
@@ -85,11 +86,26 @@ export default function CandidateProfilePage() {
   };
 
   const handleSave = async () => {
+    const graduationYear = Number(profile.graduation_year);
+    const latestYear = new Date().getFullYear() + 10;
+    if (!Number.isInteger(graduationYear) || graduationYear < 1950 || graduationYear > latestYear) {
+      toast.error(`Graduation year must be between 1950 and ${latestYear}`);
+      return;
+    }
+    if (profile.resume_url && !isHttpUrl(profile.resume_url)) {
+      toast.error("Enter a valid resume URL starting with http:// or https://");
+      return;
+    }
+    if (profile.portfolio_url && !isHttpUrl(profile.portfolio_url)) {
+      toast.error("Enter a valid portfolio URL starting with http:// or https://");
+      return;
+    }
     try {
       setSaving(true);
 
       const payload = {
         ...profile,
+        graduation_year: graduationYear,
         skills: skillsInput
           .split(",")
           .map((skill) => skill.trim())
@@ -554,7 +570,14 @@ function ProfileField({
   icon,
   editMode,
   onChange,
-}: any) {
+}: {
+  label: string;
+  value: string | number;
+  name: string;
+  icon: React.ReactNode;
+  editMode: boolean;
+  onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+}) {
   return (
     <div
       className="

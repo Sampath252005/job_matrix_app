@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { toastApiWarning } from "@/lib/toast";
+import { validateAssessment } from "@/lib/validation";
 import {
   createAssessment,
   getAssessmentByJob,
@@ -36,6 +37,7 @@ interface Assessment {
   start_time?: string;
   end_time?: string;
   status: string;
+  is_published: boolean;
 }
 
 export default function AssessmentPage() {
@@ -58,27 +60,42 @@ export default function AssessmentPage() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [status, setStatus] = useState("ACTIVE");
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
     fetchAssessment();
   }, []);
 
   const handlePublish = async () => {
-    if (!assessment) return;
+    if (!assessment || assessment.is_published || publishing) return;
+    setPublishing(true);
     try {
       await publishAssessment(assessment.id);
       toast.success("Assessment published");
-      fetchAssessment();
-    } catch (error: any) {
-      const message = error?.response?.data?.message;
+      await fetchAssessment();
+    } catch (error: unknown) {
+      const message =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof error.response === "object" &&
+        error.response !== null &&
+        "data" in error.response &&
+        typeof error.response.data === "object" &&
+        error.response.data !== null &&
+        "message" in error.response.data
+          ? error.response.data.message
+          : undefined;
 
-      if (message === "Assessment already published") {
-        toast.error("Assessment already published");
-      } else {
-        toast.error("Failed to publish assessment");
-      }
+      toast.error(
+        typeof message === "string" && message
+          ? message
+          : "Failed to publish assessment",
+      );
 
       console.error(error);
+    } finally {
+      setPublishing(false);
     }
   };
   const fetchAssessment = async () => {
@@ -111,6 +128,11 @@ export default function AssessmentPage() {
 
   const handleSaveSettings = async () => {
     if (!assessment) return;
+    const validation = validateAssessment({ title, description, durationMinutes, passingScore, startTime, endTime });
+    if (!validation.valid) {
+      toast.error(validation.message);
+      return;
+    }
 
     try {
       await updateAssessment(assessment.id, {
@@ -132,6 +154,11 @@ export default function AssessmentPage() {
     }
   };
   const handleCreateAssessment = async () => {
+    const validation = validateAssessment({ title, description, durationMinutes, passingScore });
+    if (!validation.valid) {
+      toast.error(validation.message);
+      return;
+    }
     try {
       const res = await createAssessment({
         job_id: jobId,
@@ -228,6 +255,8 @@ export default function AssessmentPage() {
                     <ClipboardList className="text-blue-600" size={18} />
 
                     <input
+                      required
+                      maxLength={100}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       className="w-full bg-transparent py-3 px-3 outline-none"
@@ -242,6 +271,7 @@ export default function AssessmentPage() {
                     <FileText className="text-blue-600 mt-1" size={18} />
 
                     <textarea
+                      maxLength={2000}
                       rows={5}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
@@ -268,6 +298,9 @@ export default function AssessmentPage() {
 
                     <input
                       type="number"
+                      min={1}
+                      max={480}
+                      step={1}
                       value={durationMinutes}
                       onChange={(e) =>
                         setDurationMinutes(Number(e.target.value))
@@ -287,6 +320,8 @@ export default function AssessmentPage() {
 
                     <input
                       type="number"
+                      min={1}
+                      max={100}
                       value={passingScore}
                       onChange={(e) => setPassingScore(Number(e.target.value))}
                       className="w-full bg-transparent py-3 px-3 outline-none"
@@ -400,6 +435,7 @@ export default function AssessmentPage() {
 
               <button
                 onClick={handlePublish}
+                disabled={assessment.is_published || publishing}
                 className="
           inline-flex
           items-center
@@ -414,11 +450,19 @@ export default function AssessmentPage() {
           text-white
           font-semibold
           hover:scale-105
+          disabled:cursor-not-allowed
+          disabled:from-gray-400
+          disabled:to-gray-500
+          disabled:hover:scale-100
           transition
         "
               >
                 <Rocket size={18} />
-                Publish
+                {assessment.is_published
+                  ? "Published"
+                  : publishing
+                    ? "Publishing..."
+                    : "Publish"}
               </button>
 
               <button

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { toastApiWarning } from "@/lib/toast";
+import { validateQuestion } from "@/lib/validation";
 
 import {
   getQuestions,
@@ -82,8 +83,13 @@ export default function QuestionsPage() {
   };
 
   const handleCreateQuestion = async () => {
+    const validation = validateQuestion(form);
+    if (!validation.valid) {
+      toast.error(validation.message);
+      return;
+    }
     try {
-      await createQuestion(assessmentId, form);
+      await createQuestion(assessmentId, validation.data);
       setForm({
         question: "",
         option_a: "",
@@ -106,9 +112,14 @@ export default function QuestionsPage() {
   };
   const handleUpdateQuestion = async () => {
     if (!editingQuestionId) return;
+    const validation = validateQuestion(form);
+    if (!validation.valid) {
+      toast.error(validation.message);
+      return;
+    }
 
     try {
-      await updateQuestion(editingQuestionId, form);
+      await updateQuestion(editingQuestionId, validation.data);
 
       setEditingQuestionId(null);
 
@@ -413,6 +424,9 @@ export default function QuestionsPage() {
 
                 <input
                   type="number"
+                  min={1}
+                  max={100}
+                  step={1}
                   value={form.marks}
                   placeholder="5"
                   onChange={(e) =>
@@ -916,6 +930,9 @@ export default function QuestionsPage() {
 
                   <input
                     type="number"
+                    min={1}
+                    max={100}
+                    step={1}
                     value={form.marks}
                     onChange={(e) =>
                       setForm({

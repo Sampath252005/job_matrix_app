@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 import { Briefcase, MapPin, IndianRupee, Clock, FileText } from "lucide-react";
+import toast from "react-hot-toast";
+import { JobPayload, validateJob } from "@/lib/validation";
 
-export default function JobForm({ initialData, onSubmit }: any) {
+type JobFormValues = Omit<JobPayload, "salary"> & { salary: string | number };
+
+interface JobFormProps {
+  initialData?: Partial<JobFormValues>;
+  onSubmit: (data: JobPayload) => Promise<void>;
+}
+
+export default function JobForm({ initialData, onSubmit }: JobFormProps) {
   // console.log("Intial Data",initialData.title);
 
   const [form, setForm] = useState({
@@ -11,21 +20,29 @@ export default function JobForm({ initialData, onSubmit }: any) {
     description: initialData?.description || "",
     location: initialData?.location || "",
     type: initialData?.type || "",
-    salary: initialData?.salary || "",
+    salary: initialData?.salary ?? "",
     experience: initialData?.experience || "",
   });
 
   const [loading, setLoading] = useState(false);
 
   const handleChange = (field: string, value: string) => {
-    setForm((prev: any) => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const result = validateJob(form);
+    if (!result.valid) {
+      toast.error(result.message);
+      return;
+    }
     setLoading(true);
-    await onSubmit(form);
-    setLoading(false);
+    try {
+      await onSubmit(result.data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,7 +78,7 @@ export default function JobForm({ initialData, onSubmit }: any) {
       lg:p-8
       "
         >
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} noValidate className="space-y-8">
             {/* ================= BASIC INFORMATION ================= */}
 
             <div>
@@ -78,6 +95,8 @@ export default function JobForm({ initialData, onSubmit }: any) {
 
                     <input
                       type="text"
+                      required
+                      maxLength={100}
                       placeholder="Frontend Developer"
                       value={form.title}
                       onChange={(e) => handleChange("title", e.target.value)}
@@ -96,6 +115,8 @@ export default function JobForm({ initialData, onSubmit }: any) {
 
                     <input
                       type="text"
+                      required
+                      maxLength={100}
                       placeholder="Bangalore"
                       value={form.location}
                       onChange={(e) => handleChange("location", e.target.value)}
@@ -115,6 +136,9 @@ export default function JobForm({ initialData, onSubmit }: any) {
                 <FileText className="text-blue-500 mt-1" size={18} />
 
                 <textarea
+                  required
+                  minLength={20}
+                  maxLength={5000}
                   placeholder="Describe the role, responsibilities, requirements..."
                   value={form.description}
                   onChange={(e) => handleChange("description", e.target.value)}
@@ -160,11 +184,11 @@ export default function JobForm({ initialData, onSubmit }: any) {
                 outline-none
                 "
                   >
-                    <option>Select Type</option>
-                    <option>Full-time</option>
-                    <option>Part-time</option>
-                    <option>Remote</option>
-                    <option>Internship</option>
+                    <option value="">Select Type</option>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Internship">Internship</option>
                   </select>
                 </div>
 
@@ -177,7 +201,10 @@ export default function JobForm({ initialData, onSubmit }: any) {
                     <IndianRupee size={18} className="text-blue-500" />
 
                     <input
-                      placeholder="8-12 LPA"
+                      type="number"
+                      min="0"
+                      step="1"
+                      placeholder="800000"
                       value={form.salary}
                       onChange={(e) => handleChange("salary", e.target.value)}
                       className="w-full bg-transparent py-3 px-3 outline-none"

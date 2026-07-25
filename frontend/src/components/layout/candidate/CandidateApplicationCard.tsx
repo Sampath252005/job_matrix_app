@@ -6,10 +6,16 @@ import {
   ArrowUpRight,
   Briefcase,
   CalendarDays,
+  Check,
   Clock3,
   MapPin,
+  MessageSquare,
+  Send,
+  Trophy,
+  UserCheck,
   Wallet,
   X,
+  XCircle,
 } from "lucide-react";
 
 import {
@@ -18,7 +24,13 @@ import {
 } from "@/services/application.services";
 import { toastApiWarning } from "@/lib/toast";
 
-type ApplicationStatus = "PENDING" | "ACCEPTED" | "REJECTED";
+type ApplicationStatus =
+  | "PENDING"
+  | "SHORTLISTED"
+  | "INTERVIEW"
+  | "HIRED"
+  | "REJECTED"
+  | "ACCEPTED";
 
 interface ApplicationJob {
   id?: string;
@@ -81,6 +93,12 @@ export default function CandidateApplicationCard({
     PENDING:
       "bg-amber-50 text-amber-700 ring-amber-100 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-900/60",
     ACCEPTED:
+      "bg-emerald-50 text-emerald-700 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900/60",
+    SHORTLISTED:
+      "bg-blue-50 text-blue-700 ring-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-900/60",
+    INTERVIEW:
+      "bg-violet-50 text-violet-700 ring-violet-100 dark:bg-violet-950/40 dark:text-violet-300 dark:ring-violet-900/60",
+    HIRED:
       "bg-emerald-50 text-emerald-700 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900/60",
     REJECTED:
       "bg-red-50 text-red-700 ring-red-100 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900/60",
@@ -152,6 +170,10 @@ export default function CandidateApplicationCard({
             {application.status}
           </span>
         </div>
+
+        <div className="my-5 border-t border-slate-100 dark:border-slate-800" />
+
+        <ApplicationProgress status={application.status} />
 
         <div className="my-5 border-t border-slate-100 dark:border-slate-800" />
 
@@ -271,6 +293,8 @@ export default function CandidateApplicationCard({
             </div>
 
             <div className="space-y-5 overflow-y-auto px-5 py-6 sm:px-6">
+              <ApplicationProgress status={details.status} />
+
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-xl bg-slate-50 p-4 dark:bg-slate-900/70">
                   <p className="text-xs font-semibold uppercase text-slate-500">
@@ -308,5 +332,97 @@ export default function CandidateApplicationCard({
         </div>
       )}
     </>
+  );
+}
+
+const progressSteps = [
+  { status: "PENDING", label: "Applied", icon: Send },
+  { status: "SHORTLISTED", label: "Shortlisted", icon: UserCheck },
+  { status: "INTERVIEW", label: "Interview", icon: MessageSquare },
+  { status: "HIRED", label: "Hired", icon: Trophy },
+] as const;
+
+function ApplicationProgress({ status }: { status: ApplicationStatus }) {
+  const normalizedStatus = status === "ACCEPTED" ? "SHORTLISTED" : status;
+  const currentIndex = progressSteps.findIndex(
+    (step) => step.status === normalizedStatus,
+  );
+  const isRejected = normalizedStatus === "REJECTED";
+
+  return (
+    <section
+      aria-label="Application progress"
+      className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-900/60 sm:p-5"
+    >
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+            Application progress
+          </h3>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Follow your hiring journey
+          </p>
+        </div>
+        {isRejected && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2.5 py-1 text-xs font-bold text-red-700 dark:bg-red-950/50 dark:text-red-300">
+            <XCircle size={14} />
+            Application closed
+          </span>
+        )}
+      </div>
+
+      <div className="grid grid-cols-4">
+        {progressSteps.map((step, index) => {
+          const Icon = step.icon;
+          const isComplete = !isRejected && index < currentIndex;
+          const isCurrent = !isRejected && index === currentIndex;
+          const isReached = isComplete || isCurrent;
+
+          return (
+            <div key={step.status} className="relative flex flex-col items-center">
+              {index < progressSteps.length - 1 && (
+                <div className="absolute left-1/2 top-5 h-1 w-full bg-slate-200 dark:bg-slate-700">
+                  <div
+                    className={`h-full origin-left bg-gradient-to-r from-blue-600 to-cyan-400 transition-all duration-700 ${
+                      !isRejected && index < currentIndex
+                        ? "scale-x-100"
+                        : "scale-x-0"
+                    }`}
+                  />
+                </div>
+              )}
+
+              <span
+                className={`relative z-10 grid h-10 w-10 place-items-center rounded-full border-2 transition-all duration-500 ${
+                  isComplete
+                    ? "border-blue-600 bg-blue-600 text-white"
+                    : isCurrent
+                      ? "animate-pulse border-blue-500 bg-white text-blue-600 shadow-lg shadow-blue-500/30 dark:bg-slate-950 dark:text-blue-300"
+                      : "border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500"
+                }`}
+              >
+                {isComplete ? <Check size={17} strokeWidth={3} /> : <Icon size={17} />}
+              </span>
+
+              <span
+                className={`mt-2 text-center text-[10px] font-bold sm:text-xs ${
+                  isReached
+                    ? "text-slate-900 dark:text-white"
+                    : "text-slate-400 dark:text-slate-500"
+                }`}
+              >
+                {step.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {isRejected && (
+        <p className="mt-4 rounded-xl bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700 dark:bg-red-950/30 dark:text-red-300">
+          This application will not move to the next hiring stage.
+        </p>
+      )}
+    </section>
   );
 }

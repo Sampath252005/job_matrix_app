@@ -403,15 +403,28 @@ export const getAssessmentResult = async (attemptId, status, token) => {
         error: null,
     };
 };
-export const publishAssessment = async (assessmentId, token) => {
+export const publishAssessment = async (assessmentId, recruiterId, token) => {
     const supabase = getSupabase(token);
-    const { data: assessment } = await supabase
+    const { data: assessment, error: assessmentError } = await supabase
         .from("assessments")
         .select("*")
         .eq("id", assessmentId)
+        .eq("recruiter_id", recruiterId)
         .single();
+    if (assessmentError || !assessment) {
+        throw new Error("Assessment not found or you are not authorized");
+    }
     if (assessment?.is_published) {
         throw new Error("Assessment already published");
+    }
+    const { count: questionCount, error: questionsError } = await supabase
+        .from("questions")
+        .select("id", { count: "exact", head: true })
+        .eq("assessment_id", assessmentId);
+    if (questionsError)
+        throw questionsError;
+    if (!questionCount) {
+        throw new Error("Add at least one question before publishing");
     }
     if (assessment?.total_marks <= assessment?.passing_score) {
         throw new Error("passing score is less than total marks");
