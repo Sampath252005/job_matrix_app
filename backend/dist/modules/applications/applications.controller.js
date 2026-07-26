@@ -47,21 +47,41 @@ export const getAllShortlistedApplication = async (req, res) => {
 };
 export const updateApplicationStatus = async (req, res) => {
     const { applicationId } = req.params;
-    const recruiter_id = req.user.id;
+    const recruiterId = req.user?.id;
     const { status } = req.body;
     const token = req.accessToken;
-    if (!recruiter_id || !token) {
-        return res.status(401).json({ message: "Unauthorized" });
+    if (!recruiterId || !token) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized",
+        });
+    }
+    if (!status) {
+        return res.status(400).json({
+            success: false,
+            message: "Status is required",
+        });
     }
     try {
-        const result = await ApplicationServices.updateStatusService(applicationId, recruiter_id, status, token);
-        return res.json({
+        const result = await ApplicationServices.updateStatusService(applicationId, recruiterId, status, token);
+        return res.status(200).json({
+            success: true,
             message: "Application status updated",
             data: result,
         });
     }
     catch (error) {
-        return res.status(400).json({ error: error.message });
+        const message = error instanceof Error
+            ? error.message
+            : "Unable to update application status";
+        const statusCode = message === "Not authorized" ? 403 :
+            message === "Application not found" ? 404 :
+                message === "Invalid status value" ? 400 :
+                    500;
+        return res.status(statusCode).json({
+            success: false,
+            message,
+        });
     }
 };
 //---------------------------------candidate side application controller----------------------------------------------------

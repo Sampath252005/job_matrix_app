@@ -107,7 +107,7 @@ export const startAssessment = async (assessmentId, candidateId, token) => {
     }
     // 4. Check assessment window
     const now = new Date();
-    if (assessment.start_time && now < new Date(assessment.start_time)) {
+    if (assessment.start_time && now > new Date(assessment.start_time)) {
         return {
             data: null,
             error: {
@@ -426,9 +426,6 @@ export const publishAssessment = async (assessmentId, recruiterId, token) => {
     if (!questionCount) {
         throw new Error("Add at least one question before publishing");
     }
-    if (assessment?.total_marks <= assessment?.passing_score) {
-        throw new Error("passing score is less than total marks");
-    }
     const { data, error } = await supabase
         .from("assessments")
         .update({
@@ -446,22 +443,24 @@ export const getCandidateAssessments = async (candidateId, token) => {
     const supabase = getSupabase(token);
     const { data: applications, error: appError } = await supabase
         .from("applications")
-        .select("id, job_id")
-        .eq("candidate_id", candidateId)
-        .eq("status", "SHORTLISTED");
+        .select("id, job_id, status")
+        .eq("candidate_id", candidateId);
     if (appError)
         throw appError;
     if (!applications?.length) {
-        return [];
+        return { assessments: [], assessmentStatus: [] };
     }
     const jobIds = applications.map((app) => app.job_id);
-    const { data: assessments, error: assesmetError } = await supabase
+    const { data: assessments, error: assessmentError } = await supabase
         .from("assessments")
         .select("*")
         .in("job_id", jobIds)
         .eq("is_published", true);
-    if (assesmetError)
-        throw assesmetError;
+    if (assessmentError)
+        throw assessmentError;
+    if (!assessments?.length) {
+        return { assessments: [], assessmentStatus: [] };
+    }
     const assessmentIds = assessments.map((assessment) => assessment.id);
     const { data: assessmentStatus, error: attemptsError } = await supabase
         .from("assessment_attempts")
@@ -470,7 +469,13 @@ export const getCandidateAssessments = async (candidateId, token) => {
         .eq("candidate_id", candidateId);
     if (attemptsError)
         throw attemptsError;
-    return { assessments, assessmentStatus };
+    const shortlistedJobIds = new Set(applications
+        .filter((application) => application.status === "SHORTLISTED")
+        .map((application) => application.job_id));
+    const attemptedAssessmentIds = new Set((assessmentStatus ?? []).map((attempt) => attempt.assessment_id));
+    const visibleAssessments = assessments.filter((assessment) => shortlistedJobIds.has(assessment.job_id) ||
+        attemptedAssessmentIds.has(assessment.id));
+    return { assessments: visibleAssessments, assessmentStatus };
 };
 //to get assment details for the candidates
 export const getCandidateAssessmentById = async (assessmentId, token) => {

@@ -299,7 +299,6 @@ export const publishAssessment = async (req, res) => {
             "Assessment already published",
             "Add at least one question before publishing",
             "Assessment not found or you are not authorized",
-            "passing score is less than total marks",
         ];
         if (publishErrors.includes(error.message)) {
             return res.status(400).json({

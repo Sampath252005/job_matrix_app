@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Bell, ChevronDown, Loader2, LogOut, Search } from "lucide-react";
+import { ChevronDown, Loader2, LogOut, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { logoutService } from "@/services/auth.services";
+import CandidateNotifications from "./CandidateNotifications";
 
 function getStoredUserName() {
   try {
@@ -105,13 +106,7 @@ export default function CSearchBar() {
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          type="button"
-          className="hidden rounded-full border border-slate-200/80 bg-white/80 p-2.5 text-slate-600 shadow-sm shadow-slate-200/60 transition hover:bg-white dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:shadow-none dark:hover:bg-slate-800 sm:inline-flex"
-          aria-label="Notifications"
-        >
-          <Bell size={18} />
-        </button>
+        <CandidateNotifications />
 
         <div ref={dropdownRef} className="relative">
           <button

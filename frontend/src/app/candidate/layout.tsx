@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import CNavbar from "@/components/layout/candidate/CNavbar";
 import CSearchBar from "@/components/layout/candidate/CSearchBar";
 import { Menu } from "lucide-react";
+import CandidateRealtimeProvider from "@/components/socket/CandidateRealtimeProvider";
 
 export default function CandidateLayout({
   children,
@@ -17,15 +18,20 @@ export default function CandidateLayout({
 
   if (isAttemptPage) {
     return (
-      <main className="min-h-screen bg-slate-950 text-slate-100">
-        {children}
-      </main>
+      <>
+        <CandidateRealtimeProvider />
+        <main className="min-h-screen bg-slate-950 text-slate-100">
+          {children}
+        </main>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/45 text-slate-950 dark:bg-slate-950 dark:text-slate-100">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.12),transparent_32rem),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.10),transparent_28rem)] dark:bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.10),transparent_32rem),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.08),transparent_28rem)]" />
+    <>
+      <CandidateRealtimeProvider />
+      <div className="min-h-screen bg-slate-50/45 text-slate-950 dark:bg-slate-950 dark:text-slate-100">
+        <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.12),transparent_32rem),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.10),transparent_28rem)] dark:bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.10),transparent_32rem),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.08),transparent_28rem)]" />
 
       {/* Sidebar */}
       <aside
@@ -75,6 +81,7 @@ export default function CandidateLayout({
           {children}
         </main>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

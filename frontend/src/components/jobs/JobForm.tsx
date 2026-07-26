@@ -12,7 +12,7 @@ interface JobFormProps {
   onSubmit: (data: JobPayload) => Promise<void>;
 }
 
-export default function JobForm({ initialData, onSubmit }: JobFormProps) {
+export default function   JobForm({ initialData, onSubmit }: JobFormProps) {
   // console.log("Intial Data",initialData.title);
 
   const [form, setForm] = useState({

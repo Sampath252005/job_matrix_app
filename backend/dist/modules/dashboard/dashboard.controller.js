@@ -31,4 +31,26 @@ export const getCandidateDashboardController = async (req, res) => {
         });
     }
 };
+export const getRecruiterDashboardAnalyticsController = async (req, res) => {
+    try {
+        const recruiterId = req.user.id;
+        const token = req.accessToken;
+        const analytics = await DashBoardServices.getRecruiterDashboardAnalytics(recruiterId, token);
+        return res.json(analytics);
+    }
+    catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+export const getCandidateDashboardAnalyticsController = async (req, res) => {
+    try {
+        const candidateId = req.user.id;
+        const token = req.accessToken;
+        const analytics = await DashBoardServices.getCandidateDashboardAnalytics(candidateId, token);
+        return res.json(analytics);
+    }
+    catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
 //# sourceMappingURL=dashboard.controller.js.map

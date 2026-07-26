@@ -5,6 +5,7 @@ import express from "express";
 import authRoutes from "./modules/auth/auth.routes.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { allowedFrontendOrigins } from "./config/cors.js";
 
 // import recruiterRoutes from "./routes/recruiter.routes.js";
 // import candidateRoutes from "./routes/candidate.routes.js"
@@ -14,13 +15,14 @@ import applicationRoutes from "./modules/applications/applications.routes.js";
 import dashboardroutes from "./modules/dashboard/dashboard.routes.js";
 import assessmentRoutes from "./modules/assessments/assessments.routes.js";
 import questionRoutes from "./modules/questions/questions.routes.js";
-import resultRoutes from "./modules/result/result.route.js"
+import resultRoutes from "./modules/result/result.route.js";
+import notificationRoutes from "./modules/notification/notification.routes.js"
 const app = express();
 
 // CORS FIRST
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: allowedFrontendOrigins,
     credentials: true,
   }),
 );
@@ -37,7 +39,11 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/dashboard", dashboardroutes);
 app.use("/api/assessments", assessmentRoutes);
 app.use("/api", questionRoutes);
-app.use("/api",resultRoutes)
+app.use("/api", resultRoutes);
+app.use(
+  "/api/notifications",
+  notificationRoutes,
+);
 // app.use("/api/candidate", candidateRoutes);
 
 // Test route
