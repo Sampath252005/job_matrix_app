@@ -8,6 +8,7 @@ import { applyJob } from "@/services/jobs.services";
 import { getMyApplications } from "@/services/application.services";
 import { toast } from "react-hot-toast";
 import { toastApiWarning } from "@/lib/toast";
+import CandidateJobAnnouncements from "@/components/announcements/CandidateJobAnnouncements";
 
 import {
   getAllJobs,
@@ -511,6 +512,8 @@ export default function JobsPage() {
                           {selectedJob?.description}
                         </p>
                       </div>
+
+                      <CandidateJobAnnouncements jobId={selectedJob.id} />
 
                       {/* Requirements */}
 

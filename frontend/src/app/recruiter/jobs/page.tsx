@@ -6,9 +6,21 @@ import { getMyJobs } from "@/services/jobs.services";
 import JobCard from "@/components/jobs/JobCard";
 import { useRouter } from "next/navigation";
 import { toastApiWarning } from "@/lib/toast";
+import RecruiterAnnouncementManager from "@/components/announcements/RecruiterAnnouncementManager";
+
+interface RecruiterJob {
+  id: string;
+  title: string;
+  status: string;
+  description?: string;
+  location?: string;
+  createdAt?: string;
+}
 
 export default function JobsPage() {
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState<RecruiterJob[]>([]);
+  const [announcementJob, setAnnouncementJob] =
+    useState<RecruiterJob | null>(null);
   const router = useRouter();
 
   const fetchJobs = async () => {
@@ -22,7 +34,22 @@ export default function JobsPage() {
   };
 
   useEffect(() => {
-    fetchJobs();
+    let active = true;
+
+    const loadJobs = async () => {
+      try {
+        const data = await getMyJobs();
+        if (active) setJobs(data);
+      } catch (error) {
+        console.error(error);
+        if (active) toastApiWarning(error, "Failed to load jobs");
+      }
+    };
+
+    void loadJobs();
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (
@@ -61,7 +88,7 @@ export default function JobsPage() {
           <p className="text-gray-500">Open Jobs</p>
 
           <h2 className="mt-2 text-3xl font-bold text-green-600">
-            {jobs.filter((job: any) => job.status === "open").length}
+            {jobs.filter((job) => job.status.toUpperCase() === "OPEN").length}
           </h2>
         </div>
 
@@ -69,7 +96,7 @@ export default function JobsPage() {
           <p className="text-gray-500">Closed Jobs</p>
 
           <h2 className="mt-2 text-3xl font-bold text-red-500">
-            {jobs.filter((job: any) => job.status !== "open").length}
+            {jobs.filter((job) => job.status.toUpperCase() !== "OPEN").length}
           </h2>
         </div>
       </div>
@@ -78,8 +105,13 @@ export default function JobsPage() {
 
       {jobs.length > 0 ? (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {jobs.map((job: any) => (
-            <JobCard key={job.id} job={job} refresh={fetchJobs} />
+          {jobs.map((job) => (
+            <JobCard
+              key={job.id}
+              job={job}
+              refresh={fetchJobs}
+              onAnnouncements={setAnnouncementJob}
+            />
           ))}
         </div>
       ) : (
@@ -114,6 +146,10 @@ export default function JobsPage() {
           </button>
         </div>
       )}
+      <RecruiterAnnouncementManager
+        job={announcementJob}
+        onClose={() => setAnnouncementJob(null)}
+      />
     </div>
   );
 }

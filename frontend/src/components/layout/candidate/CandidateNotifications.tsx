@@ -7,6 +7,7 @@ import {
   Check,
   CheckCheck,
   Loader2,
+  Megaphone,
   Trophy,
   UserCheck,
   XCircle,
@@ -44,10 +45,18 @@ function formatNotificationTime(createdAt: string) {
   });
 }
 
-function NotificationIcon({ type }: { type: CandidateNotification["type"] }) {
+function NotificationIcon({
+  notification,
+}: {
+  notification: CandidateNotification;
+}) {
   const iconClass = "h-5 w-5";
 
-  switch (type) {
+  if (notification.data?.kind === "JOB_ANNOUNCEMENT") {
+    return <Megaphone className={iconClass} />;
+  }
+
+  switch (notification.type) {
     case "APPLICATION_SHORTLISTED":
       return <UserCheck className={iconClass} />;
     case "APPLICATION_REJECTED":
@@ -61,8 +70,12 @@ function NotificationIcon({ type }: { type: CandidateNotification["type"] }) {
   }
 }
 
-function notificationIconStyle(type: CandidateNotification["type"]) {
-  switch (type) {
+function notificationIconStyle(notification: CandidateNotification) {
+  if (notification.data?.kind === "JOB_ANNOUNCEMENT") {
+    return "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300";
+  }
+
+  switch (notification.type) {
     case "APPLICATION_SHORTLISTED":
       return "bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-300";
     case "APPLICATION_REJECTED":
@@ -305,9 +318,9 @@ export default function CandidateNotifications() {
                 )}
 
                 <span
-                  className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${notificationIconStyle(notification.type)}`}
+                  className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${notificationIconStyle(notification)}`}
                 >
-                  <NotificationIcon type={notification.type} />
+                  <NotificationIcon notification={notification} />
                 </span>
 
                 <span className="min-w-0 flex-1">

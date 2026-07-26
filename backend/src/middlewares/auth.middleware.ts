@@ -27,7 +27,7 @@ export const protect = async (req: any, res: any, next: NextFunction) => {
     if (userError || !userData)
       return res.status(401).json({ message: "User not found" });
 
-    // Attach to request
+    // Attach to request  
     // console.log("user data",userData);
     req.user = userData;
     req.accessToken = token;

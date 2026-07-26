@@ -3,14 +3,31 @@
 import {
   Briefcase,
   CalendarDays,
+  Megaphone,
   MapPin,
 } from "lucide-react";
 import JobActions from "./JobActions";
 
+interface RecruiterJobCardData {
+  id: string;
+  title: string;
+  description?: string;
+  location?: string;
+  createdAt?: string;
+  status: string;
+}
+
+interface JobCardProps {
+  job: RecruiterJobCardData;
+  refresh: () => void | Promise<void>;
+  onAnnouncements?: (job: RecruiterJobCardData) => void;
+}
+
 export default function JobCard({
   job,
   refresh,
-}: any) {
+  onAnnouncements,
+}: JobCardProps) {
   return (
     <div
       className="
@@ -171,9 +188,14 @@ export default function JobCard({
             : "🔴 Closed"}
         </span>
 
-        <span className="break-all text-sm text-gray-400">
-          ID #{job.id}
-        </span>
+        <button
+          type="button"
+          onClick={() => onAnnouncements?.(job)}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700 transition hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-950"
+        >
+          <Megaphone size={16} />
+          Announcements
+        </button>
 
       </div>
 

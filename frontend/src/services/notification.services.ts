@@ -16,7 +16,10 @@ export interface CandidateNotification {
   title: string;
   message: string;
   data: {
+    kind?: "JOB_ANNOUNCEMENT";
+    announcementId?: string;
     applicationId?: string;
+    audience?: string;
     jobId?: string;
     jobTitle?: string;
     status?: string;

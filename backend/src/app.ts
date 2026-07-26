@@ -17,6 +17,7 @@ import assessmentRoutes from "./modules/assessments/assessments.routes.js";
 import questionRoutes from "./modules/questions/questions.routes.js";
 import resultRoutes from "./modules/result/result.route.js";
 import notificationRoutes from "./modules/notification/notification.routes.js"
+import announcementRoutes from "./modules/announcements/ announcement.routes.js";
 const app = express();
 
 // CORS FIRST
@@ -43,6 +44,10 @@ app.use("/api", resultRoutes);
 app.use(
   "/api/notifications",
   notificationRoutes,
+);
+app.use(
+  "/api/announcements",
+  announcementRoutes,
 );
 // app.use("/api/candidate", candidateRoutes);
 

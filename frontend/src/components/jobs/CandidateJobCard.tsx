@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowUpRight, Briefcase, Clock3, MapPin, Wallet } from "lucide-react";
+import CandidateJobAnnouncementBadge from "@/components/announcements/CandidateJobAnnouncementBadge";
 
 interface Job {
   id: string;
@@ -152,6 +153,8 @@ export default function CandidateJobCard({ job, onView }: Props) {
           </p>
         </div>
       </div>
+
+      <CandidateJobAnnouncementBadge jobId={job.id} />
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-sm text-slate-500 dark:text-slate-400">
