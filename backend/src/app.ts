@@ -18,6 +18,8 @@ import questionRoutes from "./modules/questions/questions.routes.js";
 import resultRoutes from "./modules/result/result.route.js";
 import notificationRoutes from "./modules/notification/notification.routes.js"
 import announcementRoutes from "./modules/announcements/ announcement.routes.js";
+import querriesRoutes from "./modules/querries/question.routes.js";
+
 const app = express();
 
 // CORS FIRST
@@ -49,6 +51,8 @@ app.use(
   "/api/announcements",
   announcementRoutes,
 );
+
+app.use("/api/questions", querriesRoutes);
 // app.use("/api/candidate", candidateRoutes);
 
 // Test route

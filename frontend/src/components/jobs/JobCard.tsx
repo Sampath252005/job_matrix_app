@@ -5,6 +5,7 @@ import {
   CalendarDays,
   Megaphone,
   MapPin,
+  MessageCircleQuestion,
 } from "lucide-react";
 import JobActions from "./JobActions";
 
@@ -21,12 +22,14 @@ interface JobCardProps {
   job: RecruiterJobCardData;
   refresh: () => void | Promise<void>;
   onAnnouncements?: (job: RecruiterJobCardData) => void;
+  onQuestions?: (job: RecruiterJobCardData) => void;
 }
 
 export default function JobCard({
   job,
   refresh,
   onAnnouncements,
+  onQuestions,
 }: JobCardProps) {
   return (
     <div
@@ -167,7 +170,7 @@ export default function JobCard({
 
       {/* Footer */}
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-6 flex flex-col gap-3">
 
         <span
           className={`
@@ -188,14 +191,24 @@ export default function JobCard({
             : "🔴 Closed"}
         </span>
 
-        <button
-          type="button"
-          onClick={() => onAnnouncements?.(job)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700 transition hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-950"
-        >
-          <Megaphone size={16} />
-          Announcements
-        </button>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => onAnnouncements?.(job)}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300"
+          >
+            <Megaphone size={15} />
+            Announcements
+          </button>
+          <button
+            type="button"
+            onClick={() => onQuestions?.(job)}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-300"
+          >
+            <MessageCircleQuestion size={15} />
+            Q&amp;A
+          </button>
+        </div>
 
       </div>
 

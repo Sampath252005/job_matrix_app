@@ -9,6 +9,7 @@ import { getMyApplications } from "@/services/application.services";
 import { toast } from "react-hot-toast";
 import { toastApiWarning } from "@/lib/toast";
 import CandidateJobAnnouncements from "@/components/announcements/CandidateJobAnnouncements";
+import JobQuestionsPanel from "@/components/questions/JobQuestionsPanel";
 
 import {
   getAllJobs,
@@ -514,6 +515,11 @@ export default function JobsPage() {
                       </div>
 
                       <CandidateJobAnnouncements jobId={selectedJob.id} />
+
+                      <JobQuestionsPanel
+                        jobId={selectedJob.id}
+                        role="candidate"
+                      />
 
                       {/* Requirements */}
 

@@ -7,6 +7,7 @@ import JobCard from "@/components/jobs/JobCard";
 import { useRouter } from "next/navigation";
 import { toastApiWarning } from "@/lib/toast";
 import RecruiterAnnouncementManager from "@/components/announcements/RecruiterAnnouncementManager";
+import RecruiterQuestionsManager from "@/components/questions/RecruiterQuestionsManager";
 
 interface RecruiterJob {
   id: string;
@@ -21,6 +22,7 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<RecruiterJob[]>([]);
   const [announcementJob, setAnnouncementJob] =
     useState<RecruiterJob | null>(null);
+  const [questionsJob, setQuestionsJob] = useState<RecruiterJob | null>(null);
   const router = useRouter();
 
   const fetchJobs = async () => {
@@ -111,6 +113,7 @@ export default function JobsPage() {
               job={job}
               refresh={fetchJobs}
               onAnnouncements={setAnnouncementJob}
+              onQuestions={setQuestionsJob}
             />
           ))}
         </div>
@@ -149,6 +152,10 @@ export default function JobsPage() {
       <RecruiterAnnouncementManager
         job={announcementJob}
         onClose={() => setAnnouncementJob(null)}
+      />
+      <RecruiterQuestionsManager
+        job={questionsJob}
+        onClose={() => setQuestionsJob(null)}
       />
     </div>
   );

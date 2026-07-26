@@ -4,6 +4,7 @@ import { useState } from "react";
 import RNavabar from "@/components/layout/recruiter/RnavBar";
 import RsearchBar from "@/components/layout/recruiter/RsearchBar";
 import { Menu } from "lucide-react";
+import QuestionRealtimeProvider from "@/components/socket/QuestionRealtimeProvider";
 
 export default function DashboardLayout({
   children,
@@ -15,6 +16,7 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-dvh overflow-hidden bg-slate-50/45 dark:bg-slate-950">
+      <QuestionRealtimeProvider />
       {/* ================= SIDEBAR ================= */}
 
       <aside

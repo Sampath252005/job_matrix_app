@@ -1,5 +1,5 @@
 import { Router } from "express";
-
+import { allowRoles } from "../../middlewares/rbac.middleware.js";
 import { protect } from "../../middlewares/auth.middleware.js";
 
 import {
@@ -18,6 +18,7 @@ const router = Router();
 router.get(
   "/jobs/:jobId",
   protect,
+  allowRoles("ADMIN", "CANDIDATE"),
   getJobAnnouncements,
 );
 
@@ -28,6 +29,7 @@ router.get(
 router.post(
   "/jobs/:jobId",
   protect,
+  allowRoles("ADMIN", "RECRUITER"),
   createAnnouncement,
 );
 
@@ -38,6 +40,7 @@ router.post(
 router.patch(
   "/:announcementId",
   protect,
+  allowRoles("ADMIN", "RECRUITER"),
   updateAnnouncement,
 );
 
@@ -48,6 +51,7 @@ router.patch(
 router.delete(
   "/:announcementId",
   protect,
+  allowRoles("ADMIN", "RECRUITER"),
   deleteAnnouncement,
 );
 
