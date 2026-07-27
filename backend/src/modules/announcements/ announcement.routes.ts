@@ -18,7 +18,7 @@ const router = Router();
 router.get(
   "/jobs/:jobId",
   protect,
-  allowRoles("ADMIN", "CANDIDATE"),
+  allowRoles("ADMIN", "CANDIDATE","RECRUITER"),
   getJobAnnouncements,
 );
 
