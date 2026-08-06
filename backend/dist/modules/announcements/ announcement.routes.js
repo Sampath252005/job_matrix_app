@@ -7,7 +7,7 @@ const router = Router();
  * GET /api/announcements/jobs/:jobId
  * Candidate and recruiter can fetch permitted announcements.
  */
-router.get("/jobs/:jobId", protect, allowRoles("ADMIN", "CANDIDATE"), getJobAnnouncements);
+router.get("/jobs/:jobId", protect, allowRoles("ADMIN", "CANDIDATE", "RECRUITER"), getJobAnnouncements);
 /*
  * POST /api/announcements/jobs/:jobId
  * Only the recruiter who owns the job can create.

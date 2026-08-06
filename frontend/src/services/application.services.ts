@@ -24,6 +24,11 @@ export const getapplcationByJob = async (jobId: string) => {
   return res;
 };
 
+export const getEligibleInterviewApplications = async (jobId: string) => {
+  const res = await api.get(`/applications/job/${jobId}/shortlisted`);
+  return Array.isArray(res.data) ? res.data : [];
+};
+
 export const updateApplicationStatus = async (
   applicationId: string,
   status: string

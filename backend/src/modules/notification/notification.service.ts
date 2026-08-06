@@ -73,3 +73,5 @@ export const markNotificationAsReadService = async (
 
   return data;
 };
+
+

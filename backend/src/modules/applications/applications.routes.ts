@@ -3,6 +3,7 @@ import { protect } from "../../middlewares/auth.middleware.js";
 import { allowRoles } from "../../middlewares/rbac.middleware.js";
 import {
   getApplicationsByJob,
+  getAllShortlistedApplication,
   updateApplicationStatus,
   applyToJob,
   getMyApplications,
@@ -24,7 +25,7 @@ router.get(
   "/job/:jobId/shortlisted",
   protect,
   allowRoles("ADMIN", "RECRUITER"),
-  getApplicationsByJob,
+  getAllShortlistedApplication,
 );
 
 // Update application status

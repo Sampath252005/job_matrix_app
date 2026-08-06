@@ -13,6 +13,7 @@ import {
   Sun,
   FileQuestion,
   BriefcaseBusiness,
+  Video,
 } from "lucide-react";
 
 type CNavbarProps = {
@@ -40,12 +41,18 @@ const navs = [
   },
   {
     id: 4,
+    name: "Interviews",
+    icon: Video,
+    link: "/candidate/interviews",
+  },
+  {
+    id: 5,
     name: "Assessments",
     icon: FileQuestion,
     link: "/candidate/assessments",
   },
   {
-    id: 5,
+    id: 6,
     name: "Profile",
     icon: User,
     link: "/candidate/profile",

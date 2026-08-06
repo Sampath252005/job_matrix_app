@@ -17,6 +17,7 @@ import resultRoutes from "./modules/result/result.route.js";
 import notificationRoutes from "./modules/notification/notification.routes.js";
 import announcementRoutes from "./modules/announcements/ announcement.routes.js";
 import querriesRoutes from "./modules/querries/question.routes.js";
+import interviewRoutes from "./modules/interviews/nterview.routes.js";
 const app = express();
 // CORS FIRST
 app.use(cors({
@@ -39,6 +40,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/questions", querriesRoutes);
 // app.use("/api/candidate", candidateRoutes);
+app.use("/api/interviews", interviewRoutes);
 // Test route
 app.get("/", (req, res) => {
     res.send("API is running 🚀");

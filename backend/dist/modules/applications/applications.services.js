@@ -206,7 +206,7 @@ export const getShortListedApplication = async (jobId, token) => {
   )
 `)
         .eq("job_id", jobId)
-        .eq("status", "SHORTLISTED");
+        .in("status", ["SHORTLISTED", "INTERVIEW"]);
 };
 //------------------------------------------------------candidate side application services--------------------------------//
 export const applyToJobServices = async (jobId, candidateId, token) => {

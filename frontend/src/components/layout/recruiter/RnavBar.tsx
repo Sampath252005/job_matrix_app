@@ -31,7 +31,7 @@ const navs = [
     id: 2,
     name: "Interviews",
     icon: ClipboardList,
-    link: "/recruiter/IterView",
+    link: "/recruiter/interviews",
   },
   {
     id: 4,

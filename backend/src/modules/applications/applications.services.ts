@@ -291,7 +291,7 @@ export const getShortListedApplication = async (
 `,
     )
     .eq("job_id", jobId)
-    .eq("status", "SHORTLISTED");
+    .in("status", ["SHORTLISTED", "INTERVIEW"]);
 };
 
 //------------------------------------------------------candidate side application services--------------------------------//

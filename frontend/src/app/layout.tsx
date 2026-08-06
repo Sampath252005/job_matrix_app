@@ -1,4 +1,5 @@
 import "./globals.css";
+import "@livekit/components-styles";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "react-hot-toast";
 import { Geist } from "next/font/google";
