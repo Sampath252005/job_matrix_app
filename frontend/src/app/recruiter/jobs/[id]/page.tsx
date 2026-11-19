@@ -23,3 +23,9 @@
 //     />
 //   );
 // }
+
+// Keep the dynamic route a valid Next.js page while job editing lives at
+// `/recruiter/jobs/[id]/update`.
+export default function JobPage() {
+  return null;
+}
