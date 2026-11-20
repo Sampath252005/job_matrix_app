@@ -1,13 +1,9 @@
 import axios from "axios";
 
-const backendUrl =
-  process.env.NEXT_PUBLIC_BACKEND_URL ||
-  (typeof window === "undefined"
-    ? "http://localhost:2000"
-    : `${window.location.protocol}//${window.location.hostname}:2000`);
-
 export const api = axios.create({
-  baseURL: `${backendUrl}/api`,
+  // Requests go through Next.js so auth cookies are issued for the frontend
+  // domain. The route guard can then read them on Vercel.
+  baseURL: "/api",
   withCredentials: true,
 });
 

@@ -95,13 +95,15 @@ export const login = async (
     return res
       .cookie("access_token", data.session.access_token, {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
+        path: "/",
       })
       .cookie("refresh_token", data.session.refresh_token, {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
+        path: "/",
       })
       .status(200)
       .json({
@@ -119,7 +121,7 @@ export const
 logout = (_req: Request, res: Response) => {
   const cookieOptions = {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",
   };
