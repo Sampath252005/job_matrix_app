@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { loginService } from "@/services/auth.services";
 import { Eye, EyeOff } from "lucide-react";
 import { toastApiWarning } from "@/lib/toast";
@@ -21,7 +21,6 @@ const LoginPage = () => {
   } = useForm<RegisterForm>();
 
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
@@ -53,7 +52,7 @@ const LoginPage = () => {
       const role = result.user.role;
       const defaultPath =
         role === "CANDIDATE" ? "/candidate/dashboard" : "/recruiter/dashboard";
-      const redirect = searchParams.get("redirect");
+      const redirect = new URLSearchParams(window.location.search).get("redirect");
       const rolePath = role === "CANDIDATE" ? "/candidate/" : "/recruiter/";
 
       // Only accept an internal route belonging to the authenticated role.
