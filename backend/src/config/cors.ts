@@ -12,7 +12,7 @@ export const allowedFrontendOrigins = [
     "http://localhost:3000",
     "http://10.181.52.183:3000",
     "http://192.168.1.69:3000",
-    "https://job-matrix-app-hj79.vercel.app",
+    "https://job-matrix-app.vercel.app/",
     ...configuredOrigins,
   ]),
 ];
